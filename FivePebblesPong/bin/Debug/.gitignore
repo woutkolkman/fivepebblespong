@@ -1,0 +1,6 @@
+Assembly-CSharp.dll
+BepInEx.dll
+HOOKS-Assembly-CSharp.dll
+MonoMod.RuntimeDetour.dll
+MonoMod.Utils.dll
+UnityEngine.dll
