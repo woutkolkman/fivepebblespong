@@ -42,6 +42,8 @@ namespace FivePebblesPong
         {
             sLeaser.sprites = new FSprite[1];
             sLeaser.sprites[0] = new FSprite("Pebble" + 2.ToString(), true); //UnityEngine.Random.Range(1, 15)
+            //TODO possible new sprite at Rain World\Assets\Futile\Resources\Illustrations\GamepadIcon.png
+            //     FSprite > FAtlasManager || ActuallyLoadAtlasOrImage
             this.AddToContainer(sLeaser, rCam, null);
         }
 
