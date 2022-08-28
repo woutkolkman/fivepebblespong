@@ -36,16 +36,8 @@ namespace FivePebblesPong
                 //WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, intVector.x, intVector.y, -1);
                 WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, 23, 18, -1); //consistent location
 
-                AbstractPhysicalObject ent = new AbstractPhysicalObject(
-                    self.world,
-                    EnumExt_FPP.FPGameController,
-                    null,
-                    coord,
-                    newID
-                );
-
+                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.FPGameController, null, coord, newID);
                 self.abstractRoom.AddEntity(ent);
-
                 FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, entity added at " + coord.SaveToString()); //TODO remove
             }
         }
@@ -53,12 +45,7 @@ namespace FivePebblesPong
 
         static void AbstractPhysicalObjectRealizeHook(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
         {
-            if (!FivePebblesPong.HasEnumExt) { //avoid potential crashes
-                orig(self);
-                return;
-            }
-
-            if (self.realizedObject == null && self.type == EnumExt_FPP.FPGameController)
+            if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == EnumExt_FPP.FPGameController)
             {
                 self.realizedObject = new FPGameController(self);
             }

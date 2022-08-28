@@ -26,7 +26,7 @@ namespace FivePebblesPong
         public void OnEnable() //called when mod is loaded, subscribe functions to methods of the game
         {
             Hooks.Apply();
-            Logger.LogInfo("OnEnable()");
+            Logger.LogInfo("OnEnable()"); //TODO remove
         }
     }
 }

@@ -14,6 +14,27 @@ namespace FivePebblesPong
         {
             base.PickedUp(upPicker);
             FivePebblesPong.ME.Logger_p.LogInfo("PickedUp()");
+            //TODO
+        }
+
+        
+        public override void ChangeMode(Weapon.Mode newMode)
+        {
+            Weapon.Mode prevMode = this.mode;
+            base.ChangeMode(newMode);
+            if (prevMode == newMode)
+                return;
+
+            if (newMode == Weapon.Mode.Free)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("newMode: " + newMode.ToString());
+                //TODO
+            }
+            if (newMode == Weapon.Mode.Carried)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("newMode: " + newMode.ToString());
+                //TODO
+            }
         }
 
 
