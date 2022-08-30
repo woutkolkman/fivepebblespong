@@ -18,12 +18,17 @@ namespace FivePebblesPong
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
 
+            //five pebbles movement
+            On.SSOracleBehavior.Move += SSOracleBehaviorMoveHook;
+
             //TODO, SLOracleBehaviorHasMark MoonConversation
         }
 
 
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
+            //TODO spawn controller at random location with random spin outside five pebbles's can
+
             bool firsttime = self.abstractRoom.firstTimeRealized;
             orig(self);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
@@ -56,16 +61,15 @@ namespace FivePebblesPong
 
         static void SSOracleBehaviorUpdateHook(On.SSOracleBehavior.orig_Update orig, SSOracleBehavior self, bool eu)
         {
-            for (int i = 0; i < self.player.grasps.Length; i++)
-            {
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is FPGameController)
-                {
-//                    FivePebblesPong.ME.Logger_p.LogInfo("player holding FPGameController object");
-                    FPGameBehavior.Update(eu);
-                    return;
-                }
-            }
             orig(self, eu);
+            FPGame.Update(self, eu);
+        }
+
+
+        static void SSOracleBehaviorMoveHook(On.SSOracleBehavior.orig_Move orig, SSOracleBehavior self)
+        {
+            FPGame.Move(self);
+            orig(self);
         }
     }
 }

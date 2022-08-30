@@ -7,14 +7,20 @@ namespace FivePebblesPong
 {
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
+        //type for spawning controller
         public static AbstractPhysicalObject.AbstractObjectType FPGameController;
 
-        public static SSOracleBehavior.MovementBehavior PlayGame; //TODO implement
-        public static SSOracleBehavior.Action Gaming_Init; //TODO implement
-        public static SSOracleBehavior.Action Gaming_Gaming; //TODO implement
-        public static SSOracleBehavior.Action Gaming_FPWin; //TODO implement
-        public static SSOracleBehavior.Action Gaming_FPLose; //TODO implement
-        public static SSOracleBehavior.SubBehavior.SubBehavID Gaming; //TODO implement
+        //five pebbles action
+        public static SSOracleBehavior.Action Gaming_Gaming;
+
+        //five pebbles movement during game
+        public static SSOracleBehavior.MovementBehavior PlayGame;
+
+//        public static SSOracleBehavior.Action Gaming_Init; //TODO implement
+        
+//        public static SSOracleBehavior.Action Gaming_FPWin; //TODO implement
+//        public static SSOracleBehavior.Action Gaming_FPLose; //TODO implement
+//        public static SSOracleBehavior.SubBehavior.SubBehavID Gaming; //TODO implement
     }
 
 
