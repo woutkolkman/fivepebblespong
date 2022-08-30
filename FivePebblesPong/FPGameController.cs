@@ -10,34 +10,6 @@ namespace FivePebblesPong
         public FPGameController(AbstractPhysicalObject abstractPhysicalObject) : base(abstractPhysicalObject, abstractPhysicalObject.world) { }
 
 
-        public override void PickedUp(Creature upPicker)
-        {
-            base.PickedUp(upPicker);
-            FivePebblesPong.ME.Logger_p.LogInfo("PickedUp()");
-            //TODO
-        }
-
-        
-        public override void ChangeMode(Weapon.Mode newMode)
-        {
-            Weapon.Mode prevMode = this.mode;
-            base.ChangeMode(newMode);
-            if (prevMode == newMode)
-                return;
-
-            if (newMode == Weapon.Mode.Free)
-            {
-                FivePebblesPong.ME.Logger_p.LogInfo("newMode: " + newMode.ToString());
-                //TODO
-            }
-            if (newMode == Weapon.Mode.Carried)
-            {
-                FivePebblesPong.ME.Logger_p.LogInfo("newMode: " + newMode.ToString());
-                //TODO
-            }
-        }
-
-
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
             sLeaser.sprites = new FSprite[1];
