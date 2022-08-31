@@ -62,13 +62,13 @@ namespace FivePebblesPong
         static void SSOracleBehaviorUpdateHook(On.SSOracleBehavior.orig_Update orig, SSOracleBehavior self, bool eu)
         {
             orig(self, eu);
-            FPGame.Update(self, eu);
+            FivePebblesPong.Update(self, eu);
         }
 
 
         static void SSOracleBehaviorMoveHook(On.SSOracleBehavior.orig_Move orig, SSOracleBehavior self)
         {
-            FPGame.Move(self);
+            FivePebblesPong.Move(self);
             orig(self);
         }
     }
