@@ -33,15 +33,17 @@ namespace FivePebblesPong
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
         public static bool HasEnumExt => (int)EnumExt_FPP.FPGameController > 0; //returns true after EnumExtender initializes
-        static SSOracleBehavior.Action PreviousAction; //five pebbles action before carrying gamecontroller
-        public static Vector2 PebblesMoveTo { get; set; }
-
-
+        static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
+        public static Vector2 PebblesMoveTo { get; set; } //pupet moveto location while in MovementBehavior PlayGame
+        private static IFPGame Game;
+        
+        
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
         {
             Hooks.Apply();
             Logger.LogInfo("OnEnable()"); //TODO remove
+            PebblesMoveTo = new Vector2(740, 600); //default location
         }
 
 
@@ -60,6 +62,7 @@ namespace FivePebblesPong
             for (int i = 0; i < self.player.grasps.Length; i++)
                 if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is FPGameController)
                     CarriesController = true;
+            //TODO, holding gamecontroller after pebbles asking slugcat to leave will freeze the game
 
             //toggle action Gaming with PreviousAction
             if (CarriesController && self.action != EnumExt_FPP.Gaming_Gaming)
@@ -70,6 +73,7 @@ namespace FivePebblesPong
                 FivePebblesPong.ME.Logger_p.LogInfo("Start"); //TODO remove
                 PreviousAction = self.action;
                 self.action = EnumExt_FPP.Gaming_Gaming;
+                Game = new Pong(self);
             }
             else if (!CarriesController && self.action == EnumExt_FPP.Gaming_Gaming)
             {
@@ -77,18 +81,22 @@ namespace FivePebblesPong
                 self.dialogBox.Interrupt(self.Translate("Stop"), 10);
                 FivePebblesPong.ME.Logger_p.LogInfo("Stop"); //TODO remove
                 self.action = PreviousAction;
+                Game.Destruct();
+                Game = null;
             }
 
             //code to run in Gaming_Gaming action
             if (self.action == EnumExt_FPP.Gaming_Gaming)
             {
                 self.movementBehavior = EnumExt_FPP.PlayGame;
+                if (Game != null)
+                {
+                    Game.Update(self);
+                    Game.Draw(self);
+                }
             }
         }
 
-
-        private static bool once = true;
-        private static ProjectedImage image;
 
         //five pebbles movement
         public static void Move(SSOracleBehavior self)
@@ -102,29 +110,10 @@ namespace FivePebblesPong
                 self.lookPoint = self.player.DangerPos;
 
                 //move to location
-                PebblesMoveTo = new Vector2(740, 600); //TODO remove
                 self.currentGetTo = PebblesMoveTo;
                 self.floatyMovement = false;
-                FivePebblesPong.ME.Logger_p.LogInfo("pebbles vect: " + PebblesMoveTo.ToString());
-
-                //draw rect
-                
-                if (once)
-                {
-                    once = false;
-                    image = self.oracle.myScreen.AddImage("GamepadIcon");
-                    //todo image.Destroy(); image = null;
-                }
-                if (image != null)
-                {
-                    image.setPos = new Vector2?(self.player.DangerPos);
-                }
+                //FivePebblesPong.ME.Logger_p.LogInfo("pebbles vect: " + PebblesMoveTo.ToString());
             }
-            //Edge coordinates:
-            //TR 780,640 tile38,30
-            //TL 200,640 tile10,30
-            //BR 780,60  tile38,4
-            //BL 200,60  tile10,4
         }
     }
 }
