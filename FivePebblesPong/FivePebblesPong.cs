@@ -34,8 +34,8 @@ namespace FivePebblesPong
 
         public static bool HasEnumExt => (int)EnumExt_FPP.FPGameController > 0; //returns true after EnumExtender initializes
         static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
-        public static Vector2 PebblesMoveTo { get; set; } //pupet moveto location while in MovementBehavior PlayGame
-        private static IFPGame Game;
+        public static Vector2 PebblesMoveTo { get; set; } //puppet moveto location while in MovementBehavior PlayGame
+        private static FPGame Game;
         
         
         //called when mod is loaded, subscribe functions to methods of the game

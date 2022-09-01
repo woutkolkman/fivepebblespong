@@ -59,7 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IFPGame.cs" />
+    <Compile Include="FPGame.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="FPGameController.cs" />
     <Compile Include="FivePebblesPong.cs" />

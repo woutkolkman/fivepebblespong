@@ -6,30 +6,23 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
-    class Pong : IFPGame
+    public class Pong : FPGame
     {
-        public List<ProjectedImage> Images;
-        public enum ImgRepr
-        {
-            Player,
-            Pebbles,
-            Ball,
-            Divider
+        public enum ImgRepr {
+            Player, Pebbles, Ball, Divider
         }
-        public static readonly string[] ImgName = //must be <= ImgRepr
-        {
-            "listDivider2.png",
-            "listDivider2.png",
-            "buttonCircleB.png",
-            "listDivider.png" //TODO images invalid
+        public static readonly string[] ImgName = { //must be <= ImgRepr
+            //"listDivider2", "listDivider2", "buttonCircleB", "listDivider"
+            "AIimg3b", "AIimg3b", "AIimg3b", "AIimg3b"
         };
 
 
-        public Pong(SSOracleBehavior self)
+        public Pong(SSOracleBehavior self) : base(self)
         {
-            this.Images = new List<ProjectedImage>();
+            base.Images = new List<ProjectedImage>();
+
             for (int i = 0; i < ImgName.Length; i++)
-                this.Images.Add(self.oracle.myScreen.AddImage(ImgName[i]));
+                base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i]));
 
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor called"); //TODO remove
         }
@@ -42,35 +35,22 @@ namespace FivePebblesPong
         }
 
 
-        //to immediately remove images
-        public void Destruct()
+        public override void Update(SSOracleBehavior self)
         {
-            for (int i = 0; i < this.Images.Count; i++)
-            {
-                if (Images[i] != null)
-                {
-                    Images[i].Destroy();
-                    Images[i] = null;
-                }
-            }
-            Images.RemoveRange(0, Images.Count);
+            base.Update(self);
         }
 
 
-        public void Update(SSOracleBehavior self)
+        public override void Draw(SSOracleBehavior self)
         {
+            base.Draw(self);
 
-        }
-
-
-        public void Draw(SSOracleBehavior self)
-        {
-            for (int i = 0; i < this.Images.Count; i++)
-                if (Images[i] == null)
+            for (int i = 0; i < base.Images.Count; i++)
+                if (base.Images[i] == null)
                     return;
 
-            Images[(int)ImgRepr.Player].setPos = new Vector2?(self.player.DangerPos);
-            Images[(int)ImgRepr.Divider].setPos = new Vector2(490, 350); //TODO magic number
+            base.Images[(int)ImgRepr.Player].setPos = new Vector2?(self.player.DangerPos);
+            base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
         }
     }
 }
