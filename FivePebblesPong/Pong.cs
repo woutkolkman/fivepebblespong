@@ -14,6 +14,7 @@ namespace FivePebblesPong
         public static readonly string[] ImgName = { //must be <= ImgRepr
             //"listDivider2", "listDivider2", "buttonCircleB", "listDivider"
             "AIimg3b", "AIimg3b", "AIimg3b", "AIimg3b"
+            //"Atlases/uiSprites"
         };
 
 
@@ -22,7 +23,7 @@ namespace FivePebblesPong
             base.Images = new List<ProjectedImage>();
 
             for (int i = 0; i < ImgName.Length; i++)
-                base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i]));
+                base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i])); //if image is invalid, constructor execution is cancelled (by exception?)
 
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor called"); //TODO remove
         }
@@ -37,20 +38,20 @@ namespace FivePebblesPong
 
         public override void Update(SSOracleBehavior self)
         {
-            base.Update(self);
+            base.Update(self); //empty
         }
 
 
         public override void Draw(SSOracleBehavior self)
         {
-            base.Draw(self);
+            base.Draw(self); //empty
 
             for (int i = 0; i < base.Images.Count; i++)
                 if (base.Images[i] == null)
                     return;
 
             base.Images[(int)ImgRepr.Player].setPos = new Vector2?(self.player.DangerPos);
-            base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
+            //base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
         }
     }
 }
