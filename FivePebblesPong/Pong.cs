@@ -12,27 +12,23 @@ namespace FivePebblesPong
             Player, Pebbles, Ball, Divider
         }
         public static readonly string[] ImgName = { //must be <= ImgRepr
-            //"listDivider2", "listDivider2", "buttonCircleB", "listDivider"
-            "AIimg3b", "AIimg3b", "AIimg3b", "AIimg3b"
-            //"Atlases/uiSprites"
+            "test", "AIimg3b", "AIimg3b", "AIimg3b"
         };
 
 
         public Pong(SSOracleBehavior self) : base(self)
         {
-            base.Images = new List<ProjectedImage>();
-
             for (int i = 0; i < ImgName.Length; i++)
                 base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i])); //if image is invalid, constructor execution is cancelled (by exception?)
 
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor called"); //TODO remove
+            FivePebblesPong.ME.Logger_p.LogInfo("Pong CONstructor"); //TODO remove
         }
 
 
         ~Pong() //destructor
         {
             this.Destruct(); //if not done already
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong destructor called"); //TODO remove
+            FivePebblesPong.ME.Logger_p.LogInfo("Pong DEstructor"); //TODO remove
         }
 
 
@@ -51,7 +47,8 @@ namespace FivePebblesPong
                     return;
 
             base.Images[(int)ImgRepr.Player].setPos = new Vector2?(self.player.DangerPos);
-            //base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
+            base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
+            base.Images[(int)ImgRepr.Ball].setPos = new Vector2(MAX_X, MID_Y);
         }
     }
 }

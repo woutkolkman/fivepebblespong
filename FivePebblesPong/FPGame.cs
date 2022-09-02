@@ -17,7 +17,10 @@ namespace FivePebblesPong
         public const int MID_X = MIN_X + ((MAX_X - MIN_X) / 2);
 
 
-        public FPGame(SSOracleBehavior self) { }
+        public FPGame(SSOracleBehavior self)
+        {
+            this.Images = new List<ProjectedImage>();
+        }
 
 
         //to immediately remove images

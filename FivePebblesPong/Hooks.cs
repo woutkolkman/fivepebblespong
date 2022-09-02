@@ -27,7 +27,7 @@ namespace FivePebblesPong
 
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
-            //TODO spawn controller at random location with random spin outside five pebbles's can
+            //TODO spawn controller at random location outside five pebbles's can
 
             bool firsttime = self.abstractRoom.firstTimeRealized;
             orig(self);
