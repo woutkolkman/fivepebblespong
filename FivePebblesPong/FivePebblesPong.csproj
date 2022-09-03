@@ -60,11 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FPGame.cs" />
+    <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="FPGameController.cs" />
     <Compile Include="FivePebblesPong.cs" />
     <Compile Include="Pong.cs" />
-    <Compile Include="ProjectedSprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

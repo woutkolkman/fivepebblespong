@@ -25,6 +25,7 @@ namespace FivePebblesPong
         }
 
 
+        //selects room to place FPGameController type
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
             //TODO spawn controller at random location outside five pebbles's can
@@ -49,6 +50,7 @@ namespace FivePebblesPong
         }
 
 
+        //creates FPGameController object
         static void AbstractPhysicalObjectRealizeHook(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
         {
             if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == EnumExt_FPP.FPGameController)
@@ -59,6 +61,7 @@ namespace FivePebblesPong
         }
 
 
+        //five pebbles update function
         static void SSOracleBehaviorUpdateHook(On.SSOracleBehavior.orig_Update orig, SSOracleBehavior self, bool eu)
         {
             orig(self, eu);
@@ -66,6 +69,7 @@ namespace FivePebblesPong
         }
 
 
+        //five pebbles movement
         static void SSOracleBehaviorMoveHook(On.SSOracleBehavior.orig_Move orig, SSOracleBehavior self)
         {
             FivePebblesPong.Move(self);

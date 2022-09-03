@@ -21,28 +21,22 @@ namespace FivePebblesPong
             for (int i = 0; i < ImgName.Length; i++)
                 base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i])); //if image is invalid, constructor execution is cancelled (by exception?)
 
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong CONstructor"); //TODO remove
+            FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
 
 
         ~Pong() //destructor
         {
             this.Destruct(); //if not done already
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong DEstructor"); //TODO remove
+            FivePebblesPong.ME.Logger_p.LogInfo("Pong destructor"); //TODO remove
         }
 
 
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self); //empty
-        }
 
-
-        public override void Draw(SSOracleBehavior self)
-        {
-            base.Draw(self); //empty
-
-            for (int i = 0; i < base.Images.Count; i++)
+            for (int i = 0; i < base.Images.Count; i++) //safety
                 if (base.Images[i] == null)
                     return;
 

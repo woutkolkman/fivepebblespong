@@ -8,7 +8,7 @@ namespace FivePebblesPong
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
         //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType FPGameController;
+        public static AbstractPhysicalObject.AbstractObjectType FPGameController; //must be first in list
 
         //five pebbles action
         public static SSOracleBehavior.Action Gaming_Gaming;
@@ -16,7 +16,7 @@ namespace FivePebblesPong
         //five pebbles movement during game
         public static SSOracleBehavior.MovementBehavior PlayGame;
 
-//        public static SSOracleBehavior.Action Gaming_Init; //TODO implement
+//        public static SSOracleBehavior.Action Gaming_Init; //TODO implement state machine? 
 //        public static SSOracleBehavior.Action Gaming_FPWin; //TODO implement
 //        public static SSOracleBehavior.Action Gaming_FPLose; //TODO implement
 //        public static SSOracleBehavior.SubBehavior.SubBehavID Gaming; //TODO implement
@@ -42,8 +42,8 @@ namespace FivePebblesPong
         public void OnEnable()
         {
             Hooks.Apply();
+            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawRectangle(25, 150, 2), "rectanglesavetest");
             Logger.LogInfo("OnEnable()"); //TODO remove
-            PebblesMoveTo = new Vector2(740, 600); //default location
         }
 
 
@@ -90,10 +90,7 @@ namespace FivePebblesPong
             {
                 self.movementBehavior = EnumExt_FPP.PlayGame;
                 if (Game != null)
-                {
                     Game.Update(self);
-                    Game.Draw(self);
-                }
             }
         }
 

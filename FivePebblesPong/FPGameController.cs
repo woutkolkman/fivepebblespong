@@ -1,6 +1,4 @@
-﻿using BepInEx;
-using System;
-using RWCustom;
+﻿using RWCustom;
 using UnityEngine;
 
 namespace FivePebblesPong

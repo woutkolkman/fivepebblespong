@@ -39,6 +39,5 @@ namespace FivePebblesPong
 
 
         public virtual void Update(SSOracleBehavior self) { }
-        public virtual void Draw(SSOracleBehavior self) { }
     }
 }
