@@ -8,7 +8,7 @@ namespace FivePebblesPong
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
         //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType FPGameController; //must be first in list
+        public static AbstractPhysicalObject.AbstractObjectType FPGameController; //needs to be first in list
 
         //five pebbles action
         public static SSOracleBehavior.Action Gaming_Gaming;
@@ -42,7 +42,8 @@ namespace FivePebblesPong
         public void OnEnable()
         {
             Hooks.Apply();
-            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawRectangle(25, 150, 2), "rectanglesavetest");
+            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawRectangle(25, 150, 13), "rectanglesavetest");
+            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawCircle(70, 70), "circlesavetest");
             Logger.LogInfo("OnEnable()"); //TODO remove
         }
 
