@@ -31,14 +31,22 @@ namespace FivePebblesPong
 
         public void Update(int inputX, int inputY)
         {
-            //TODO better edge detection
-
             float newX = pos.x + inputX * movementSpeed;
             float newY = pos.y + inputY * movementSpeed;
+            float vEdge = (width / 2);
+            float hEdge = (height / 2);
 
-            if (newX + (width / 2) < maxX && newX - (width / 2) > minX)
+            //close gap towards edge
+            if (newX - vEdge < minX) newX = minX;
+            if (newX + vEdge > maxX) newX = maxX;
+            if (newY - hEdge < minY) newY = minY;
+            if (newY + hEdge > maxY) newY = maxY;
+
+            //stop at any edge
+            if (newX + vEdge <= maxX && newX - vEdge >= minX)
                 pos.x = newX;
-            if (newY + (height / 2) < maxY && newY - (height / 2) > minY)
+
+            if (newY + hEdge <= maxY && newY - hEdge >= minY)
                 pos.y = newY;
 
             //only if paddle is spawned at invalid location
