@@ -42,8 +42,6 @@ namespace FivePebblesPong
         public void OnEnable()
         {
             Hooks.Apply();
-            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawRectangle(25, 150, 13), "rectanglesavetest");
-            CreateGamePNGs.SavePNG(CreateGamePNGs.DrawCircle(70, 70), "circlesavetest");
             Logger.LogInfo("OnEnable()"); //TODO remove
         }
 
@@ -66,15 +64,18 @@ namespace FivePebblesPong
             //TODO, holding gamecontroller after pebbles asking slugcat to leave will freeze the game
 
             //toggle action Gaming with PreviousAction
-            if (CarriesController && self.action != EnumExt_FPP.Gaming_Gaming)
+            if (CarriesController)
             {
+                if (self.action != EnumExt_FPP.Gaming_Gaming)
+                {
+                    self.dialogBox.Interrupt(self.Translate("Start"), 10);
+                    FivePebblesPong.ME.Logger_p.LogInfo("Start"); //TODO remove
+                    PreviousAction = self.action;
+                    self.action = EnumExt_FPP.Gaming_Gaming;
+                    Game = new Pong(self);
+                }
                 self.conversation.paused = true;
                 self.restartConversationAfterCurrentDialoge = false;
-                self.dialogBox.Interrupt(self.Translate("Start"), 10);
-                FivePebblesPong.ME.Logger_p.LogInfo("Start"); //TODO remove
-                PreviousAction = self.action;
-                self.action = EnumExt_FPP.Gaming_Gaming;
-                Game = new Pong(self);
             }
             else if (!CarriesController && self.action == EnumExt_FPP.Gaming_Gaming)
             {
@@ -82,7 +83,7 @@ namespace FivePebblesPong
                 self.dialogBox.Interrupt(self.Translate("Stop"), 10);
                 FivePebblesPong.ME.Logger_p.LogInfo("Stop"); //TODO remove
                 self.action = PreviousAction;
-                Game.Destruct();
+                Game.Destroy();
                 Game = null;
             }
 

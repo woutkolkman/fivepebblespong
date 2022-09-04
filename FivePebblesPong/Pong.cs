@@ -8,18 +8,17 @@ namespace FivePebblesPong
 {
     public class Pong : FPGame
     {
-        public enum ImgRepr {
-            Player, Pebbles, Ball, Divider
-        }
-        public static readonly string[] ImgName = { //must be <= ImgRepr
-            "test", "AIimg3b", "AIimg3b", "AIimg3b"
-        };
+        public PongPaddle playerPdl;
+        public PongPaddle pebblesPdl;
 
 
         public Pong(SSOracleBehavior self) : base(self)
         {
-            for (int i = 0; i < ImgName.Length; i++)
-                base.Images.Add(self.oracle.myScreen.AddImage(ImgName[i])); //if image is invalid, constructor execution is cancelled (by exception?)
+            this.playerPdl = new PongPaddle(self, this, 25, 100, "FPP_Player");
+            this.playerPdl.pos = new Vector2(minX, midY);
+
+            pebblesPdl = new PongPaddle(self, this, 25, 100, "FPP_Pebbles");
+            pebblesPdl.pos = new Vector2(maxX, midY);
 
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
@@ -27,22 +26,27 @@ namespace FivePebblesPong
 
         ~Pong() //destructor
         {
-            this.Destruct(); //if not done already
+            this.Destroy(); //if not done already
             FivePebblesPong.ME.Logger_p.LogInfo("Pong destructor"); //TODO remove
+        }
+
+
+        public override void Destroy()
+        {
+            base.Destroy(); //empty
+            this.playerPdl.Destroy();
+            this.pebblesPdl.Destroy();
         }
 
 
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self); //empty
+            playerPdl.Update(self.player.input[0].x, self.player.input[0].y);
+            pebblesPdl.Update(0, 0);
 
-            for (int i = 0; i < base.Images.Count; i++) //safety
-                if (base.Images[i] == null)
-                    return;
-
-            base.Images[(int)ImgRepr.Player].setPos = new Vector2?(self.player.DangerPos);
-            base.Images[(int)ImgRepr.Divider].setPos = new Vector2(MID_X, MID_Y);
-            base.Images[(int)ImgRepr.Ball].setPos = new Vector2(MAX_X, MID_Y);
+            playerPdl.DrawImage();
+            pebblesPdl.DrawImage();
         }
     }
 }

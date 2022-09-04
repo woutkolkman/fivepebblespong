@@ -8,34 +8,22 @@ namespace FivePebblesPong
 {
     public abstract class FPGame
     {
-        public List<ProjectedImage> Images { get; set; }
-        public const int MAX_Y = 600;
-        public const int MIN_Y = 100;
-        public const int MID_Y = MIN_Y + ((MAX_Y - MIN_Y) / 2);
-        public const int MAX_X = 740;
-        public const int MIN_X = 240;
-        public const int MID_X = MIN_X + ((MAX_X - MIN_X) / 2);
+        public int maxY, minY, maxX, minX; //playable field
+        public int midY => minY + ((maxY - minY) / 2);
+        public int midX => minX + ((maxX - minX) / 2);
 
 
         public FPGame(SSOracleBehavior self)
         {
-            this.Images = new List<ProjectedImage>();
+            maxY = 640;
+            minY = 60;
+            maxX = 760;
+            minX = 220;
         }
 
 
         //to immediately remove images
-        public virtual void Destruct()
-        {
-            for (int i = 0; i < this.Images.Count; i++)
-            {
-                if (this.Images[i] != null)
-                {
-                    this.Images[i].Destroy();
-                    this.Images[i] = null;
-                }
-            }
-            this.Images.RemoveRange(0, this.Images.Count);
-        }
+        public virtual void Destroy() { }
 
 
         public virtual void Update(SSOracleBehavior self) { }
