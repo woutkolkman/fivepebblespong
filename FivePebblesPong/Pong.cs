@@ -10,15 +10,18 @@ namespace FivePebblesPong
     {
         public PongPaddle playerPdl;
         public PongPaddle pebblesPdl;
+        public PongBall ball;
 
 
         public Pong(SSOracleBehavior self) : base(self)
         {
-            this.playerPdl = new PongPaddle(self, this, 25, 100, "FPP_Player");
+            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player");
             this.playerPdl.pos = new Vector2(minX, midY);
 
-            pebblesPdl = new PongPaddle(self, this, 25, 100, "FPP_Pebbles");
-            pebblesPdl.pos = new Vector2(maxX, midY);
+            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles");
+            this.pebblesPdl.pos = new Vector2(maxX, midY);
+
+            this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
@@ -36,6 +39,7 @@ namespace FivePebblesPong
             base.Destroy(); //empty
             this.playerPdl.Destroy();
             this.pebblesPdl.Destroy();
+            this.ball.Destroy();
         }
 
 
@@ -44,9 +48,16 @@ namespace FivePebblesPong
             base.Update(self); //empty
             playerPdl.Update(self.player.input[0].x, self.player.input[0].y);
             pebblesPdl.Update(0, 0);
+            ball.Update();
+
+            //move pebbles and look at player/ball
+            self.currentGetTo = pebblesPdl.pos;
+            self.floatyMovement = false;
+            self.lookPoint = ball != null ? ball.pos : self.player.DangerPos;
 
             playerPdl.DrawImage();
             pebblesPdl.DrawImage();
+            ball.DrawImage();
         }
     }
 }

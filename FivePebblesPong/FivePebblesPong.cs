@@ -34,7 +34,6 @@ namespace FivePebblesPong
 
         public static bool HasEnumExt => (int)EnumExt_FPP.FPGameController > 0; //returns true after EnumExtender initializes
         static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
-        public static Vector2 PebblesMoveTo { get; set; } //puppet moveto location while in MovementBehavior PlayGame
         private static FPGame Game;
         
         
@@ -93,25 +92,6 @@ namespace FivePebblesPong
                 self.movementBehavior = EnumExt_FPP.PlayGame;
                 if (Game != null)
                     Game.Update(self);
-            }
-        }
-
-
-        //five pebbles movement
-        public static void Move(SSOracleBehavior self)
-        {
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
-                return;
-
-            if (self.movementBehavior == EnumExt_FPP.PlayGame)
-            {
-                //look at player
-                self.lookPoint = self.player.DangerPos;
-
-                //move to location
-                self.currentGetTo = PebblesMoveTo;
-                self.floatyMovement = false;
-                //FivePebblesPong.ME.Logger_p.LogInfo("pebbles vect: " + PebblesMoveTo.ToString());
             }
         }
     }

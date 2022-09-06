@@ -41,7 +41,6 @@ namespace FivePebblesPong
             if (image != null)
                 image.Destroy();
             image = null;
-            //TODO, self.oracle.myScreen.RemoveImage(imageName) not necessary? 
         }
     }
 }

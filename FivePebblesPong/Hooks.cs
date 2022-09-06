@@ -18,9 +18,6 @@ namespace FivePebblesPong
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
 
-            //five pebbles movement
-            On.SSOracleBehavior.Move += SSOracleBehaviorMoveHook;
-
             //TODO, SLOracleBehaviorHasMark MoonConversation
         }
 
@@ -66,14 +63,6 @@ namespace FivePebblesPong
         {
             orig(self, eu);
             FivePebblesPong.Update(self, eu);
-        }
-
-
-        //five pebbles movement
-        static void SSOracleBehaviorMoveHook(On.SSOracleBehavior.orig_Move orig, SSOracleBehavior self)
-        {
-            FivePebblesPong.Move(self);
-            orig(self);
         }
     }
 }

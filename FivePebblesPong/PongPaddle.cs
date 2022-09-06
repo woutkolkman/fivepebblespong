@@ -17,7 +17,7 @@ namespace FivePebblesPong
         {
             this.width = width;
             this.height = height;
-            this.movementSpeed = 5f;
+            this.movementSpeed = 6f;
 
             //position boundaries
             this.maxY = game.maxY;
@@ -36,11 +36,11 @@ namespace FivePebblesPong
             float vEdge = (width / 2);
             float hEdge = (height / 2);
 
-            //close gap towards edge
-            if (newX - vEdge < minX) newX = minX;
-            if (newX + vEdge > maxX) newX = maxX;
-            if (newY - hEdge < minY) newY = minY;
-            if (newY + hEdge > maxY) newY = maxY;
+            //close gap towards edge, also in case of invalid spawn location
+            if (newX - vEdge < minX && maxX != minX) newX = minX + vEdge;
+            if (newX + vEdge > maxX && maxX != minX) newX = maxX - vEdge;
+            if (newY - hEdge < minY && maxY != minY) newY = minY + hEdge;
+            if (newY + hEdge > maxY && maxY != minY) newY = maxY - hEdge;
 
             //stop at any edge
             if (newX + vEdge <= maxX && newX - vEdge >= minX)
@@ -48,18 +48,6 @@ namespace FivePebblesPong
 
             if (newY + hEdge <= maxY && newY - hEdge >= minY)
                 pos.y = newY;
-
-            //only if paddle is spawned at invalid location
-            if (minX != maxX)
-            {
-                if (pos.x - (width / 2) <= minX) pos.x++;
-                if (pos.x + (width / 2) >= maxX) pos.x--;
-            }
-            if (minY != maxY)
-            {
-                if (pos.y - (height / 2) <= minY) pos.y++;
-                if (pos.y + (height / 2) >= maxY) pos.y--;
-            }
         }
     }
 }
