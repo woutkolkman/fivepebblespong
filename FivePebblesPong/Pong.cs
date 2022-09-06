@@ -46,14 +46,15 @@ namespace FivePebblesPong
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self); //empty
-            playerPdl.Update(0, self.player.input[0].y);
-            pebblesPdl.Update(0, 0);
             ball.Update();
+            playerPdl.Update(0, self.player.input[0].y, ball);
+            pebblesPdl.Update(0, self.player.input[0].y, ball);
 
             //move pebbles and look at player/ball
             self.currentGetTo = pebblesPdl.pos;
             self.floatyMovement = false;
             self.lookPoint = ball != null ? ball.pos : self.player.DangerPos;
+            //TODO move pebbles faster, & move cart closer
 
             playerPdl.DrawImage();
             pebblesPdl.DrawImage();

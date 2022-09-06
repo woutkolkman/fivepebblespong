@@ -16,6 +16,7 @@ namespace FivePebblesPong
         public double angle; //radians
         public Vector2 lastWallHit;
         const float CMP = 0.01f; //compare precision
+        public double paddleBounceAngle;
 
 
         public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName) : base(imageName)
@@ -24,6 +25,7 @@ namespace FivePebblesPong
             this.movementSpeed = 5f; //TODO gradually increase
             base.pos = new Vector2(game.midX, game.midY);
             this.angle = 6.0;
+            this.paddleBounceAngle = 1.5;
 
             //position boundaries
             this.maxY = game.maxY;
@@ -55,7 +57,7 @@ namespace FivePebblesPong
                 lastWallHit = base.pos;
                 if (lastWallHit.y + radius > maxY - CMP) lastWallHit.y = maxY;
                 if (lastWallHit.y - radius < minY + CMP) lastWallHit.y = minY;
-                angle -= 2 * angle;
+                ReverseYDir();
             }
 
             //bounce back at left/right wall
@@ -64,12 +66,15 @@ namespace FivePebblesPong
                 lastWallHit = base.pos;
                 if (lastWallHit.x + radius > maxX - CMP) lastWallHit.x = maxX;
                 if (lastWallHit.x - radius < minX + CMP) lastWallHit.x = minX;
-                angle += (Math.PI - 2 * angle);
+                ReverseXDir();
             }
 
             angle %= 2 * Math.PI; //prevent overflow
-
-            FivePebblesPong.ME.Logger_p.LogInfo("angle: " + angle.ToString() + " pos: " + pos.ToString() + " lastWallHit: " + lastWallHit);
         }
+
+
+        public void ReverseXDir() { angle += (Math.PI - 2 * angle); }
+        public void ReverseYDir() { angle -= 2 * angle; }
+        public void ReverseDir() { angle += Math.PI; }
     }
 }

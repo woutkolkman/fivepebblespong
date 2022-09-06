@@ -29,7 +29,7 @@ namespace FivePebblesPong
         }
 
 
-        public void Update(int inputX, int inputY)
+        public void Update(int inputX, int inputY, PongBall ball)
         {
             float newX = pos.x + inputX * movementSpeed;
             float newY = pos.y + inputY * movementSpeed;
@@ -48,6 +48,38 @@ namespace FivePebblesPong
 
             if (newY + hEdge <= maxY && newY - hEdge >= minY)
                 pos.y = newY;
+
+            //check if ball is hit
+            if (ball != null)
+            {
+                //left/right side
+                if (Math.Abs(ball.pos.y - pos.y) <= hEdge)
+                {
+                    float normalized = (pos.y - ball.pos.y) / hEdge;
+                    if (ball.pos.x - ball.radius <= pos.x + vEdge && ball.pos.x > pos.x)
+                    { //bounce to right
+                        ball.angle = ball.paddleBounceAngle * normalized;
+                    } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
+                    { //bounce to left
+                        ball.angle = ball.paddleBounceAngle * normalized + Math.PI; //TODO check ball bounce direction
+                        ball.angle -= 2 * ball.angle;
+                    }
+                }
+
+                //up/bottom side
+                if (Math.Abs(ball.pos.x - pos.x) <= vEdge)
+                {
+                    if ((ball.pos.y - ball.radius <= pos.y + hEdge && ball.pos.y > pos.y) ||
+                        (ball.pos.y + ball.radius >= pos.y - hEdge && ball.pos.y < pos.y))
+                    {
+                        ball.ReverseYDir();
+                    }
+                }
+
+                //bounce from points of paddle
+                //TODO, missing calculation is not noticable while playing --> don't implement and save CPU cycles
+                //TODO, if length from point to ball.pos is smaller or equal to ball.radius
+            }
         }
     }
 }
