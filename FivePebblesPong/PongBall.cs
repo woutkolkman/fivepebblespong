@@ -15,14 +15,15 @@ namespace FivePebblesPong
         public int maxY, minY, maxX, minX; //positions
         public double angle; //radians
         public Vector2 lastWallHit;
+        const float CMP = 0.01f; //compare precision
 
 
         public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName) : base(imageName)
         {
             this.radius = radius;
-            this.movementSpeed = 4f; //TODO gradually increase
+            this.movementSpeed = 5f; //TODO gradually increase
             base.pos = new Vector2(game.midX, game.midY);
-            this.angle = 5.0;
+            this.angle = 6.0;
 
             //position boundaries
             this.maxY = game.maxY;
@@ -30,7 +31,7 @@ namespace FivePebblesPong
             this.maxX = game.maxX;
             this.minX = game.minX;
 
-            base.SetImage(self, CreateGamePNGs.DrawCircle(radius, 2));
+            base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius));
         }
 
 
@@ -48,30 +49,25 @@ namespace FivePebblesPong
             if (newY - radius < minY) newY = minY + radius;
             if (newY + radius > maxY) newY = maxY - radius;
 
-            //bounce back at any edge
-            if (newY + radius <= maxY - 0.01f && newY - radius >= minY + 0.01f)
-            {
-                pos.y = newY;
-            }
-            else
-            {
+            //bounce back at top/bottom 
+            pos.y = newY;
+            if (!(newY + radius <= maxY - CMP && newY - radius >= minY + CMP)) {
                 lastWallHit = base.pos;
+                if (lastWallHit.y + radius > maxY - CMP) lastWallHit.y = maxY;
+                if (lastWallHit.y - radius < minY + CMP) lastWallHit.y = minY;
                 angle -= 2 * angle;
-                //angle = angle + (180 - (2 * angle));
-            }
-            if (newX + radius <= maxX - 0.01f && newX - radius >= minX + 0.01f)
-            {
-                pos.x = newX;
-            } else
-            {
-                lastWallHit = base.pos; //TODO lastWallHit komt niet direct overeen met wall
-                //angle -= (Math.PI + 2*angle);
-                angle += (Math.PI - 2 * angle);
-                //angle = angle + (180 - (2 * angle));
             }
 
-            if (angle >= 2*Math.PI) angle -= 2*Math.PI;
-            if (angle < 0) angle += 2*Math.PI;
+            //bounce back at left/right wall
+            pos.x = newX;
+            if (!(newX + radius <= maxX - CMP && newX - radius >= minX + CMP)) {
+                lastWallHit = base.pos;
+                if (lastWallHit.x + radius > maxX - CMP) lastWallHit.x = maxX;
+                if (lastWallHit.x - radius < minX + CMP) lastWallHit.x = minX;
+                angle += (Math.PI - 2 * angle);
+            }
+
+            angle %= 2 * Math.PI; //prevent overflow
 
             FivePebblesPong.ME.Logger_p.LogInfo("angle: " + angle.ToString() + " pos: " + pos.ToString() + " lastWallHit: " + lastWallHit);
         }

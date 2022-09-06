@@ -16,10 +16,10 @@ namespace FivePebblesPong
         public Pong(SSOracleBehavior self) : base(self)
         {
             this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player");
-            this.playerPdl.pos = new Vector2(minX, midY);
+            this.playerPdl.pos = new Vector2(minX+30, midY);
 
             this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles");
-            this.pebblesPdl.pos = new Vector2(maxX, midY);
+            this.pebblesPdl.pos = new Vector2(maxX-30, midY);
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
@@ -46,7 +46,7 @@ namespace FivePebblesPong
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self); //empty
-            playerPdl.Update(self.player.input[0].x, self.player.input[0].y);
+            playerPdl.Update(0, self.player.input[0].y);
             pebblesPdl.Update(0, 0);
             ball.Update();
 

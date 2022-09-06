@@ -17,8 +17,8 @@ namespace FivePebblesPong
         {
             maxY = 640;
             minY = 60;
-            maxX = 760;
-            minX = 220;
+            maxX = 780;
+            minX = 200;
         }
 
 
