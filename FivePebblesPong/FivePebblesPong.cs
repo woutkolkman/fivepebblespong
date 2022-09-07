@@ -8,12 +8,12 @@ namespace FivePebblesPong
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
         //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType FPGameController; //needs to be first in list
+        public static AbstractPhysicalObject.AbstractObjectType GameController; //needs to be first in list
 
         //five pebbles action
         public static SSOracleBehavior.Action Gaming_Gaming;
 
-        //five pebbles movement (is not applied by this type, but by FPGame object)
+        //five pebbles movement (controlled by FPGame subclass)
         public static SSOracleBehavior.MovementBehavior PlayGame;
 
 //        public static SSOracleBehavior.Action Gaming_Init; //TODO implement state machine? 
@@ -32,7 +32,7 @@ namespace FivePebblesPong
         public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
-        public static bool HasEnumExt => (int)EnumExt_FPP.FPGameController > 0; //returns true after EnumExtender initializes
+        public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
         static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
         private static FPGame Game;
         
@@ -58,7 +58,7 @@ namespace FivePebblesPong
             //check if slugcat is holding a gamecontroller
             bool CarriesController = false;
             for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is FPGameController)
+                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
                     CarriesController = true;
             //TODO, holding gamecontroller after pebbles asking slugcat to leave will freeze the game
 

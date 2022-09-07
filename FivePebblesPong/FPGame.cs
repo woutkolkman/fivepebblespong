@@ -11,6 +11,7 @@ namespace FivePebblesPong
         public int maxY, minY, maxX, minX; //playable field
         public int midY => minY + ((maxY - minY) / 2);
         public int midX => minX + ((maxX - minX) / 2);
+        public int gameCounter;
 
 
         public FPGame(SSOracleBehavior self)
@@ -26,6 +27,9 @@ namespace FivePebblesPong
         public virtual void Destroy() { }
 
 
-        public virtual void Update(SSOracleBehavior self) { }
+        public virtual void Update(SSOracleBehavior self)
+        {
+            this.gameCounter++;
+        }
     }
 }

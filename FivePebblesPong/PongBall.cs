@@ -23,9 +23,9 @@ namespace FivePebblesPong
         {
             this.radius = radius;
             this.movementSpeed = 5f; //TODO gradually increase
-            base.pos = new Vector2(game.midX, game.midY);
-            this.angle = 6.0;
-            this.paddleBounceAngle = 1.5;
+            //base.pos = new Vector2(game.midX, game.midY);
+            this.angle = 0;
+            this.paddleBounceAngle = 1.4;
 
             //position boundaries
             this.maxY = game.maxY;
@@ -51,7 +51,7 @@ namespace FivePebblesPong
             if (newY - radius < minY) newY = minY + radius;
             if (newY + radius > maxY) newY = maxY - radius;
 
-            //bounce back at top/bottom 
+            //bounce back at top/bottom wall
             pos.y = newY;
             if (!(newY + radius <= maxY - CMP && newY - radius >= minY + CMP)) {
                 lastWallHit = base.pos;

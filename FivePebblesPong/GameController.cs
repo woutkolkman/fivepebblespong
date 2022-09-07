@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
-    public class FPGameController : Rock
+    public class GameController : Rock
     {
-        public FPGameController(AbstractPhysicalObject abstractPhysicalObject) : base(abstractPhysicalObject, abstractPhysicalObject.world) { }
+        public GameController(AbstractPhysicalObject abstractPhysicalObject) : base(abstractPhysicalObject, abstractPhysicalObject.world) { }
 
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)

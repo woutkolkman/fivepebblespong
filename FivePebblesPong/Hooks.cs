@@ -9,10 +9,10 @@ namespace FivePebblesPong
     {
         public static void Apply()
         {
-            //selects room to place FPGameController type
+            //selects room to place GameController type
             On.Room.Loaded += RoomLoadedHook;
 
-            //creates FPGameController object
+            //creates GameController object
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectRealizeHook;
 
             //five pebbles update function
@@ -22,7 +22,7 @@ namespace FivePebblesPong
         }
 
 
-        //selects room to place FPGameController type
+        //selects room to place GameController type
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
             //TODO spawn controller at random location outside five pebbles's can
@@ -40,19 +40,19 @@ namespace FivePebblesPong
                 //WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, intVector.x, intVector.y, -1);
                 WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, 30, 10, -1); //consistent location
 
-                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.FPGameController, null, coord, newID);
+                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.GameController, null, coord, newID);
                 self.abstractRoom.AddEntity(ent);
                 FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString()); //TODO remove
             }
         }
 
 
-        //creates FPGameController object
+        //creates GameController object
         static void AbstractPhysicalObjectRealizeHook(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
         {
-            if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == EnumExt_FPP.FPGameController)
+            if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == EnumExt_FPP.GameController)
             {
-                self.realizedObject = new FPGameController(self);
+                self.realizedObject = new GameController(self);
             }
             orig(self);
         }

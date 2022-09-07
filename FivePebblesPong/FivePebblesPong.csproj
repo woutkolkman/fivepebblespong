@@ -63,7 +63,7 @@
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="FPGameObject.cs" />
     <Compile Include="Hooks.cs" />
-    <Compile Include="FPGameController.cs" />
+    <Compile Include="GameController.cs" />
     <Compile Include="FivePebblesPong.cs" />
     <Compile Include="Pong.cs" />
     <Compile Include="PongBall.cs" />
