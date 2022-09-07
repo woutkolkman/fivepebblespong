@@ -82,6 +82,7 @@ namespace FivePebblesPong
 
         public static void SavePNG(Texture2D texture, string name)
         {
+            //overwrites existing files with same name
             string fileName = string.Concat(new object[]
             {
                 Custom.RootFolderDirectory(),

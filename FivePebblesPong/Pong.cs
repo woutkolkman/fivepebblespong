@@ -48,17 +48,26 @@ namespace FivePebblesPong
             base.Update(self); //empty
             ball.Update();
             playerPdl.Update(0, self.player.input[0].y, ball);
-            pebblesPdl.Update(0, self.player.input[0].y, ball);
 
-            //move pebbles and look at player/ball
+            int pebblesInput = PebblesAI(self);
+            pebblesPdl.Update(0, pebblesInput, ball);
+
+            //move puppet and look at player/ball
+            self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
             self.currentGetTo = pebblesPdl.pos;
+            self.currentGetTo.y += pebblesInput * 80; //keep up with fast paddle
             self.floatyMovement = false;
             self.lookPoint = ball != null ? ball.pos : self.player.DangerPos;
-            //TODO move pebbles faster, & move cart closer
 
             playerPdl.DrawImage();
             pebblesPdl.DrawImage();
             ball.DrawImage();
+        }
+
+
+        public int PebblesAI(SSOracleBehavior self)
+        {
+            return self.player.input[0].y;
         }
     }
 }

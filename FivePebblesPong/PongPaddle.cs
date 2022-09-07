@@ -61,8 +61,8 @@ namespace FivePebblesPong
                         ball.angle = ball.paddleBounceAngle * normalized;
                     } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
                     { //bounce to left
-                        ball.angle = ball.paddleBounceAngle * normalized + Math.PI; //TODO check ball bounce direction
-                        ball.angle -= 2 * ball.angle;
+                        ball.angle = ball.paddleBounceAngle * normalized + Math.PI;
+                        ball.ReverseYDir();
                     }
                 }
 

@@ -13,7 +13,7 @@ namespace FivePebblesPong
         //five pebbles action
         public static SSOracleBehavior.Action Gaming_Gaming;
 
-        //five pebbles movement during game
+        //five pebbles movement (is not applied by this type, but by FPGame object)
         public static SSOracleBehavior.MovementBehavior PlayGame;
 
 //        public static SSOracleBehavior.Action Gaming_Init; //TODO implement state machine? 
