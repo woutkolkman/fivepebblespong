@@ -61,8 +61,8 @@ namespace FivePebblesPong
                         ball.angle = ball.paddleBounceAngle * normalized;
                     } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
                     { //bounce to left
-                        ball.angle = ball.paddleBounceAngle * normalized + Math.PI;
-                        ball.ReverseYDir();
+                        ball.angle = ball.paddleBounceAngle * normalized;
+                        ball.ReverseXDir();
                     }
                 }
 
@@ -76,9 +76,19 @@ namespace FivePebblesPong
                     }
                 }
 
+
                 //bounce from points of paddle
-                //TODO, missing calculation is not noticable while playing --> don't implement and save CPU cycles
-                //TODO, if length from point to ball.pos is smaller or equal to ball.radius
+                float x = ((ball.pos.x >= pos.x) ? (pos.x + vEdge) : (pos.x - vEdge));
+                float y = ((ball.pos.y >= pos.y) ? (pos.y + hEdge) : (pos.y - hEdge));
+                Vector2 closestPoint = new Vector2(x, y);
+                if (Vector2.Distance(ball.pos, closestPoint) <= ball.radius)
+                {
+                    ball.angle = ball.paddleBounceAngle;
+                    if (y > pos.y)
+                        ball.ReverseYDir();
+                    if (x < pos.x)
+                        ball.ReverseXDir();
+                }
             }
         }
     }

@@ -20,8 +20,7 @@ namespace FivePebblesPong
             GetReady,
             Playing,
             PlayerWin,
-            PebblesWin,
-            Reset
+            PebblesWin
         }
         public State state { get; set; }
 
@@ -62,6 +61,9 @@ namespace FivePebblesPong
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self);
+
+            //increase ball speed gradually
+            ball.movementSpeed = 5f + (0.001f * base.gameCounter);
 
             StateMachine(self);
             if (state == State.GetReady)

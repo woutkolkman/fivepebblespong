@@ -22,7 +22,7 @@ namespace FivePebblesPong
         public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName) : base(imageName)
         {
             this.radius = radius;
-            this.movementSpeed = 5f; //TODO gradually increase
+            this.movementSpeed = 5f;
             //base.pos = new Vector2(game.midX, game.midY);
             this.angle = 0;
             this.paddleBounceAngle = 1.4;
@@ -74,7 +74,7 @@ namespace FivePebblesPong
 
 
         public void ReverseXDir() { angle += (Math.PI - 2 * angle); }
-        public void ReverseYDir() { angle -= 2 * angle; }
+        public void ReverseYDir() { angle *= -1; }
         public void ReverseDir() { angle += Math.PI; }
     }
 }
