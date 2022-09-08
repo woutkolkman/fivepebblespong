@@ -12,6 +12,8 @@ namespace FivePebblesPong
         public PongPaddle pebblesPdl;
         public PongBall ball;
         public bool playerLastWin;
+        const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
+        const int GETREADY_WAIT = 120; //frames
 
         public enum State
         {
@@ -28,11 +30,14 @@ namespace FivePebblesPong
         {
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
+            int paddleOffset = 260;
             this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player");
-            this.playerPdl.pos = new Vector2(midX-260, midY);
+            this.playerPdl.pos = new Vector2(midX - paddleOffset, midY);
 
             this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles");
-            this.pebblesPdl.pos = new Vector2(midX+260, midY);
+            this.pebblesPdl.pos = new Vector2(midX + paddleOffset, midY);
+
+            this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
@@ -58,36 +63,52 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
+            StateMachine(self);
+            if (state == State.GetReady)
+            { //reset ball position and angle
+                ball.pos = new Vector2(midX, midY);
+                ball.angle = (playerLastWin ? Math.PI : 0); //pass ball to last winner
+                ball.lastWallHit = new Vector2(); //reset wall hit
+            }
+            if (state == State.Playing)
+                ball.Update();
+
+            //update paddles
+            int pebblesInput = PebblesAI(self);
+            pebblesPdl.Update(0, pebblesInput, ball);
+            playerPdl.Update(0, self.player.input[0].y, ball);
+
+            //move puppet and look at player/ball
+            self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
+            self.currentGetTo = pebblesPdl.pos;
+            self.currentGetTo.y += pebblesInput * POS_OFFSET_SPEED; //keep up with fast paddle
+            self.floatyMovement = false;
+            self.lookPoint = (state == State.Playing) ? ball.pos : self.player.DangerPos;
+
+            //update image positions
+            playerPdl.DrawImage();
+            pebblesPdl.DrawImage();
+            ball.DrawImage();
+        }
+
+
+        private void StateMachine(SSOracleBehavior self)
+        {
             State previousState = state;
             switch (state)
             {
                 //======================================================
                 case State.GetReady:
-                    if (ball == null)
-                        ball = new PongBall(self, this, 10, "FPP_Ball");
-                    ball.pos = new Vector2(midX, midY);
-                    ball.angle = (playerLastWin ? Math.PI : 0); //pass ball to last winner
-                    ball.lastWallHit = new Vector2(); //reset
-                    if (base.gameCounter > 120)
+                    if (base.gameCounter > GETREADY_WAIT)
                         state = State.Playing;
                     break;
 
                 //======================================================
                 case State.Playing:
-                    if (ball == null) {
-                        state = State.GetReady;
-                        break;
-                    }
-                    ball.Update();
                     if (ball.lastWallHit.x == minX) //check if wall is hit
                         state = State.PebblesWin;
                     if (ball.lastWallHit.x == maxX)
                         state = State.PlayerWin;
-                    if (state != State.Playing)
-                    {
-                        ball?.Destroy();
-                        ball = null;
-                    }
                     break;
 
                 //======================================================
@@ -113,29 +134,13 @@ namespace FivePebblesPong
             }
             if (state != previousState)
                 base.gameCounter = 0;
-
-            //update paddles
-            int pebblesInput = PebblesAI(self);
-            pebblesPdl.Update(0, pebblesInput, ball);
-            playerPdl.Update(0, self.player.input[0].y, ball);
-
-            //move puppet and look at player/ball
-            self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
-            self.currentGetTo = pebblesPdl.pos;
-            self.currentGetTo.y += pebblesInput * 80; //keep up with fast paddle
-            self.floatyMovement = false;
-            self.lookPoint = ball != null ? ball.pos : self.player.DangerPos;
-
-            //update image positions
-            playerPdl.DrawImage();
-            pebblesPdl.DrawImage();
-            ball?.DrawImage();
         }
 
 
         public int PebblesAI(SSOracleBehavior self)
         {
             return self.player.input[0].y;
+            //TODO
         }
     }
 }
