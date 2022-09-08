@@ -11,6 +11,7 @@ namespace FivePebblesPong
         public PongPaddle playerPdl;
         public PongPaddle pebblesPdl;
         public PongBall ball;
+        public PongLine line;
         public bool playerLastWin;
         const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
@@ -38,6 +39,8 @@ namespace FivePebblesPong
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
+            this.line = new PongLine(self, this, "FPP_Line");
+
             FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
 
@@ -55,6 +58,7 @@ namespace FivePebblesPong
             this.playerPdl?.Destroy();
             this.pebblesPdl?.Destroy();
             this.ball?.Destroy();
+            this.line?.Destroy();
         }
 
 
@@ -91,6 +95,7 @@ namespace FivePebblesPong
             playerPdl.DrawImage();
             pebblesPdl.DrawImage();
             ball.DrawImage();
+            line.DrawImage();
         }
 
 

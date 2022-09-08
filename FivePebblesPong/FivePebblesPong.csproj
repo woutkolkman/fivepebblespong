@@ -65,6 +65,7 @@
     <Compile Include="FivePebblesPong.cs" />
     <Compile Include="Pong.cs" />
     <Compile Include="PongBall.cs" />
+    <Compile Include="PongLine.cs" />
     <Compile Include="PongPaddle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

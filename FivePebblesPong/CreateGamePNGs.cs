@@ -70,6 +70,27 @@ namespace FivePebblesPong
         }
 
 
+        public static Texture2D DrawPerpendicularLine(bool horizontal, int length, int width, Color color) { return DrawPerpendicularLine(horizontal, length, width, 0, color); }
+        public static Texture2D DrawPerpendicularLine(bool horizontal, int length, int width, int dashLength, Color color)
+        {
+            int texX = 2 * EDGE_DIST + (horizontal ? length : width);
+            int texY = 2 * EDGE_DIST + (horizontal ? width : length);
+
+            Texture2D texture = new Texture2D(texX, texY, TextureFormat.ARGB32, false);
+
+            //transparent background
+            FillTransparent(ref texture);
+
+            bool dashed = (dashLength != 0);
+            for (int l = 0; l < length; l++)
+                if (!dashed || l % dashLength < dashLength/2)
+                    for (int w = 0; w < width; w++)
+                        texture.SetPixel(EDGE_DIST + (horizontal ? l : w), EDGE_DIST + (horizontal ? w : l), color);
+
+            return texture;
+        }
+
+
         public static void FillTransparent(ref Texture2D texture)
         {
             Color[] fillPixels = new Color[texture.width * texture.height];
