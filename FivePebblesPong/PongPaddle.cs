@@ -29,8 +29,10 @@ namespace FivePebblesPong
         }
 
 
-        public void Update(int inputX, int inputY, PongBall ball)
+        public bool Update(int inputX, int inputY, PongBall ball)
         {
+            bool hitBall = false;
+
             float newX = pos.x + inputX * movementSpeed;
             float newY = pos.y + inputY * movementSpeed;
             float vEdge = (width / 2);
@@ -59,10 +61,12 @@ namespace FivePebblesPong
                     if (ball.pos.x - ball.radius <= pos.x + vEdge && ball.pos.x > pos.x)
                     { //bounce to right
                         ball.angle = ball.paddleBounceAngle * normalized;
+                        hitBall = true;
                     } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
                     { //bounce to left
                         ball.angle = ball.paddleBounceAngle * normalized;
                         ball.ReverseXDir();
+                        hitBall = true;
                     }
                 }
 
@@ -73,6 +77,7 @@ namespace FivePebblesPong
                         (ball.pos.y + ball.radius >= pos.y - hEdge && ball.pos.y < pos.y))
                     {
                         ball.ReverseYDir();
+                        hitBall = true;
                     }
                 }
 
@@ -88,8 +93,10 @@ namespace FivePebblesPong
                         ball.ReverseYDir();
                     if (x < pos.x)
                         ball.ReverseXDir();
+                    hitBall = true;
                 }
             }
+            return hitBall;
         }
     }
 }

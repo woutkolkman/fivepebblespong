@@ -67,7 +67,7 @@ namespace FivePebblesPong
             base.Update(self);
 
             //increase ball speed gradually
-            ball.movementSpeed = 5f + (0.001f * base.gameCounter);
+            ball.movementSpeed = 5.5f + (0.001f * base.gameCounter);
 
             StateMachine(self);
             if (state == State.GetReady)
@@ -77,12 +77,15 @@ namespace FivePebblesPong
                 ball.lastWallHit = new Vector2(); //reset wall hit
             }
             if (state == State.Playing)
-                ball.Update();
+                if (ball.Update()) //if wall is hit
+                    self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
 
             //update paddles
             int pebblesInput = PebblesAI(self);
-            pebblesPdl.Update(0, pebblesInput, ball);
-            playerPdl.Update(0, self.player.input[0].y, ball);
+            if (pebblesPdl.Update(0, pebblesInput, ball)) //if ball is hit
+                self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
+            if (playerPdl.Update(0, self.player.input[0].y, ball)) //if ball is hit
+                self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
             self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
