@@ -25,7 +25,7 @@ namespace FivePebblesPong
         //selects room to place GameController type
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
-            //TODO spawn controller at random location outside five pebbles's can
+            //TODO spawn controller at random location outside five pebbles's can?
 
             bool firsttime = self.abstractRoom.firstTimeRealized;
             orig(self);
@@ -62,7 +62,30 @@ namespace FivePebblesPong
         static void SSOracleBehaviorUpdateHook(On.SSOracleBehavior.orig_Update orig, SSOracleBehavior self, bool eu)
         {
             orig(self, eu);
-            FivePebblesPong.Update(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            //wait until slugcat can communicate
+            if (self.timeSinceSeenPlayer <= 300 || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
+                return;
+
+            //check if slugcat is holding a gamecontroller
+            bool CarriesController = false;
+            for (int i = 0; i < self.player.grasps.Length; i++)
+                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
+                    CarriesController = true;
+
+            //prevent freezing/locking up the game
+            if (self.currSubBehavior is SSOracleBehavior.ThrowOutBehavior ||
+                self.action == SSOracleBehavior.Action.ThrowOut_ThrowOut ||
+                self.action == SSOracleBehavior.Action.ThrowOut_Polite_ThrowOut ||
+                self.action == SSOracleBehavior.Action.ThrowOut_SecondThrowOut ||
+                self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight)
+                return;
+
+            //run state machine for starting/running/stopping games
+            FivePebblesPong.StateMachine(self, CarriesController);
         }
     }
 }

@@ -32,6 +32,8 @@ namespace FivePebblesPong
         public virtual void Update(SSOracleBehavior self)
         {
             this.gameCounter++;
+            if (this.gameCounter < 0)
+                this.gameCounter = 0;
         }
     }
 }

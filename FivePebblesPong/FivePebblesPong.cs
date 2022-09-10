@@ -17,11 +17,6 @@ namespace FivePebblesPong
 
         //five pebbles movement (controlled by FPGame subclass)
         public static SSOracleBehavior.MovementBehavior PlayGame;
-
-//        public static SSOracleBehavior.Action Gaming_Init; //TODO implement state machine? 
-//        public static SSOracleBehavior.Action Gaming_FPWin; //TODO implement
-//        public static SSOracleBehavior.Action Gaming_FPLose; //TODO implement
-//        public static SSOracleBehavior.SubBehavior.SubBehavID Gaming; //TODO implement
     }
 
 
@@ -35,10 +30,8 @@ namespace FivePebblesPong
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
         public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
-        static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
-        private static FPGame Game;
-        
-        
+
+
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
         {
@@ -47,54 +40,122 @@ namespace FivePebblesPong
         }
 
 
-        //five pebbles update function
-        public static void Update(SSOracleBehavior self, bool eu)
+        static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
+        private static FPGame Game;
+        public enum State
         {
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
-                return;
+            Stop,
+            StartDialog,
+            SelectGame,
+            Started,
+            StopDialog
+        }
+        public static State state { get; set; }
+        public static State statePreviousRun = State.Stop;
+        public static int notFullyStartedCounter = 0;
 
-            //wait until slugcat can communicate
-            if (self.timeSinceSeenPlayer <= 300 || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
-                return;
 
-            //check if slugcat is holding a gamecontroller
-            bool CarriesController = false;
-            for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
-                    CarriesController = true;
-            //TODO, holding gamecontroller after pebbles asking slugcat to leave will freeze the game
-
-            //toggle action Gaming with PreviousAction
-            if (CarriesController)
+        public static void StateMachine(SSOracleBehavior self, bool CarriesController)
+        {
+            State stateBeforeRun = state;
+            switch (state)
             {
-                if (self.action != EnumExt_FPP.Gaming_Gaming)
-                {
-                    self.dialogBox.Interrupt(self.Translate("Start"), 10);
-                    FivePebblesPong.ME.Logger_p.LogInfo("Start"); //TODO remove
-                    PreviousAction = self.action;
-                    self.action = EnumExt_FPP.Gaming_Gaming;
+                //======================================================
+                case State.Stop: //main game conversation is running
+                    if (CarriesController && notFullyStartedCounter < 4)
+                        state = State.StartDialog;
+                    break;
+
+                //======================================================
+                case State.StartDialog:
+                    if (statePreviousRun != state)
+                    {
+                        switch (notFullyStartedCounter)
+                        {
+                            case 0: self.dialogBox.Interrupt(self.Translate("Well, a little game shouldn't hurt."), 10); break;
+                            case 1: self.dialogBox.Interrupt(self.Translate("Have you made up your mind?"), 10); break;
+                            case 2: self.dialogBox.Interrupt(self.Translate("I hope you're not mocking."), 10); break;
+                            case 3:
+                                self.dialogBox.Interrupt(self.Translate("I'll ignore that."), 10);
+                                notFullyStartedCounter++;
+                                state = State.Stop;
+                                break;
+                        }
+                    }
+                    if (!CarriesController)
+                        state = State.StopDialog;
+                    if (!self.dialogBox.ShowingAMessage) //dialog finished
+                        state = State.SelectGame;
+                    break;
+
+                //======================================================
+                case State.SelectGame:
+                    FivePebblesPong.ME.Logger_p.LogInfo("StopDialog"); //TODO remove
+
+                    //TODO game selection
                     Game = new Pong(self);
-                }
+                    state = State.Started;
+                    if (!CarriesController)
+                        state = State.StopDialog;
+                    break;
+
+                //======================================================
+                case State.Started:
+                    self.movementBehavior = EnumExt_FPP.PlayGame;
+
+                    Game?.Update(self);
+
+                    if (!CarriesController)
+                        state = State.StopDialog;
+                    break;
+
+                //======================================================
+                case State.StopDialog:
+                    if (state != statePreviousRun)
+                    {
+                        Game?.Destroy();
+                        Game = null;
+
+                        if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame) {
+                            switch (UnityEngine.Random.Range(0, 3))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("You are not very decisive..."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("I'll take that as a no."), 10); break;
+                                case 3: self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10); break;
+                            }
+                            notFullyStartedCounter++;
+                        } else {
+                            self.dialogBox.Interrupt(self.Translate("Ok, where was I?"), 10);
+                        }
+                    }
+
+                    if (!self.dialogBox.ShowingAMessage)
+                        state = State.Stop;
+                    break;
+
+                //======================================================
+                default:
+                    state = State.Stop;
+                    break;
+            }
+
+            //handle states
+            if (state != State.Stop && stateBeforeRun == State.Stop)
+                PreviousAction = self.action;
+            if (state == State.Stop && state != stateBeforeRun)
+            {
+                self.action = PreviousAction;
+                self.restartConversationAfterCurrentDialoge = true;
+            }
+            if (state != State.Stop)
+            {
+                self.action = EnumExt_FPP.Gaming_Gaming;
                 self.conversation.paused = true;
                 self.restartConversationAfterCurrentDialoge = false;
             }
-            else if (!CarriesController && self.action == EnumExt_FPP.Gaming_Gaming)
-            {
-                self.restartConversationAfterCurrentDialoge = true;
-                self.dialogBox.Interrupt(self.Translate("Stop"), 10);
-                FivePebblesPong.ME.Logger_p.LogInfo("Stop"); //TODO remove
-                self.action = PreviousAction;
-                Game.Destroy();
-                Game = null;
-            }
 
-            //code to run in Gaming_Gaming action
-            if (self.action == EnumExt_FPP.Gaming_Gaming)
-            {
-                self.movementBehavior = EnumExt_FPP.PlayGame;
-                if (Game != null)
-                    Game.Update(self);
-            }
+            statePreviousRun = stateBeforeRun;
         }
     }
 }
