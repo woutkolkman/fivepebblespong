@@ -11,6 +11,8 @@ namespace FivePebblesPong
         public int maxY, minY, maxX, minX; //playable field
         public int midY => minY + ((maxY - minY) / 2);
         public int midX => minX + ((maxX - minX) / 2);
+        public int lenX => maxX - minX;
+        public int lenY => maxY - minY;
         public int gameCounter;
 
 

@@ -40,15 +40,12 @@ namespace FivePebblesPong
             this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
             this.line = new PongLine(self, this, "FPP_Line");
-
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong constructor"); //TODO remove
         }
 
 
         ~Pong() //destructor
         {
             this.Destroy(); //if not done already
-            FivePebblesPong.ME.Logger_p.LogInfo("Pong destructor"); //TODO remove
         }
 
 
@@ -125,16 +122,13 @@ namespace FivePebblesPong
                 case State.PlayerWin:
                     state = State.GetReady;
                     playerLastWin = true;
-                    FivePebblesPong.ME.Logger_p.LogInfo("PlayerWin"); //TODO remove
-                    //TODO dialogue
+                    self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
                     break;
 
                 //======================================================
                 case State.PebblesWin:
                     state = State.GetReady;
                     playerLastWin = false;
-                    FivePebblesPong.ME.Logger_p.LogInfo("PebblesWin"); //TODO remove
-                    //TODO dialogue
                     break;
 
                 //======================================================
@@ -147,10 +141,66 @@ namespace FivePebblesPong
         }
 
 
+        private float predY;
+        private float randomOffsY;
+        private bool newRandomOffsY;
         public int PebblesAI(SSOracleBehavior self)
         {
-            return self.player.input[0].y;
-            //TODO
+            if (false) //player controlled
+                return self.player.input[0].y;
+
+            const int deadband = 5; //avoids paddle oscillation
+            bool once = false;
+
+            //https://stackoverflow.com/questions/61139016/how-to-predict-trajectory-of-ball-in-a-ping-pong-game-for-ai-paddle-prediction
+            if (base.gameCounter % 4 == 0) //only execute every 4 frames
+            {
+                if (ball.velocityX > 0) //if ball moves towards Pebbles
+                {
+                    //height ball position area
+                    float mHeight = base.lenY - (2 * ball.radius);
+
+                    //deltaY per X
+                    float slope = ball.velocityY / ball.velocityX;
+                    if (float.IsInfinity(slope) || float.IsNegativeInfinity(slope))
+                        slope = 0; //should never run with ball.paddleBounceAngle applied
+
+                    //distance towards paddle
+                    float deltaX = pebblesPdl.pos.x - pebblesPdl.width / 2 - ball.radius - ball.pos.x;
+
+                    //predict intercept point without walls
+                    float intercept = Math.Abs((ball.pos.y - ball.minY - ball.radius) + (deltaX * slope));
+                    predY = (intercept % (2 * mHeight));
+
+                    //remove walls and ballradius
+                    if (predY > (mHeight))
+                        predY = (2 * mHeight) - predY;
+                    predY += ball.minY + ball.radius;
+
+                    newRandomOffsY = true;
+                }
+                else
+                { //ball moves away from Pebbles
+                    predY = base.midY;
+                    if (newRandomOffsY && UnityEngine.Random.value < 0.5f)
+                        once = true;
+                    newRandomOffsY = false;
+                }
+            }
+
+            //at random interval a random offset from predicted ball intercept
+            if (once || UnityEngine.Random.value < 0.001f)
+            {
+                once = false;
+                float allowed = (pebblesPdl.height / 2) - deadband;
+                randomOffsY = allowed * UnityEngine.Random.Range(-1f, 1f);
+            }
+
+            if (predY + randomOffsY > pebblesPdl.pos.y + deadband)
+                return 1;
+            if (predY + randomOffsY < pebblesPdl.pos.y - deadband)
+                return -1;
+            return 0;
         }
     }
 }

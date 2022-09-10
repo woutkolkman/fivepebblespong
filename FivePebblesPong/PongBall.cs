@@ -9,14 +9,14 @@ namespace FivePebblesPong
     public class PongBall : FPGameObject
     {
         public int radius;
-        public float ballVelX;
-        public float ballVelY;
         public float movementSpeed;
         public int maxY, minY, maxX, minX; //positions
         public double angle; //radians
         public Vector2 lastWallHit;
         const float CMP = 0.01f; //compare precision
         public double paddleBounceAngle;
+        public float velocityX { get { return (float) (movementSpeed * Math.Cos(angle)); } }
+        public float velocityY { get { return (float) (movementSpeed * -Math.Sin(angle)); } }
 
 
         public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName) : base(imageName)
@@ -41,11 +41,9 @@ namespace FivePebblesPong
         {
             bool hitWall = false;
 
-            //calculate new velocity and location
-            ballVelX = (float) (movementSpeed * Math.Cos(angle));
-            ballVelY = (float) (movementSpeed * -Math.Sin(angle));
-            float newX = pos.x + ballVelX;
-            float newY = pos.y + ballVelY;
+            //calculate new location
+            float newX = pos.x + velocityX;
+            float newY = pos.y + velocityY;
 
             //close gap towards edge of wall
             if (newX - radius < minX) newX = minX + radius;
