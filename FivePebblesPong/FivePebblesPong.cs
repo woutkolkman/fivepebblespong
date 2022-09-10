@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
+    //TODO multiplayer support???
+
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
         //type for spawning controller

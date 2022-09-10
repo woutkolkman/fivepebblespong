@@ -31,10 +31,10 @@ namespace FivePebblesPong
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
             int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player");
+            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player", PlayerGraphics.SlugcatColor(0), 10); //TODO choose slugcat which carries gamecontroller
             this.playerPdl.pos = new Vector2(midX - paddleOffset, midY);
 
-            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles");
+            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f)); //5P overseer color
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, midY);
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball");

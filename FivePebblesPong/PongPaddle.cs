@@ -13,7 +13,7 @@ namespace FivePebblesPong
         public int maxY, minY, maxX, minX; //positions
 
 
-        public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName) : base(imageName)
+        public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2) : base(imageName)
         {
             this.width = width;
             this.height = height;
@@ -25,7 +25,10 @@ namespace FivePebblesPong
             this.maxX = game.maxX;
             this.minX = game.minX;
 
-            base.SetImage(self, CreateGamePNGs.DrawRectangle(width, height, 2));
+            Color c = Color.white;
+            if (color != null)
+                c = (Color) color;
+            base.SetImage(self, CreateGamePNGs.DrawRectangle(width, height, thickness, c));
         }
 
 
