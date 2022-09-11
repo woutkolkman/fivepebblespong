@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using System;
+using System.Collections.Generic;
 using RWCustom;
 using UnityEngine;
 
@@ -52,7 +53,8 @@ namespace FivePebblesPong
         }
         public static State state { get; set; }
         public static State statePreviousRun = State.Stop;
-        public static int notFullyStartedCounter = 0;
+        public static int notFullyStartedCounter = 0; //TODO, value is not reset after player respawns; make state machine not static, but as a class?
+        public static GameSelection menu;
 
 
         public static void StateMachine(SSOracleBehavior self, bool CarriesController)
@@ -90,13 +92,34 @@ namespace FivePebblesPong
 
                 //======================================================
                 case State.SelectGame:
-                    FivePebblesPong.ME.Logger_p.LogInfo("StopDialog"); //TODO remove
+                    if (statePreviousRun != state)
+                    {
+                        menu = new GameSelection(self);
+                        self.dialogBox.Interrupt(self.Translate("Pick one."), 10);
+                    }
+                    menu?.Update(self);
 
-                    //TODO game selection
-                    Game = new Pong(self);
-                    state = State.Started;
+                    int amountOfGames = 2; //increase counter when adding more games
+                    if (menu != null)
+                        menu.pearlGrabbed %= amountOfGames;
+                    if (menu != null) {
+                        switch (menu.pearlGrabbed)
+                        {
+                            case 0: Game = new Pong(self); break;
+                            case 1: break; //TODO add bricks game
+                            //add new FPGames here
+                        }
+                    }
+                    //TODO better structure
+
+                    if (Game != null)
+                        state = State.Started;
                     if (!CarriesController)
                         state = State.StopDialog;
+                    if (state != State.SelectGame) {
+                        menu?.Destroy();
+                        menu = null;
+                    }
                     break;
 
                 //======================================================
