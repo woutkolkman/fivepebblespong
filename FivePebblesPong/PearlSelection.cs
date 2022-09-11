@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
-    public class GameSelection : FPGame
+    public class PearlSelection : FPGame
     {
         public List<PhysicalObject> pearls;
         public int pearlGrabbed;
 
 
-        public GameSelection(SSOracleBehavior self) : base(self)
+        public PearlSelection(SSOracleBehavior self) : base(self)
         {
             base.minX = 240;
             base.maxX = 760;

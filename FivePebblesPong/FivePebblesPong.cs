@@ -54,7 +54,7 @@ namespace FivePebblesPong
         public static State state { get; set; }
         public static State statePreviousRun = State.Stop;
         public static int notFullyStartedCounter = 0; //TODO, value is not reset after player respawns; make state machine not static, but as a class?
-        public static GameSelection menu;
+        public static PearlSelection menu;
 
 
         public static void StateMachine(SSOracleBehavior self, bool CarriesController)
@@ -94,7 +94,7 @@ namespace FivePebblesPong
                 case State.SelectGame:
                     if (statePreviousRun != state)
                     {
-                        menu = new GameSelection(self);
+                        menu = new PearlSelection(self);
                         self.dialogBox.Interrupt(self.Translate("Pick one."), 10);
                     }
                     menu?.Update(self);
@@ -110,7 +110,6 @@ namespace FivePebblesPong
                             //add new FPGames here
                         }
                     }
-                    //TODO better structure
 
                     if (Game != null)
                         state = State.Started;
