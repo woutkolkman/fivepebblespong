@@ -66,7 +66,7 @@ namespace FivePebblesPong
             //increase ball speed gradually
             ball.movementSpeed = 5.5f + (0.001f * base.gameCounter);
 
-            StateMachine(self);
+            this.StateMachine(self);
             if (state == State.GetReady)
             { //reset ball position and angle
                 ball.pos = new Vector2(midX, midY);

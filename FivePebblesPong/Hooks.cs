@@ -15,6 +15,9 @@ namespace FivePebblesPong
             //creates GameController object
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectRealizeHook;
 
+            //five pebbles constructor
+            On.SSOracleBehavior.ctor += SSOracleBehaviorCtorHook;
+
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
 
@@ -58,6 +61,14 @@ namespace FivePebblesPong
         }
 
 
+        //five pebbles constructor
+        static void SSOracleBehaviorCtorHook(On.SSOracleBehavior.orig_ctor orig, SSOracleBehavior self, Oracle oracle)
+        {
+            orig(self, oracle);
+            FivePebblesPong.starter = new GameStarter();
+        }
+
+
         //five pebbles update function
         static void SSOracleBehaviorUpdateHook(On.SSOracleBehavior.orig_Update orig, SSOracleBehavior self, bool eu)
         {
@@ -85,7 +96,7 @@ namespace FivePebblesPong
                 return;
 
             //run state machine for starting/running/stopping games
-            FivePebblesPong.StateMachine(self, CarriesController);
+            FivePebblesPong.starter?.StateMachine(self, CarriesController);
         }
     }
 }

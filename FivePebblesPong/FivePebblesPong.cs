@@ -32,6 +32,11 @@ namespace FivePebblesPong
 
         public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
 
+        //TODO starter object is constructed when SSOracleBehavior ctor runs, but 
+        //it's never destructed until it is overwritten. so memory is never fully 
+        //freed until game restart
+        public static GameStarter starter;
+
 
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
@@ -39,10 +44,13 @@ namespace FivePebblesPong
             Hooks.Apply();
             Logger.LogInfo("OnEnable()"); //TODO remove
         }
+    }
 
 
-        static SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
-        private static FPGame Game;
+    public class GameStarter
+    {
+        public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
+        public FPGame game;
         public enum State
         {
             Stop,
@@ -51,13 +59,27 @@ namespace FivePebblesPong
             Started,
             StopDialog
         }
-        public static State state { get; set; }
-        public static State statePreviousRun = State.Stop;
-        public static int notFullyStartedCounter = 0; //TODO, value is not reset after player respawns; make state machine not static, but as a class?
-        public static PearlSelection menu;
+        public State state { get; set; }
+        public State statePreviousRun;
+        public int notFullyStartedCounter;
+        public PearlSelection menu;
 
 
-        public static void StateMachine(SSOracleBehavior self, bool CarriesController)
+        public GameStarter()
+        {
+            this.notFullyStartedCounter = 0;
+            this.statePreviousRun = State.Stop;
+        }
+        ~GameStarter() //destructor
+        {
+            game?.Destroy();
+            game = null;
+            menu?.Destroy();
+            menu = null;
+        }
+
+
+        public void StateMachine(SSOracleBehavior self, bool CarriesController)
         {
             State stateBeforeRun = state;
             switch (state)
@@ -100,18 +122,17 @@ namespace FivePebblesPong
                     menu?.Update(self);
 
                     int amountOfGames = 2; //increase counter when adding more games
-                    if (menu != null)
-                        menu.pearlGrabbed %= amountOfGames;
                     if (menu != null) {
+                        menu.pearlGrabbed %= amountOfGames;
                         switch (menu.pearlGrabbed)
                         {
-                            case 0: Game = new Pong(self); break;
+                            case 0: game = new Pong(self); break;
                             case 1: break; //TODO add bricks game
                             //add new FPGames here
                         }
                     }
 
-                    if (Game != null)
+                    if (game != null)
                         state = State.Started;
                     if (!CarriesController)
                         state = State.StopDialog;
@@ -125,7 +146,7 @@ namespace FivePebblesPong
                 case State.Started:
                     self.movementBehavior = EnumExt_FPP.PlayGame;
 
-                    Game?.Update(self);
+                    game?.Update(self);
 
                     if (!CarriesController)
                         state = State.StopDialog;
@@ -135,8 +156,8 @@ namespace FivePebblesPong
                 case State.StopDialog:
                     if (state != statePreviousRun)
                     {
-                        Game?.Destroy();
-                        Game = null;
+                        game?.Destroy();
+                        game = null;
 
                         if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame) {
                             switch (UnityEngine.Random.Range(0, 3))
