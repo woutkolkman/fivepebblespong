@@ -10,10 +10,12 @@ namespace FivePebblesPong
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
+            CreateGamePNGs.LoadPNG("GamepadIcon");
+
             sLeaser.sprites = new FSprite[1];
-            sLeaser.sprites[0] = new FSprite("Pebble" + 2.ToString(), true); //UnityEngine.Random.Range(1, 15)
-            //TODO possible new sprite at Rain World\Assets\Futile\Resources\Illustrations\GamepadIcon.png
-            //     FSprite > FAtlasManager || ActuallyLoadAtlasOrImage
+            sLeaser.sprites[0] = new FSprite("GamepadIcon", true);
+            sLeaser.sprites[0].scale = 0.25f;
+
             this.AddToContainer(sLeaser, rCam, null);
         }
 
@@ -51,11 +53,8 @@ namespace FivePebblesPong
         //palette applies color to sprites
         public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
-            this.color = new Color(1f, 0.2f, 0f);
+            this.color = new Color(0.44705883f, 0.9019608f, 0.76862746f); //5P overseer color
             sLeaser.sprites[0].color = this.color;
-
-            //this.color = palette.blackColor; //blackColor, waterColor1, waterColor2, waterSurfaceColor1, waterSurfaceColor2, waterShineColor, fogColor, skyColor, shortCutSymbol
-            //sLeaser.sprites[0].color = this.color;
         }
     }
 }

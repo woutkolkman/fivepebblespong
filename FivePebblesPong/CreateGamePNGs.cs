@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using BepInEx;
-using System;
 using RWCustom;
 using UnityEngine;
 using System.IO;
@@ -120,6 +118,14 @@ namespace FivePebblesPong
             });
             PNGSaver.SaveTextureToFile(texture, fileName);
             FivePebblesPong.ME.Logger_p.LogInfo("Texture saved as " + name + ".png");
+        }
+
+
+        public static void LoadPNG(string fileName)
+        {
+            //load file via disposable projectedimage object
+            ProjectedImage p = new ProjectedImage(new List<string> { fileName }, 0);
+            p.Destroy();
         }
     }
 }
