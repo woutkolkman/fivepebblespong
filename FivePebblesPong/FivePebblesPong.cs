@@ -42,7 +42,6 @@ namespace FivePebblesPong
         public void OnEnable()
         {
             Hooks.Apply();
-            Logger.LogInfo("OnEnable()"); //TODO remove
         }
     }
 
@@ -73,9 +72,7 @@ namespace FivePebblesPong
         ~GameStarter() //destructor
         {
             game?.Destroy();
-            game = null;
             menu?.Destroy();
-            menu = null;
         }
 
 
@@ -127,7 +124,7 @@ namespace FivePebblesPong
                         switch (menu.pearlGrabbed)
                         {
                             case 0: game = new Pong(self); break;
-                            case 1: break; //TODO add bricks game
+                            case 1: game = new Breakout(self); break;
                             //add new FPGames here
                         }
                     }
@@ -156,6 +153,7 @@ namespace FivePebblesPong
                 case State.StopDialog:
                     if (state != statePreviousRun)
                     {
+                        self.movementBehavior = SSOracleBehavior.MovementBehavior.Talk;
                         game?.Destroy();
                         game = null;
 

@@ -45,7 +45,7 @@ namespace FivePebblesPong
 
                 AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.GameController, null, coord, newID);
                 self.abstractRoom.AddEntity(ent);
-                FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString()); //TODO remove
+                FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString());
             }
         }
 

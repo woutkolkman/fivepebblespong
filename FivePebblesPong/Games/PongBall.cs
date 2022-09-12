@@ -25,7 +25,7 @@ namespace FivePebblesPong
             this.movementSpeed = 5.5f;
             //base.pos = new Vector2(game.midX, game.midY);
             this.angle = 0;
-            this.paddleBounceAngle = 1.4;
+            this.paddleBounceAngle = 1.3;
 
             //position boundaries
             this.maxY = game.maxY;

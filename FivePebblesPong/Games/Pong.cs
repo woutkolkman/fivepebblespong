@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using BepInEx;
-using System;
-using RWCustom;
+﻿using System;
 using UnityEngine;
 
 namespace FivePebblesPong
@@ -39,7 +36,8 @@ namespace FivePebblesPong
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball");
 
-            this.line = new PongLine(self, this, "FPP_Line");
+            this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line");
+            this.line.pos = new Vector2(midX, midY);
         }
 
 
@@ -146,8 +144,8 @@ namespace FivePebblesPong
         private bool newRandomOffsY;
         public int PebblesAI(SSOracleBehavior self)
         {
-            if (false) //player controlled
-                return self.player.input[0].y;
+            //if (false) //player controlled
+            //    return self.player.input[0].y;
 
             const int deadband = 5; //avoids paddle oscillation
             bool once = false;
@@ -182,7 +180,7 @@ namespace FivePebblesPong
                 else
                 { //ball moves away from Pebbles
                     predY = base.midY;
-                    if (newRandomOffsY && UnityEngine.Random.value < 0.5f)
+                    if (newRandomOffsY && UnityEngine.Random.value < 0.7f)
                         once = true;
                     newRandomOffsY = false;
                 }
