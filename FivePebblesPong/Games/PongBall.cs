@@ -19,7 +19,7 @@ namespace FivePebblesPong
         public float velocityY { get { return (float) (movementSpeed * -Math.Sin(angle)); } }
 
 
-        public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName) : base(imageName)
+        public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, bool reloadImg = false) : base(imageName)
         {
             this.radius = radius;
             this.movementSpeed = 5.5f;
@@ -33,7 +33,10 @@ namespace FivePebblesPong
             this.maxX = game.maxX;
             this.minX = game.minX;
 
-            base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius));
+            Color c = Color.white;
+            if (color != null)
+                c = (Color)color;
+            base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius, c), reloadImg);
         }
 
 

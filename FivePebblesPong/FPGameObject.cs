@@ -26,10 +26,18 @@ namespace FivePebblesPong
         }
 
 
-        public virtual void SetImage(SSOracleBehavior self, Texture2D texture)
+        public virtual void SetImage(SSOracleBehavior self, Texture2D texture, bool reload = false)
         {
+            //only reload image if image is not currently used
+
+            //unload existing png
+            bool exists = Futile.atlasManager.DoesContainAtlas(imageName);
+            if (exists && reload)
+                Futile.atlasManager.UnloadImage(imageName);
+
             //create png
-            CreateGamePNGs.SavePNG(texture, imageName);
+            if (!exists || reload)
+                CreateGamePNGs.SavePNG(texture, imageName);
 
             //load png
             this.image = self.oracle.myScreen.AddImage(imageName); //if image is invalid, execution is cancelled (by exception?)

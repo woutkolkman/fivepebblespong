@@ -11,9 +11,10 @@ namespace FivePebblesPong
         public int width, height;
         public float movementSpeed;
         public int maxY, minY, maxX, minX; //positions
+        public bool flatBounce; //invert but don't overwrite angle, works best with immovable paddles
 
 
-        public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2) : base(imageName)
+        public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2, bool reloadImg = false) : base(imageName)
         {
             this.width = width;
             this.height = height;
@@ -28,7 +29,9 @@ namespace FivePebblesPong
             Color c = Color.white;
             if (color != null)
                 c = (Color) color;
-            base.SetImage(self, CreateGamePNGs.DrawRectangle(width, height, thickness, c));
+            base.SetImage(self, CreateGamePNGs.DrawRectangle(width, height, thickness, c), reloadImg);
+
+            this.flatBounce = false;
         }
 
 
@@ -63,11 +66,16 @@ namespace FivePebblesPong
                     float normalized = (pos.y - ball.pos.y) / hEdge;
                     if (ball.pos.x - ball.radius <= pos.x + vEdge && ball.pos.x > pos.x)
                     { //bounce to right
-                        ball.angle = ball.paddleBounceAngle * normalized;
+                        if (!flatBounce) {
+                            ball.angle = ball.paddleBounceAngle * normalized;
+                        } else {
+                            ball.ReverseXDir();
+                        }
                         hitBall = true;
                     } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
                     { //bounce to left
-                        ball.angle = ball.paddleBounceAngle * normalized;
+                        if (!flatBounce)
+                            ball.angle = ball.paddleBounceAngle * normalized;
                         ball.ReverseXDir();
                         hitBall = true;
                     }
@@ -91,11 +99,24 @@ namespace FivePebblesPong
                 Vector2 closestPoint = new Vector2(x, y);
                 if (Vector2.Distance(ball.pos, closestPoint) <= ball.radius)
                 {
-                    ball.angle = ball.paddleBounceAngle;
-                    if (y > pos.y)
-                        ball.ReverseYDir();
-                    if (x < pos.x)
-                        ball.ReverseXDir();
+                    if (!flatBounce)
+                    { //overwrites angle (default)
+                        ball.angle = ball.paddleBounceAngle;
+                        if (y > pos.y)
+                            ball.ReverseYDir();
+                        if (x < pos.x)
+                            ball.ReverseXDir();
+                    } else
+                    { //as if ball bounces off wall
+                        float hDist = Math.Abs(x - ball.pos.x);
+                        float vDist = Math.Abs(y - ball.pos.y);
+                        if (vDist < hDist) {
+                            ball.ReverseXDir();
+                        } else {
+                            ball.ReverseYDir();
+                            //TODO allows ball to remove multiple bricks if it passes straight next to a row of bricks
+                        }
+                    }
                     hitBall = true;
                 }
             }

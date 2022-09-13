@@ -12,6 +12,7 @@ namespace FivePebblesPong
         public bool playerLastWin;
         const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
+        public static bool compliment = true;
 
         public enum State
         {
@@ -28,15 +29,15 @@ namespace FivePebblesPong
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
             int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player", PlayerGraphics.SlugcatColor(0), 10); //TODO choose slugcat which carries gamecontroller
+            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player", PlayerGraphics.SlugcatColor(0), 10, reloadImg: true); //TODO choose slugcat which carries gamecontroller
             this.playerPdl.pos = new Vector2(midX - paddleOffset, midY);
 
-            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f)); //5P overseer color
+            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, midY);
 
-            this.ball = new PongBall(self, this, 10, "FPP_Ball");
+            this.ball = new PongBall(self, this, 10, "FPP_Ball", reloadImg: true);
 
-            this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line");
+            this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
         }
 
@@ -120,7 +121,9 @@ namespace FivePebblesPong
                 case State.PlayerWin:
                     state = State.GetReady;
                     playerLastWin = true;
-                    self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
+                    if (compliment)
+                        self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
+                    compliment = false;
                     break;
 
                 //======================================================
