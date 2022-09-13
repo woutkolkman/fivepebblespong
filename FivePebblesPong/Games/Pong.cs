@@ -164,7 +164,7 @@ namespace FivePebblesPong
                     //deltaY per X
                     float slope = ball.velocityY / ball.velocityX;
                     if (float.IsInfinity(slope) || float.IsNegativeInfinity(slope))
-                        slope = 0; //should never run with ball.paddleBounceAngle applied
+                        slope = 0; //should never run with ballBounceAngle applied
 
                     //distance towards paddle
                     float deltaX = pebblesPdl.pos.x - pebblesPdl.width / 2 - ball.radius - ball.pos.x;

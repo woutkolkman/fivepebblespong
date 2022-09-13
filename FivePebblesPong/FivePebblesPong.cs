@@ -94,8 +94,9 @@ namespace FivePebblesPong
                         switch (notFullyStartedCounter)
                         {
                             case 0: self.dialogBox.Interrupt(self.Translate("Well, a little game shouldn't hurt."), 10); break;
+                                //or "Fine, I needed a break.", "That's also not edible."
                             case 1: self.dialogBox.Interrupt(self.Translate("Have you made up your mind?"), 10); break;
-                            case 2: self.dialogBox.Interrupt(self.Translate("I hope you're not mocking."), 10); break;
+                            case 2: self.dialogBox.Interrupt(self.Translate("You're just playing with that, aren't you.."), 10); break;
                             case 3:
                                 self.dialogBox.Interrupt(self.Translate("I'll ignore that."), 10);
                                 notFullyStartedCounter++;

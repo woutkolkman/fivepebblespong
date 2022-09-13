@@ -14,7 +14,6 @@ namespace FivePebblesPong
         public double angle; //radians
         public Vector2 lastWallHit;
         const float CMP = 0.01f; //compare precision
-        public double paddleBounceAngle;
         public float velocityX { get { return (float) (movementSpeed * Math.Cos(angle)); } }
         public float velocityY { get { return (float) (movementSpeed * -Math.Sin(angle)); } }
 
@@ -23,9 +22,7 @@ namespace FivePebblesPong
         {
             this.radius = radius;
             this.movementSpeed = 5.5f;
-            //base.pos = new Vector2(game.midX, game.midY);
             this.angle = 0;
-            this.paddleBounceAngle = 1.3;
 
             //position boundaries
             this.maxY = game.maxY;

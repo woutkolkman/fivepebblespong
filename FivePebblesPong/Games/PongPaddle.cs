@@ -12,6 +12,7 @@ namespace FivePebblesPong
         public float movementSpeed;
         public int maxY, minY, maxX, minX; //positions
         public bool flatBounce; //invert but don't overwrite angle, works best with immovable paddles
+        public double ballBounceAngle;
 
 
         public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2, bool reloadImg = false) : base(imageName)
@@ -32,6 +33,7 @@ namespace FivePebblesPong
             base.SetImage(self, CreateGamePNGs.DrawRectangle(width, height, thickness, c), reloadImg);
 
             this.flatBounce = false;
+            this.ballBounceAngle = 1.3;
         }
 
 
@@ -67,7 +69,7 @@ namespace FivePebblesPong
                     if (ball.pos.x - ball.radius <= pos.x + vEdge && ball.pos.x > pos.x)
                     { //bounce to right
                         if (!flatBounce) {
-                            ball.angle = ball.paddleBounceAngle * normalized;
+                            ball.angle = ballBounceAngle * normalized;
                         } else {
                             ball.ReverseXDir();
                         }
@@ -75,7 +77,7 @@ namespace FivePebblesPong
                     } else if (ball.pos.x + ball.radius >= pos.x - vEdge && ball.pos.x < pos.x)
                     { //bounce to left
                         if (!flatBounce)
-                            ball.angle = ball.paddleBounceAngle * normalized;
+                            ball.angle = ballBounceAngle * normalized;
                         ball.ReverseXDir();
                         hitBall = true;
                     }
@@ -101,7 +103,7 @@ namespace FivePebblesPong
                 {
                     if (!flatBounce)
                     { //overwrites angle (default)
-                        ball.angle = ball.paddleBounceAngle;
+                        ball.angle = ballBounceAngle;
                         if (y > pos.y)
                             ball.ReverseYDir();
                         if (x < pos.x)

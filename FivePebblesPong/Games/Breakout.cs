@@ -21,6 +21,7 @@ namespace FivePebblesPong
             this.paddle = new PongPaddle(self, this, 20, 100, "FPP_Player", reloadImg: true);
             this.paddle.pos = new Vector2(minX, midY);
             this.paddle.maxX = minX + lenX / 3;
+            this.paddle.ballBounceAngle = 1.1;
 
             this.lineMid = new PongLine(self, false, lenY, 4, 0, Color.white, "FPP_Line", reloadImg: true);
             this.lineMid.pos = new Vector2(this.paddle.maxX, midY);
@@ -30,7 +31,6 @@ namespace FivePebblesPong
             this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true);
             this.ball.pos = new Vector2(midX, midY);
             this.ball.movementSpeed = 8f;
-            this.ball.paddleBounceAngle = 1.1;
             this.ball.angle = Math.PI; //move towards player first
 
             this.bricks = new List<PongPaddle>();
@@ -104,7 +104,10 @@ namespace FivePebblesPong
                 {
                     bricks[closest].Destroy();
                     bricks.RemoveAt(closest);
-                    self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
+                    //self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
+                    //self.oracle.room.PlaySound(SoundID.HUD_Karma_Reinforce_Flicker, self.oracle.firstChunk);
+                    //self.oracle.room.PlaySound(SoundID.Calm_Surface_Hit_Wall, self.oracle.firstChunk);
+                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Switch_On, self.oracle.firstChunk);
                 }
             }
 
@@ -116,18 +119,34 @@ namespace FivePebblesPong
         }
 
 
+        private static readonly string[] PlaceBricks_imgNames = { "FPP_BrickG", "FPP_BrickB", "FPP_BrickY", "FPP_BrickR" };
+        private static readonly Color[] PlaceBricks_colors = { Color.green, Color.blue, Color.yellow, Color.red };
         public void PlaceBricks(SSOracleBehavior self)
         {
+            //clear any bricks that are left
             for (int i = 0; i < bricks.Count; i++)
                 bricks[i]?.Destroy();
             bricks.Clear();
 
-            bricks.Add(new PongPaddle(self, this, 20, 80, "FPP_BrickB", Color.blue, 10)); //TODO rand met andere kleur???
-            bricks.Add(new PongPaddle(self, this, 20, 80, "FPP_BrickB", Color.blue, 10));
-            bricks[0].pos = new Vector2(maxX - 60, maxY - 100);
-            bricks[1].pos = new Vector2(maxX - 60, minY + 100); //TODO locatie verbeteren en automatisch spawnen
-            bricks[0].flatBounce = true;
-            bricks[1].flatBounce = true;
+            //calculate brick size and distance
+            const int brickSpacing = 20;
+            const int brickColumn = 5;
+            int brickHeight = lenY / brickColumn - brickSpacing;
+            const int brickWidth = 30;
+
+            //place bricks in different columns and rows
+            for (int c = 0; c < PlaceBricks_imgNames.Length; c++)
+            {
+                for (int r = 0; r < brickColumn; r++)
+                {
+                    bricks.Add(new PongPaddle(self, this, brickWidth, brickHeight, PlaceBricks_imgNames[c], PlaceBricks_colors[c], brickWidth / 2));
+                    bricks[r + c * brickColumn].pos = new Vector2(
+                        maxX - (brickWidth * 2) - (brickWidth + brickSpacing) * c,
+                        maxY - (brickHeight / 2) - (brickHeight + brickSpacing) * r
+                    );
+                    bricks[r + c * brickColumn].flatBounce = true;
+                }
+            }
         }
     }
 }
