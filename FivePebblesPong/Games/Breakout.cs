@@ -17,15 +17,15 @@ namespace FivePebblesPong
 
         public Breakout(SSOracleBehavior self) : base(self)
         {
-            base.minX += 15;
-            this.paddle = new PongPaddle(self, this, 20, 100, "FPP_Player", reloadImg: true);
+            base.minX += 18;
+            this.paddle = new PongPaddle(self, this, 25, 100, "FPP_Player", reloadImg: true);
             this.paddle.pos = new Vector2(minX, midY);
             this.paddle.maxX = minX + lenX / 3;
             this.paddle.ballBounceAngle = 1.1;
 
             this.lineMid = new PongLine(self, false, lenY, 4, 0, Color.white, "FPP_Line", reloadImg: true);
             this.lineMid.pos = new Vector2(this.paddle.maxX, midY);
-            this.lineEnd = new PongLine(self, false, lenY, 4, 18, Color.red, "FPP_Line2", reloadImg: true);
+            this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_Line2", reloadImg: true);
             this.lineEnd.pos = new Vector2(this.paddle.minX, midY);
 
             this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true);
@@ -81,7 +81,7 @@ namespace FivePebblesPong
             self.lookPoint = (ball != null) ? ball.pos : self.player.DangerPos;
 
             //place bricks
-            if (bricks.Count <= 0)
+            if (bricks.Count <= 0 && ball.pos.x <= midX)
                 this.PlaceBricks(self);
 
             //update brick closest to ball
@@ -104,10 +104,8 @@ namespace FivePebblesPong
                 {
                     bricks[closest].Destroy();
                     bricks.RemoveAt(closest);
-                    //self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
-                    //self.oracle.room.PlaySound(SoundID.HUD_Karma_Reinforce_Flicker, self.oracle.firstChunk);
-                    //self.oracle.room.PlaySound(SoundID.Calm_Surface_Hit_Wall, self.oracle.firstChunk);
-                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Switch_On, self.oracle.firstChunk);
+                    self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
+                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
                 }
             }
 
@@ -129,10 +127,13 @@ namespace FivePebblesPong
             bricks.Clear();
 
             //calculate brick size and distance
-            const int brickSpacing = 20;
+            const int brickVertSpacing = 15; //space between bricks
+            const int brickHorSpacing = 5; //space between bricks
             const int brickColumn = 5;
-            int brickHeight = lenY / brickColumn - brickSpacing;
-            const int brickWidth = 30;
+            const int brickWidth = 28;
+            const int backWallOffset = 35; //space behind bricks
+            const int horWallOffset = 15; //space between horizontal wall and bricks
+            int brickHeight = (lenY - 2*horWallOffset) / brickColumn - brickVertSpacing;
 
             //place bricks in different columns and rows
             for (int c = 0; c < PlaceBricks_imgNames.Length; c++)
@@ -141,10 +142,11 @@ namespace FivePebblesPong
                 {
                     bricks.Add(new PongPaddle(self, this, brickWidth, brickHeight, PlaceBricks_imgNames[c], PlaceBricks_colors[c], brickWidth / 2));
                     bricks[r + c * brickColumn].pos = new Vector2(
-                        maxX - (brickWidth * 2) - (brickWidth + brickSpacing) * c,
-                        maxY - (brickHeight / 2) - (brickHeight + brickSpacing) * r
+                        maxX - (brickWidth * 2) - (brickWidth + brickHorSpacing) * c - backWallOffset,
+                        maxY - (brickHeight / 2) - (brickHeight + brickVertSpacing) * r - horWallOffset
                     );
                     bricks[r + c * brickColumn].flatBounce = true;
+                    bricks[r + c * brickColumn].ballBounceAngle = Math.PI/4;
                 }
             }
         }

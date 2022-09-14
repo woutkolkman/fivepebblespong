@@ -101,24 +101,11 @@ namespace FivePebblesPong
                 Vector2 closestPoint = new Vector2(x, y);
                 if (Vector2.Distance(ball.pos, closestPoint) <= ball.radius)
                 {
-                    if (!flatBounce)
-                    { //overwrites angle (default)
-                        ball.angle = ballBounceAngle;
-                        if (y > pos.y)
-                            ball.ReverseYDir();
-                        if (x < pos.x)
-                            ball.ReverseXDir();
-                    } else
-                    { //as if ball bounces off wall
-                        float hDist = Math.Abs(x - ball.pos.x);
-                        float vDist = Math.Abs(y - ball.pos.y);
-                        if (vDist < hDist) {
-                            ball.ReverseXDir();
-                        } else {
-                            ball.ReverseYDir();
-                            //TODO allows ball to remove multiple bricks if it passes straight next to a row of bricks
-                        }
-                    }
+                    ball.angle = ballBounceAngle;
+                    if (y > pos.y)
+                        ball.ReverseYDir();
+                    if (x < pos.x)
+                        ball.ReverseXDir();
                     hitBall = true;
                 }
             }
