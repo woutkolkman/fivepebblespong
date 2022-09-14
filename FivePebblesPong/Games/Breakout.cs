@@ -70,6 +70,16 @@ namespace FivePebblesPong
             if (paddle.Update(pX, pY, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
+            //check if wall is hit
+            if (ball.lastWallHit.x == minX)
+            { //reset game
+                base.gameCounter = 0;
+                ball.pos = new Vector2(midX, midY);
+                ball.lastWallHit = new Vector2();
+                this.ball.angle = Math.PI;
+                this.PlaceBricks(self);
+            }
+
             //move puppet and look at player/ball
             self.SetNewDestination(paddle.pos); //moves handle closer occasionally
             self.currentGetTo = paddle.pos;
@@ -147,6 +157,7 @@ namespace FivePebblesPong
                     );
                     bricks[r + c * brickColumn].flatBounce = true;
                     bricks[r + c * brickColumn].ballBounceAngle = Math.PI/4;
+                    bricks[r + c * brickColumn].image.setAlpha = 0.8f; //slightly transparent
                 }
             }
         }
