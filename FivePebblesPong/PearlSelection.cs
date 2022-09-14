@@ -46,10 +46,12 @@ namespace FivePebblesPong
             float pTh = 1.5f; //propotional
 
             //check if pearl is grabbed, else set position
+            pearlGrabbed = -1;
             for (int i = 0; i < pearls.Count; i++) {
-                if (pearls[i].grabbedBy.Count > 0 && pearls[i].grabbedBy[0].grabber is Player)
+                if (pearls[i].grabbedBy.Count > 0)
                 {
-                    pearlGrabbed = i;
+                    if (pearls[i].grabbedBy[0].grabber is Player)
+                        pearlGrabbed = i;
                     continue;
                 }
                 //generate sinus

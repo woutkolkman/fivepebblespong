@@ -123,6 +123,7 @@ namespace FivePebblesPong
 
         public static void LoadPNG(string fileName)
         {
+            //allows loading regular PNGs to use them as sprites
             //load file via disposable projectedimage object
             ProjectedImage p = new ProjectedImage(new List<string> { fileName }, 0);
             p.Destroy();
