@@ -50,7 +50,7 @@ namespace FivePebblesPong
             for (int i = 0; i < pearls.Count; i++) {
                 if (pearls[i].grabbedBy.Count > 0)
                 {
-                    if (pearls[i].grabbedBy[0].grabber is Player)
+                    if (pearls[i].grabbedBy[0].grabber == self.player)
                         pearlGrabbed = i;
                     continue;
                 }
