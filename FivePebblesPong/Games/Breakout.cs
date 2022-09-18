@@ -25,7 +25,7 @@ namespace FivePebblesPong
 
             this.lineMid = new PongLine(self, false, lenY, 4, 0, Color.white, "FPP_Line", reloadImg: true);
             this.lineMid.pos = new Vector2(this.paddle.maxX, midY);
-            this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_Line2", reloadImg: true);
+            this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_RedLine", reloadImg: true);
             this.lineEnd.pos = new Vector2(this.paddle.minX, midY);
 
             this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true);

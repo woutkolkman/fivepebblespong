@@ -35,8 +35,11 @@ namespace FivePebblesPong
         }
         public virtual void SetImage(SSOracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
         {
-            if (image != null)
+            Vector2 prevPos = new Vector2();
+            if (image != null) {
+                prevPos = image.pos;
                 image.Destroy();
+            }
             image = null;
 
             if (textures.Count <= 0)
@@ -59,7 +62,8 @@ namespace FivePebblesPong
             }
 
             //load png(s)
-            this.image = self.oracle.myScreen.AddImage(names, cycleTime); //if an image is invalid, execution is cancelled (by exception?)
+            image = self.oracle.myScreen.AddImage(names, cycleTime); //if an image is invalid, execution is cancelled (by exception?)
+            image.pos = prevPos;
         }
 
 
