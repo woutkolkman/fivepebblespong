@@ -28,21 +28,34 @@ namespace FivePebblesPong
         }
 
 
+        //"reload": only reload image if image is not currently used
         public virtual void SetImage(SSOracleBehavior self, Texture2D texture, bool reload = false)
         {
-            //only reload image if image is not currently used
+            SetImage(self, new List<Texture2D> { texture }, 0, reload);
+        }
+        public virtual void SetImage(SSOracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
+        {
+            if (textures.Count <= 0)
+                return;
+            List<string> names = new List<string>();
 
-            //unload existing png
-            bool exists = Futile.atlasManager.DoesContainAtlas(imageName);
-            if (exists && reload)
-                Futile.atlasManager.UnloadImage(imageName);
+            for (int i = 0; i < textures.Count; i++)
+            {
+                //add number to textures if they are used in an animation
+                names.Add(imageName + (i > 0 ? i.ToString() : ""));
 
-            //create png
-            if (!exists || reload)
-                CreateGamePNGs.SavePNG(texture, imageName);
+                //unload existing png
+                bool exists = Futile.atlasManager.DoesContainAtlas(names[i]);
+                if (exists && reload)
+                    Futile.atlasManager.UnloadImage(names[i]);
 
-            //load png
-            this.image = self.oracle.myScreen.AddImage(imageName); //if image is invalid, execution is cancelled (by exception?)
+                //create png
+                if (!exists || reload)
+                    CreateGamePNGs.SavePNG(textures[i], names[i]);
+            }
+
+            //load png(s)
+            this.image = self.oracle.myScreen.AddImage(names, cycleTime); //if an image is invalid, execution is cancelled (by exception?)
         }
 
 

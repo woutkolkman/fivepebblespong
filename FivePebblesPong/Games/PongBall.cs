@@ -34,6 +34,8 @@ namespace FivePebblesPong
             if (color != null)
                 c = (Color)color;
             base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius, c), reloadImg);
+            //List<Texture2D> textures = new List<Texture2D> { CreateGamePNGs.DrawCircle(radius, radius, c), CreateGamePNGs.DrawCircle(radius, 2, c) };
+            //base.SetImage(self, textures, 10, reloadImg);
         }
 
 
