@@ -35,5 +35,10 @@ namespace FivePebblesPong
             if (this.gameCounter < 0)
                 this.gameCounter = 0;
         }
+
+
+        //separate function to allow pebbles to move all images simultaneously
+        public virtual void Draw(Vector2 offset) { }
+        public virtual void Draw() { Draw(new Vector2()); }
     }
 }

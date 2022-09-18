@@ -89,12 +89,16 @@ namespace FivePebblesPong
             self.currentGetTo.y += pebblesInput * POS_OFFSET_SPEED; //keep up with fast paddle
             self.floatyMovement = false;
             self.lookPoint = (state == State.Playing) ? ball.pos : self.player.DangerPos;
+        }
 
+
+        public override void Draw(Vector2 offset)
+        {
             //update image positions
-            playerPdl.DrawImage();
-            pebblesPdl.DrawImage();
-            ball.DrawImage();
-            line.DrawImage();
+            playerPdl.DrawImage(offset);
+            pebblesPdl.DrawImage(offset);
+            ball.DrawImage(offset);
+            line.DrawImage(offset);
         }
 
 

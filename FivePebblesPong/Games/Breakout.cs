@@ -105,7 +105,6 @@ namespace FivePebblesPong
                     minDist = curDist;
                     closest = i;
                 }
-                bricks[i].DrawImage();
             }
 
             //if there is a closest brick, check if it is hit
@@ -118,12 +117,19 @@ namespace FivePebblesPong
                     self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
                 }
             }
+        }
 
+
+        public override void Draw(Vector2 offset)
+        {
             //update image positions
-            ball.DrawImage();
-            paddle.DrawImage();
-            lineMid.DrawImage();
-            lineEnd.DrawImage();
+            ball.DrawImage(offset);
+            paddle.DrawImage(offset);
+            lineMid.DrawImage(offset);
+            lineEnd.DrawImage(offset);
+
+            for (int i = 0; i < bricks.Count; i++)
+                bricks[i]?.DrawImage(offset);
         }
 
 

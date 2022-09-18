@@ -19,10 +19,12 @@ namespace FivePebblesPong
         }
 
 
-        public virtual void DrawImage()
+        //offset allows pebbles to move all images simultaneously
+        public virtual void DrawImage() { DrawImage(new Vector2()); }
+        public virtual void DrawImage(Vector2 offset)
         {
             if (image != null)
-                image.setPos = new Vector2?(pos);
+                image.setPos = new Vector2?(pos + offset);
         }
 
 
