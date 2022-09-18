@@ -32,9 +32,10 @@ namespace FivePebblesPong
         }
 
 
-        ~PearlSelection()
+        ~PearlSelection() //destructor
         {
             pearls.Clear();
+            base.Destroy(); //if not done already
         }
 
 

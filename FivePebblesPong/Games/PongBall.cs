@@ -16,6 +16,8 @@ namespace FivePebblesPong
         const float CMP = 0.01f; //compare precision
         public float velocityX { get { return (float) (movementSpeed * Math.Cos(angle)); } }
         public float velocityY { get { return (float) (movementSpeed * -Math.Sin(angle)); } }
+        public Texture2D textureCircleFilled;
+        public Texture2D textureCircleBorder;
 
 
         public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, bool reloadImg = false) : base(imageName)
@@ -33,9 +35,15 @@ namespace FivePebblesPong
             Color c = Color.white;
             if (color != null)
                 c = (Color)color;
-            base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius, c), reloadImg);
-            //List<Texture2D> textures = new List<Texture2D> { CreateGamePNGs.DrawCircle(radius, radius, c), CreateGamePNGs.DrawCircle(radius, 2, c) };
-            //base.SetImage(self, textures, 10, reloadImg);
+            textureCircleFilled = CreateGamePNGs.DrawCircle(radius, radius, c);
+            textureCircleBorder = CreateGamePNGs.DrawCircle(radius, 2, c);
+            base.SetImage(self, textureCircleFilled, reloadImg);
+        }
+
+
+        ~PongBall() //destructor
+        {
+            base.Destroy(); //if not done already
         }
 
 
@@ -81,5 +89,15 @@ namespace FivePebblesPong
         public void ReverseXDir() { angle += (Math.PI - 2 * angle); }
         public void ReverseYDir() { angle *= -1; }
         public void ReverseDir() { angle += Math.PI; }
+
+
+        public void SetFlashing(SSOracleBehavior self, bool enabled, int cycleTime = 15, bool reloadImg = true)
+        {
+            if (enabled) {
+                base.SetImage(self, new List<Texture2D> { textureCircleFilled, textureCircleBorder }, cycleTime, reloadImg);
+            } else {
+                base.SetImage(self, textureCircleFilled, reloadImg);
+            }
+        }
     }
 }

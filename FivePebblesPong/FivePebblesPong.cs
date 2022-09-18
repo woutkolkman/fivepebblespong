@@ -58,16 +58,12 @@ namespace FivePebblesPong
             StopDialog
         }
         public State state { get; set; }
-        public State statePreviousRun;
-        public int notFullyStartedCounter;
+        public State statePreviousRun = State.Stop;
+        public int notFullyStartedCounter = 0;
         public PearlSelection menu;
 
 
-        public GameStarter()
-        {
-            this.notFullyStartedCounter = 0;
-            this.statePreviousRun = State.Stop;
-        }
+        public GameStarter() { }
         ~GameStarter() //destructor
         {
             game?.Destroy();

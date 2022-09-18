@@ -37,6 +37,12 @@ namespace FivePebblesPong
         }
 
 
+        ~PongPaddle() //destructor
+        {
+            base.Destroy(); //if not done already
+        }
+
+
         public bool Update(int inputX, int inputY, PongBall ball)
         {
             bool hitBall = false;

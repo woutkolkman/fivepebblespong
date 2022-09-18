@@ -36,6 +36,7 @@ namespace FivePebblesPong
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, midY);
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball", reloadImg: true);
+            ball.SetFlashing(self, true);
 
             this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
@@ -102,15 +103,20 @@ namespace FivePebblesPong
         }
 
 
+        public State statePreviousRun = State.GetReady;
         private void StateMachine(SSOracleBehavior self)
         {
-            State previousState = state;
+            State stateBeforeRun = state;
             switch (state)
             {
                 //======================================================
                 case State.GetReady:
-                    if (base.gameCounter > GETREADY_WAIT)
+                    if (statePreviousRun != state)
+                        ball.SetFlashing(self, true, reloadImg: false);
+                    if (base.gameCounter > GETREADY_WAIT) {
                         state = State.Playing;
+                        ball.SetFlashing(self, false, reloadImg: false);
+                    }
                     break;
 
                 //======================================================
@@ -141,8 +147,10 @@ namespace FivePebblesPong
                     state = State.GetReady;
                     break;
             }
-            if (state != previousState)
+            if (state != stateBeforeRun)
                 base.gameCounter = 0;
+
+            statePreviousRun = stateBeforeRun;
         }
 
 

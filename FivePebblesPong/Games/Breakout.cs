@@ -32,6 +32,7 @@ namespace FivePebblesPong
             this.ball.pos = new Vector2(midX, midY);
             this.ball.movementSpeed = 8f;
             this.ball.angle = Math.PI; //move towards player first
+            ball.SetFlashing(self, true);
 
             this.bricks = new List<PongPaddle>();
         }
@@ -67,6 +68,8 @@ namespace FivePebblesPong
             if (base.gameCounter > GETREADY_WAIT)
                 if (ball.Update()) //if wall is hit
                     self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
+            if (base.gameCounter == GETREADY_WAIT)
+                ball.SetFlashing(self, false, reloadImg: false);
             if (paddle.Update(pX, pY, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
@@ -78,6 +81,7 @@ namespace FivePebblesPong
                 ball.lastWallHit = new Vector2();
                 this.ball.angle = Math.PI;
                 this.PlaceBricks(self);
+                ball.SetFlashing(self, true, reloadImg: false);
             }
 
             //move puppet and look at player/ball

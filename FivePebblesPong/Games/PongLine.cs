@@ -12,5 +12,11 @@ namespace FivePebblesPong
         {
             base.SetImage(self, CreateGamePNGs.DrawPerpendicularLine(horizontal, length, width, dashLength, color), reloadImg);
         }
+
+
+        ~PongLine() //destructor
+        {
+            base.Destroy(); //if not done already
+        }
     }
 }

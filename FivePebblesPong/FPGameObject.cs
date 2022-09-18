@@ -35,6 +35,10 @@ namespace FivePebblesPong
         }
         public virtual void SetImage(SSOracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
         {
+            if (image != null)
+                image.Destroy();
+            image = null;
+
             if (textures.Count <= 0)
                 return;
             List<string> names = new List<string>();
