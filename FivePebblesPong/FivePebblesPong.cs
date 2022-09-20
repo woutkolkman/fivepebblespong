@@ -41,6 +41,22 @@ namespace FivePebblesPong
         {
             Hooks.Apply();
         }
+
+
+        //called when game selection is active, add new games here
+        public static int amountOfGames = 2; //increase counter when adding more games
+        public static FPGame GetNewFPGame(SSOracleBehavior self, int nr)
+        {
+            if (amountOfGames != 0)
+                nr %= amountOfGames;
+            switch (nr)
+            {
+                case 0: return new Pong(self);
+                case 1: return new Breakout(self);
+                //add new FPGames here
+                default: return null;
+            }
+        }
     }
 
 
@@ -122,19 +138,11 @@ namespace FivePebblesPong
                     }
                     menu?.Update(self);
 
-                    int amountOfGames = 2; //increase counter when adding more games
-                    if (menu != null) {
-                        menu.pearlGrabbed %= amountOfGames;
-                        switch (menu.pearlGrabbed)
-                        {
-                            case 0: game = new Pong(self); break;
-                            case 1: game = new Breakout(self); break;
-                            //add new FPGames here
-                        }
-                    }
+                    if (menu != null)
+                        game = FivePebblesPong.GetNewFPGame(self, menu.pearlGrabbed);
 
                     if (game != null)
-                        state = calibratedProjector ? State.Started : State.Calibrate;
+                        state = State.Calibrate;
                     if (!CarriesController)
                         state = State.StopDialog;
                     if (state != State.SelectGame) {
@@ -144,14 +152,13 @@ namespace FivePebblesPong
                     break;
 
                 //======================================================
-                case State.Calibrate:
+                case State.Calibrate: //calibratedProjector should be false if calibration should run
                     if (state != statePreviousRun)
                         game?.Update(self); //update once to optionally spawn game objects
                     if (!calibratedProjector && game != null)
                     {
                         //at random intervals, recalibrate "projector"
-                        if (UnityEngine.Random.value < 0.033333335f)
-                        {
+                        if (UnityEngine.Random.value < 0.033333335f) {
                             idealShowMediaPos += Custom.RNV() * UnityEngine.Random.value * 30f;
                             showMediaPos += Custom.RNV() * UnityEngine.Random.value * 30f;
                         }
@@ -159,8 +166,7 @@ namespace FivePebblesPong
                         //finish calibration after X frames
                         bool finish = false;
                         showMediaCounter++;
-                        if (showMediaCounter > 100)
-                        {
+                        if (showMediaCounter > 100) {
                             finish = true;
                             idealShowMediaPos = new Vector2(game.midX, game.midY);
                         }
@@ -168,8 +174,7 @@ namespace FivePebblesPong
                         ShowMediaMovementBehavior(self, ref consistentShowMediaPosCounter, ref showMediaPos, ref idealShowMediaPos, finish);
 
                         //target location reached, "projector" is calibrated
-                        if (finish && showMediaPos == new Vector2(game.midX, game.midY))
-                        {
+                        if (finish && showMediaPos == new Vector2(game.midX, game.midY)) {
                             calibratedProjector = true;
                             showMediaCounter = 0;
                         }
