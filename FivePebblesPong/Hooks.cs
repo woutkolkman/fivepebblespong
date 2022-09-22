@@ -28,8 +28,6 @@ namespace FivePebblesPong
         //selects room to place GameController type
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
-            //TODO spawn controller at random location outside five pebbles's can?
-
             bool firsttime = self.abstractRoom.firstTimeRealized;
             orig(self);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
@@ -38,10 +36,9 @@ namespace FivePebblesPong
             if (self.game != null && self.roomSettings.name.Equals("SS_AI") && firsttime)
             {
                 EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
-                IntVector2 intVector = self.RandomTile();
 
-                //WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, intVector.x, intVector.y, -1);
-                WorldCoordinate coord = new WorldCoordinate(self.abstractRoom.index, 30, 10, -1); //consistent location
+                //copy existing coordinate from a random object
+                WorldCoordinate coord = self.GetWorldCoordinate(self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
 
                 AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.GameController, null, coord, newID);
                 self.abstractRoom.AddEntity(ent);
