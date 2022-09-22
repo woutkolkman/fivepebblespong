@@ -14,6 +14,8 @@ namespace FivePebblesPong
         const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
         public static bool compliment = true;
+        public int pebblesWin = 0;
+        public int playerWin = 0;
 
         public enum State
         {
@@ -32,12 +34,8 @@ namespace FivePebblesPong
 
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
-            int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, 20, 100, "FPP_Player", PlayerGraphics.SlugcatColor(self.player.playerState.slugcatCharacter), 10, reloadImg: true);
-            this.playerPdl.pos = new Vector2(midX - paddleOffset, midY);
 
-            this.pebblesPdl = new PongPaddle(self, this, 20, 100, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
-            this.pebblesPdl.pos = new Vector2(midX + paddleOffset, midY);
+            this.CreatePaddles(self, 100, 100, 20);
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball", reloadImg: true);
             ball.SetFlashing(self, true);
@@ -50,6 +48,20 @@ namespace FivePebblesPong
         ~Pong() //destructor
         {
             this.Destroy(); //if not done already
+        }
+
+
+        public void CreatePaddles(SSOracleBehavior self, int playerPdlHeight, int pebblesPdlHeight, int pdlWidth)
+        {
+            float playerY = playerPdl != null ? playerPdl.pos.y : midY;
+            float pebblesY = pebblesPdl != null ? pebblesPdl.pos.y : midY;
+            playerPdl?.Destroy();
+            pebblesPdl?.Destroy();
+            int paddleOffset = 260;
+            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(self.player.playerState.slugcatCharacter), 10, reloadImg: true);
+            this.playerPdl.pos = new Vector2(midX - paddleOffset, playerY);
+            this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
+            this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
         }
 
 
@@ -142,15 +154,31 @@ namespace FivePebblesPong
                 case State.PlayerWin:
                     state = State.GetReady;
                     playerLastWin = true;
-                    if (compliment)
-                        self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
-                    compliment = false;
+                    playerWin++;
+                    if (compliment) {
+                        if (pebblesWin < 10) {
+                            self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
+                        } else {
+                            self.dialogBox.Interrupt(self.Translate("Nice."), 10);
+                        }
+                        compliment = false;
+                    }
                     break;
 
                 //======================================================
                 case State.PebblesWin:
                     state = State.GetReady;
                     playerLastWin = false;
+                    pebblesWin++;
+                    if (pebblesWin == 10) {
+                        self.dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
+                        this.CreatePaddles(self, 130, 70, 20);
+                    }
+                    if (pebblesWin == 15) {
+                        self.dialogBox.Interrupt(self.Translate("Try again."), 10);
+                        this.CreatePaddles(self, 200, 40, 20);
+                        playerPdl.movementSpeed += 1f;
+                    }
                     break;
 
                 //======================================================
