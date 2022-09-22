@@ -61,6 +61,7 @@
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="FPGameObject.cs" />
     <Compile Include="Games\Breakout.cs" />
+    <Compile Include="Games\SquareBorderMark.cs" />
     <Compile Include="PearlSelection.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="GameController.cs" />

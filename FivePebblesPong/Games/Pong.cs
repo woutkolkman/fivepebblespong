@@ -9,7 +9,8 @@ namespace FivePebblesPong
         public PongPaddle pebblesPdl;
         public PongBall ball;
         public PongLine line;
-        public bool playerLastWin;
+        public SquareBorderMark border;
+        public bool playerLastWin = true;
         const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
         public static bool compliment = true;
@@ -26,6 +27,9 @@ namespace FivePebblesPong
 
         public Pong(SSOracleBehavior self) : base(self)
         {
+            this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
+            this.border.pos = new Vector2(midX, midY);
+
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
             int paddleOffset = 260;
@@ -56,6 +60,7 @@ namespace FivePebblesPong
             this.pebblesPdl?.Destroy();
             this.ball?.Destroy();
             this.line?.Destroy();
+            this.border?.Destroy();
         }
 
 
@@ -100,6 +105,7 @@ namespace FivePebblesPong
             pebblesPdl.DrawImage(offset);
             ball.DrawImage(offset);
             line.DrawImage(offset);
+            border?.DrawImage(offset);
         }
 
 
@@ -125,6 +131,11 @@ namespace FivePebblesPong
                         state = State.PebblesWin;
                     if (ball.lastWallHit.x == maxX)
                         state = State.PlayerWin;
+                    if (this.border != null && this.border.image != null) { //slowly remove border
+                        this.border.image.alpha -= 0.01f;
+                        if (this.border.image.alpha <= 0f)
+                            this.border.Destroy();
+                    }
                     break;
 
                 //======================================================
