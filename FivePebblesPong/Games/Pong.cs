@@ -62,6 +62,9 @@ namespace FivePebblesPong
             this.playerPdl.pos = new Vector2(midX - paddleOffset, playerY);
             this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
+
+            //reset random offset, else next ball could be missed
+            this.randomOffsY = 0f;
         }
 
 
@@ -176,7 +179,7 @@ namespace FivePebblesPong
                     }
                     if (pebblesWin == 15) {
                         self.dialogBox.Interrupt(self.Translate("Try again."), 10);
-                        this.CreatePaddles(self, 200, 40, 20);
+                        this.CreatePaddles(self, 200, 30, 20);
                         playerPdl.movementSpeed += 1f;
                     }
                     break;
@@ -241,7 +244,7 @@ namespace FivePebblesPong
             }
 
             //at random interval a random offset from predicted ball intercept
-            if (once || UnityEngine.Random.value < 0.001f)
+            if (once || UnityEngine.Random.value < 0.002f)
             {
                 once = false;
                 float allowed = (pebblesPdl.height / 2) - deadband;
