@@ -16,6 +16,9 @@ namespace FivePebblesPong
 
         //five pebbles movement (controlled by FPGame subclass)
         public static SSOracleBehavior.MovementBehavior PlayGame;
+
+        //moon reaction on controller
+        public static SLOracleBehaviorHasMark.MiscItemType GameControllerReaction;
     }
 
 
