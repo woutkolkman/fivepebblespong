@@ -11,7 +11,7 @@ namespace FivePebblesPong
         public int pearlGrabbed;
 
 
-        public PearlSelection(SSOracleBehavior self) : base(self)
+        public PearlSelection(SSOracleBehavior self) : base()
         {
             base.minX = 240;
             base.maxX = 760;

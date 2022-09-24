@@ -16,7 +16,7 @@ namespace FivePebblesPong
         public int gameCounter;
 
 
-        public FPGame(SSOracleBehavior self)
+        public FPGame()
         {
             maxY = 640;
             minY = 60;
@@ -28,9 +28,9 @@ namespace FivePebblesPong
         //to immediately remove images
         public virtual void Destroy() { }
 
-
-        public virtual void Update(SSOracleBehavior self)
-        {
+        public virtual void Update(SSOracleBehavior self) { this.Update(); }
+        public virtual void Update(SLOracleBehavior self) { this.Update(); }
+        private void Update() {
             this.gameCounter++;
             if (this.gameCounter < 0)
                 this.gameCounter = 0;

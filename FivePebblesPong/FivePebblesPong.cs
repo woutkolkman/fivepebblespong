@@ -39,6 +39,11 @@ namespace FivePebblesPong
         public static GameStarter starter;
 
 
+        //moongame is properly constructed/deconstructed
+        public static MoonDino moonGame;
+        public static bool moonControllerReacted;
+
+
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
         {

@@ -24,6 +24,9 @@ namespace FivePebblesPong
             //moon controller reaction
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
+
+            //big sis moon update function
+            On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
         }
 
 
@@ -103,17 +106,49 @@ namespace FivePebblesPong
         static void SLOracleBehaviorHasMarkMoonConversationAddEventsHook(On.SLOracleBehaviorHasMark.MoonConversation.orig_AddEvents orig, SLOracleBehaviorHasMark.MoonConversation self)
         {
             orig(self);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
             if (self.id == Conversation.ID.Moon_Misc_Item && self.describeItem == EnumExt_FPP.GameControllerReaction)
             {
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It's an electronic device with buttons. Where did you find this?"), 0));
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It looks like something that Five Pebbles would like..."), 0));
+                FivePebblesPong.moonControllerReacted = true;
             }
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
         {
-            if (testItem is GameController)
+            if (FivePebblesPong.HasEnumExt && testItem is GameController)
                 return EnumExt_FPP.GameControllerReaction;
             return orig(self, testItem);
+        }
+
+
+        //big sis moon update function
+        static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
+        {
+            orig(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            //check if slugcat is holding a gamecontroller
+            bool CarriesController = false;
+            for (int i = 0; i < self.player.grasps.Length; i++)
+                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
+                    CarriesController = true;
+
+            //start/stop game
+            if (CarriesController && (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)) {
+                if (FivePebblesPong.moonGame == null)
+                    FivePebblesPong.moonGame = new MoonDino(self);
+                FivePebblesPong.moonGame?.Update(self);
+                FivePebblesPong.moonGame?.Draw();
+            } else {
+                FivePebblesPong.moonGame?.Destroy();
+                FivePebblesPong.moonGame = null;
+            }
         }
     }
 }

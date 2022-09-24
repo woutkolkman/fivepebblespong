@@ -27,7 +27,7 @@ namespace FivePebblesPong
         public State state { get; set; }
 
 
-        public Pong(SSOracleBehavior self) : base(self)
+        public Pong(SSOracleBehavior self) : base()
         {
             this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
             this.border.pos = new Vector2(midX, midY);

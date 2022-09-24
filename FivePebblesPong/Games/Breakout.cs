@@ -15,7 +15,7 @@ namespace FivePebblesPong
         public List<PongPaddle> bricks;
 
 
-        public Breakout(SSOracleBehavior self) : base(self)
+        public Breakout(SSOracleBehavior self) : base()
         {
             base.minX += 18;
             this.paddle = new PongPaddle(self, this, 25, 100, "FPP_Player", reloadImg: true);
