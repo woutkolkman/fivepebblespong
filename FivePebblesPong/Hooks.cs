@@ -69,7 +69,8 @@ namespace FivePebblesPong
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            FivePebblesPong.starter = new GameStarter();
+            FivePebblesPong.pebblesNotFullyStartedCounter = 0;
+            FivePebblesPong.starter = null;
         }
 
 
@@ -98,6 +99,12 @@ namespace FivePebblesPong
                 self.action == SSOracleBehavior.Action.ThrowOut_SecondThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight)
                 return;
+
+            //construct/free GameStarter object
+            if (CarriesController && FivePebblesPong.starter == null)
+                FivePebblesPong.starter = new GameStarter();
+            if (!CarriesController && FivePebblesPong.starter != null && FivePebblesPong.starter.state == GameStarter.State.Stop)
+                FivePebblesPong.starter = null; //TODO, object is not destructed when player leaves early while carrying controller
 
             //run state machine for starting/running/stopping games
             FivePebblesPong.starter?.StateMachine(self, CarriesController);

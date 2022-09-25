@@ -47,7 +47,7 @@ namespace FivePebblesPong
         {
             //update image positions
             temp.DrawImage(offset);
-            //TODO assign imageAlpha
+            temp.image.setAlpha = imageAlpha;
         }
     }
 }

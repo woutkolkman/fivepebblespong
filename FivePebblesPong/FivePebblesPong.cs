@@ -33,13 +33,11 @@ namespace FivePebblesPong
 
         public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
 
-        //TODO starter object is constructed when SSOracleBehavior ctor runs, but 
-        //it's never destructed until it is overwritten. so memory is never fully 
-        //freed until game restart
+        //start/stop FPGames via state machine
         public static GameStarter starter;
+        public static int pebblesNotFullyStartedCounter;
 
-
-        //moongame is properly constructed/deconstructed
+        //moongame if controller is taken to moon
         public static Dino moonGame;
         public static bool moonControllerReacted;
 
@@ -83,15 +81,17 @@ namespace FivePebblesPong
         }
         public State state { get; set; }
         public State statePreviousRun = State.Stop;
-        public int notFullyStartedCounter = 0;
         public PearlSelection menu;
 
 
-        public GameStarter() { }
+        public GameStarter() {
+            FivePebblesPong.ME.Logger_p.LogInfo("GameStarter ctor"); //TODO remove
+        }
         ~GameStarter() //destructor
         {
             game?.Destroy();
             menu?.Destroy();
+            FivePebblesPong.ME.Logger_p.LogInfo("GameStarter dtor"); //TODO remove
         }
 
 
@@ -110,7 +110,7 @@ namespace FivePebblesPong
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (CarriesController && notFullyStartedCounter < 4)
+                    if (CarriesController && FivePebblesPong.pebblesNotFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
 
@@ -118,7 +118,7 @@ namespace FivePebblesPong
                 case State.StartDialog:
                     if (statePreviousRun != state)
                     {
-                        switch (notFullyStartedCounter)
+                        switch (FivePebblesPong.pebblesNotFullyStartedCounter)
                         {
                             case 0: self.dialogBox.Interrupt(self.Translate("Well, a little game shouldn't hurt."), 10); break;
                                 //or "Fine, I needed a break.", "That's also not edible."
@@ -126,7 +126,7 @@ namespace FivePebblesPong
                             case 2: self.dialogBox.Interrupt(self.Translate("You're just playing with that, aren't you.."), 10); break;
                             case 3:
                                 self.dialogBox.Interrupt(self.Translate("I'll ignore that."), 10);
-                                notFullyStartedCounter++;
+                                FivePebblesPong.pebblesNotFullyStartedCounter++;
                                 state = State.Stop;
                                 break;
                         }
@@ -222,7 +222,7 @@ namespace FivePebblesPong
                                 case 2: self.dialogBox.Interrupt(self.Translate("I'll take that as a no."), 10); break;
                                 case 3: self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10); break;
                             }
-                            notFullyStartedCounter++;
+                            FivePebblesPong.pebblesNotFullyStartedCounter++;
                         } else {
                             self.dialogBox.Interrupt(self.Translate("Ok, where was I?"), 10);
                         }
@@ -257,7 +257,7 @@ namespace FivePebblesPong
         }
 
 
-        //used for trying different positions for projectedimages (basically copied via dnSpy and made static, no docs, sorry)
+        //used for animation, trying different positions for projectedimages (basically copied via dnSpy and made static, no docs, sorry)
         public static void ShowMediaMovementBehavior(OracleBehavior self, ref int consistentShowMediaPosCounter, ref Vector2 showMediaPos, ref Vector2 idealShowMediaPos, bool finish)
         {
             consistentShowMediaPosCounter += (int)Custom.LerpMap(Vector2.Distance(showMediaPos, idealShowMediaPos), 0f, 200f, 1f, 10f);
