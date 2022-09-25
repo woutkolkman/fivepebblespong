@@ -67,6 +67,8 @@ namespace FivePebblesPong
         static void SSOracleBehaviorCtorHook(On.SSOracleBehavior.orig_ctor orig, SSOracleBehavior self, Oracle oracle)
         {
             orig(self, oracle);
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
             FivePebblesPong.starter = new GameStarter();
         }
 
@@ -142,7 +144,7 @@ namespace FivePebblesPong
             //start/stop game
             if (CarriesController && (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)) {
                 if (FivePebblesPong.moonGame == null)
-                    FivePebblesPong.moonGame = new MoonDino(self);
+                    FivePebblesPong.moonGame = new Dino(self);
                 FivePebblesPong.moonGame?.Update(self);
                 FivePebblesPong.moonGame?.Draw();
             } else {

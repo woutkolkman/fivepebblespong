@@ -29,11 +29,11 @@ namespace FivePebblesPong
 
 
         //"reload": only reload image if image is not currently used
-        public virtual void SetImage(SSOracleBehavior self, Texture2D texture, bool reload = false)
+        public virtual void SetImage(OracleBehavior self, Texture2D texture, bool reload = false)
         {
             SetImage(self, new List<Texture2D> { texture }, 0, reload);
         }
-        public virtual void SetImage(SSOracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
+        public virtual void SetImage(OracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
         {
             Vector2 prevPos = new Vector2();
             if (image != null) {
@@ -61,8 +61,16 @@ namespace FivePebblesPong
                     CreateGamePNGs.SavePNG(textures[i], names[i]);
             }
 
-            //load png(s)
-            image = self.oracle.myScreen.AddImage(names, cycleTime); //if an image is invalid, execution is cancelled (by exception?)
+            //create OracleProjectionScreen in case of no projectionscreen (at BSM)
+            if (self.oracle.myScreen == null)
+                self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
+
+            //load png(s), if image is invalid, exception(?) occurs
+            if (self is SLOracleBehavior) {
+                image = ProjectedImageBloom.AddImage(self.oracle.myScreen, names, cycleTime);
+            } else {
+                image = self.oracle.myScreen.AddImage(names, cycleTime);
+            }
             image.pos = prevPos;
         }
 
@@ -72,6 +80,30 @@ namespace FivePebblesPong
             if (image != null)
                 image.Destroy();
             image = null;
+        }
+    }
+
+
+    //class was created because regular ProjectedImages don't work as well in moons room
+    public class ProjectedImageBloom : ProjectedImage
+    {
+        public ProjectedImageBloom(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
+
+
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+        {
+            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
+            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["Projection"];
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Bloom")); //default is "Foreground"
+        }
+
+
+        public static ProjectedImageBloom AddImage(ProjectionScreen self, List<string> names, int cycleTime)
+        {
+            self.images.Add(new ProjectedImageBloom(names, cycleTime));
+            self.room.AddObject(self.images[self.images.Count - 1]);
+            return self.images[self.images.Count - 1] as ProjectedImageBloom;
         }
     }
 }

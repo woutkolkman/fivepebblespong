@@ -40,7 +40,7 @@ namespace FivePebblesPong
 
 
         //moongame is properly constructed/deconstructed
-        public static MoonDino moonGame;
+        public static Dino moonGame;
         public static bool moonControllerReacted;
 
 
@@ -258,7 +258,7 @@ namespace FivePebblesPong
 
 
         //used for trying different positions for projectedimages (basically copied via dnSpy and made static, no docs, sorry)
-        public static void ShowMediaMovementBehavior(SSOracleBehavior self, ref int consistentShowMediaPosCounter, ref Vector2 showMediaPos, ref Vector2 idealShowMediaPos, bool finish)
+        public static void ShowMediaMovementBehavior(OracleBehavior self, ref int consistentShowMediaPosCounter, ref Vector2 showMediaPos, ref Vector2 idealShowMediaPos, bool finish)
         {
             consistentShowMediaPosCounter += (int)Custom.LerpMap(Vector2.Distance(showMediaPos, idealShowMediaPos), 0f, 200f, 1f, 10f);
             Vector2 vector = new Vector2(UnityEngine.Random.value * self.oracle.room.PixelWidth, UnityEngine.Random.value * self.oracle.room.PixelHeight);
@@ -283,7 +283,8 @@ namespace FivePebblesPong
                     return float.MaxValue;
                 float num = Mathf.Abs(Vector2.Distance(tryPos, self.player.DangerPos) - 250f);
                 num -= Math.Min((float)self.oracle.room.aimap.getAItile(tryPos).terrainProximity, 9f) * 30f;
-                num -= Vector2.Distance(tryPos, self.nextPos) * 0.5f;
+                if (self is SSOracleBehavior)
+                    num -= Vector2.Distance(tryPos, (self as SSOracleBehavior).nextPos) * 0.5f;
                 for (int i = 0; i < self.oracle.arm.joints.Length; i++)
                     num -= Mathf.Min(Vector2.Distance(tryPos, self.oracle.arm.joints[i].pos), 100f) * 10f;
                 if (self.oracle.graphicsModule != null)

@@ -15,7 +15,7 @@ namespace FivePebblesPong
         public double ballBounceAngle;
 
 
-        public PongPaddle(SSOracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2, bool reloadImg = false) : base(imageName)
+        public PongPaddle(OracleBehavior self, FPGame game, int width, int height, string imageName, Color? color = null, int thickness = 2, bool reloadImg = false) : base(imageName)
         {
             this.width = width;
             this.height = height;

@@ -8,7 +8,7 @@ namespace FivePebblesPong
 {
     public class SquareBorderMark : FPGameObject
     {
-        public SquareBorderMark(SSOracleBehavior self, int width, int height, string imageName, Color? color = null, int thickness = 1, bool reloadImg = false) : base(imageName)
+        public SquareBorderMark(OracleBehavior self, int width, int height, string imageName, Color? color = null, int thickness = 1, bool reloadImg = false) : base(imageName)
         {
             Color c = Color.white;
             if (color != null)

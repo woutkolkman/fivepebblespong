@@ -20,7 +20,7 @@ namespace FivePebblesPong
         public Texture2D textureCircleBorder;
 
 
-        public PongBall(SSOracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, bool reloadImg = false) : base(imageName)
+        public PongBall(OracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, bool reloadImg = false) : base(imageName)
         {
             this.radius = radius;
             this.movementSpeed = 5.5f;
@@ -91,7 +91,7 @@ namespace FivePebblesPong
         public void ReverseDir() { angle += Math.PI; }
 
 
-        public void SetFlashing(SSOracleBehavior self, bool enabled, int cycleTime = 15, bool reloadImg = true)
+        public void SetFlashing(OracleBehavior self, bool enabled, int cycleTime = 15, bool reloadImg = true)
         {
             if (enabled) {
                 base.SetImage(self, new List<Texture2D> { textureCircleFilled, textureCircleBorder }, cycleTime, reloadImg);
