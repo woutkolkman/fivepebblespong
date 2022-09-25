@@ -25,6 +25,9 @@ namespace FivePebblesPong
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
 
+            //big sis moon constructor
+            On.SLOracleBehavior.ctor += SLOracleBehaviorCtorHook;
+
             //big sis moon update function
             On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
         }
@@ -71,6 +74,7 @@ namespace FivePebblesPong
                 return;
             FivePebblesPong.pebblesNotFullyStartedCounter = 0;
             FivePebblesPong.starter = null;
+            FivePebblesPong.pebblesCalibratedProjector = false;
         }
 
 
@@ -134,9 +138,22 @@ namespace FivePebblesPong
         }
 
 
+        //big sis moon constructor
+        static void SLOracleBehaviorCtorHook(On.SLOracleBehavior.orig_ctor orig, SLOracleBehavior self, Oracle oracle)
+        {
+            orig(self, oracle);
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+            FivePebblesPong.moonControllerReacted = false;
+            FivePebblesPong.moonDelayUpdateGame = FivePebblesPong.MOON_DELAY_UPDATE_GAME_RESET;
+        }
+
+
         //big sis moon update function
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
+            const int MIN_X_POS_PLAYER = 1100;
+
             orig(self, eu);
 
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
@@ -149,7 +166,16 @@ namespace FivePebblesPong
                     CarriesController = true;
 
             //start/stop game
-            if (CarriesController && (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)) {
+            if (CarriesController &&
+                self.hasNoticedPlayer &&
+                self.player.DangerPos.x >= MIN_X_POS_PLAYER && //stop game when leaving
+                (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark))
+            {
+                if (FivePebblesPong.moonDelayUpdateGame > 0) {
+                    FivePebblesPong.moonDelayUpdateGame--;
+                    return;
+                }
+
                 if (FivePebblesPong.moonGame == null)
                     FivePebblesPong.moonGame = new Dino(self);
                 FivePebblesPong.moonGame?.Update(self);

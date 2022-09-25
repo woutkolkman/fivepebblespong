@@ -36,10 +36,13 @@ namespace FivePebblesPong
         //start/stop FPGames via state machine
         public static GameStarter starter;
         public static int pebblesNotFullyStartedCounter;
+        public static bool pebblesCalibratedProjector;
 
         //moongame if controller is taken to moon
         public static Dino moonGame;
         public static bool moonControllerReacted;
+        public const int MOON_DELAY_UPDATE_GAME_RESET = 100; //TODO set to 2000
+        public static int moonDelayUpdateGame;
 
 
         //called when mod is loaded, subscribe functions to methods of the game
@@ -84,14 +87,11 @@ namespace FivePebblesPong
         public PearlSelection menu;
 
 
-        public GameStarter() {
-            FivePebblesPong.ME.Logger_p.LogInfo("GameStarter ctor"); //TODO remove
-        }
+        public GameStarter() { }
         ~GameStarter() //destructor
         {
             game?.Destroy();
             menu?.Destroy();
-            FivePebblesPong.ME.Logger_p.LogInfo("GameStarter dtor"); //TODO remove
         }
 
 
@@ -100,7 +100,6 @@ namespace FivePebblesPong
         public Vector2 showMediaPos = new Vector2();
         public Vector2 idealShowMediaPos = new Vector2();
         public int showMediaCounter = 0;
-        public bool calibratedProjector;
 
 
         public void StateMachine(SSOracleBehavior self, bool CarriesController)
@@ -163,7 +162,7 @@ namespace FivePebblesPong
                 case State.Calibrate: //calibratedProjector should be false if calibration should run
                     if (state != statePreviousRun)
                         game?.Update(self); //update once to optionally spawn game objects
-                    if (!calibratedProjector && game != null)
+                    if (!FivePebblesPong.pebblesCalibratedProjector && game != null)
                     {
                         //at random intervals, recalibrate "projector"
                         if (UnityEngine.Random.value < 0.033333335f) {
@@ -183,12 +182,12 @@ namespace FivePebblesPong
 
                         //target location reached, "projector" is calibrated
                         if (finish && showMediaPos == new Vector2(game.midX, game.midY)) {
-                            calibratedProjector = true;
+                            FivePebblesPong.pebblesCalibratedProjector = true;
                             showMediaCounter = 0;
                         }
                     }
 
-                    if (calibratedProjector)
+                    if (FivePebblesPong.pebblesCalibratedProjector)
                         state = State.Started;
                     game?.Draw(showMediaPos - new Vector2(game.midX, game.midY));
                     if (!CarriesController)

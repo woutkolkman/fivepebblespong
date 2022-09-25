@@ -98,7 +98,7 @@ namespace FivePebblesPong
                     self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
 
             //update paddles
-            int pebblesInput = PebblesAI(self);
+            int pebblesInput = PebblesAI();
             if (pebblesPdl.Update(0, pebblesInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
             if (playerPdl.Update(0, self.player.input[0].y, ball)) //if ball is hit
@@ -199,7 +199,7 @@ namespace FivePebblesPong
         private float predY;
         private float randomOffsY;
         private bool newRandomOffsY;
-        public int PebblesAI(SSOracleBehavior self)
+        public int PebblesAI()
         {
             //if (false) //player controlled
             //    return self.player.input[0].y;
