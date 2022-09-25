@@ -17,6 +17,7 @@ namespace FivePebblesPong
             this.width = 20;
             this.height = 22;
 
+            //TODO dino walkcycle without sound? also dino death image?
             base.SetImage(self, CreateGamePNGs.DrawDino(color), reloadImg);
         }
 

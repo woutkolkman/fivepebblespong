@@ -10,6 +10,9 @@ namespace FivePebblesPong
         public PongLine line;
         public float imageAlpha = 0.4f;
         public int gameWidth = 250;
+        public bool gameStarted;
+        public int lastObstacleCounter;
+        public int minObstacleInterval = 25;
 
 
         public Dino(SLOracleBehavior self) : base()
@@ -51,13 +54,19 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
+            if (self.player.input[0].y != 0)
+                gameStarted = true;
+
             dino.Update(self.player.input[0].y);
+
+            if (!gameStarted)
+                return;
 
             for (int i = 0; i < obstacles.Count; i++) {
                 if (obstacles[i] != null) {
                     obstacles[i].Update();
 
-                    //obstacle left screen
+                    //obstacle left the screen
                     if (obstacles[i].pos.x < midX - gameWidth/2)
                     {
                         obstacles[i].Destroy();
@@ -65,10 +74,13 @@ namespace FivePebblesPong
                     }
                 }
             }
+            //TODO set gameStarted=false after hit
+            //TODO colision
 
             //spawn obstacles
-            if (gameCounter % 80 == 0) {
-                obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f, 0f, Color.white, "FPP_Cactus"));
+            if (gameCounter > 200 && UnityEngine.Random.value < 0.05f && gameCounter - lastObstacleCounter >= minObstacleInterval) {
+                lastObstacleCounter = gameCounter;
+                obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f*gameCounter), 0f, Color.white, "FPP_Cactus"));
                 obstacles[obstacles.Count-1].pos = new Vector2(midX + gameWidth/2, midY - dino.height/2 + obstacles[obstacles.Count-1].height/2);
             }
         }

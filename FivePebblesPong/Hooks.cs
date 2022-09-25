@@ -175,6 +175,7 @@ namespace FivePebblesPong
                     FivePebblesPong.moonDelayUpdateGame--;
                     return;
                 }
+                //TODO gradually reveal game (setAlpha)
 
                 if (FivePebblesPong.moonGame == null)
                     FivePebblesPong.moonGame = new Dino(self);
