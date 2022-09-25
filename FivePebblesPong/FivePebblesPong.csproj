@@ -62,6 +62,8 @@
     <Compile Include="FPGameObject.cs" />
     <Compile Include="Games\Breakout.cs" />
     <Compile Include="Games\Dino.cs" />
+    <Compile Include="Games\DinoObstacle.cs" />
+    <Compile Include="Games\DinoPlayer.cs" />
     <Compile Include="Games\SquareBorderMark.cs" />
     <Compile Include="PearlSelection.cs" />
     <Compile Include="Hooks.cs" />
