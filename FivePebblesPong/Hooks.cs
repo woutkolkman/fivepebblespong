@@ -181,6 +181,7 @@ namespace FivePebblesPong
                 FivePebblesPong.moonGame?.Update(self);
                 FivePebblesPong.moonGame?.Draw();
             } else {
+                //TODO, object is not destructed when FPGame was being played and player exits main game
                 FivePebblesPong.moonGame?.Destroy();
                 FivePebblesPong.moonGame = null;
             }

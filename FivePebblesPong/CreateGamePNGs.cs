@@ -128,5 +128,40 @@ namespace FivePebblesPong
             ProjectedImage p = new ProjectedImage(new List<string> { fileName }, 0);
             p.Destroy();
         }
+
+
+        public static Texture2D DrawDino(Color color)
+        {
+            const int width = 20;
+            const int height = 22;
+            int[] dinoArr = { 0x1FE, 0x3FF, 0x37F, 0x3FF, 0x3FF, 0x3FF, 0x3E0, 0x3FC, 0x807C0, 0x81FC0, 0xC3FF0, 0xE7FD0, 0xFFFC0, 0xFFFC0, 0x7FFC0, 0x3FF80, 0x1FF00, 0xFE00, 0x7600, 0x6200, 0x4200, 0x6300 };
+            return ArrayToTexture(ref dinoArr, width, height, color);
+        }
+
+
+        public static Texture2D DrawCactus(Color color)
+        {
+            const int width = 23;
+            const int height = 45;
+            int[] cactArr = { 0x3E00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F0E, 0x7F1F, 0x387F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7C7F1F, 0x7FFFFE, 0x7FFFFC, 0x3FFFF8, 0x1FFFF0, 0xFFF00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00, 0x7F00 };
+            return ArrayToTexture(ref cactArr, width, height, color);
+        }
+
+
+        //max width is 32 (int)
+        public static Texture2D ArrayToTexture(ref int[] arr, int width, int height, Color color)
+        {
+            Texture2D texture = new Texture2D(width + (2 * EDGE_DIST), height + (2 * EDGE_DIST), TextureFormat.ARGB32, false);
+
+            //transparent background
+            FillTransparent(ref texture);
+
+            //shape
+            for (int r = 0; r < height; r++)
+                for (int c = 0; c < width; c++)
+                    if ((arr[r] & (0x00000001 << c)) > 0)
+                        texture.SetPixel(EDGE_DIST + width - c - 1, EDGE_DIST + height - r - 1, color);
+            return texture;
+        }
     }
 }
