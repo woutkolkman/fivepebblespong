@@ -197,19 +197,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (FivePebblesPong.moonGame == null)
-                return;
-
-            //moon looks at game, else looks at slugcat
-            if (FivePebblesPong.moonGame.gameStarted && FivePebblesPong.moonGame.gameCounter > 75)
-                self.lookPoint = FivePebblesPong.moonGame.dino.pos;
-
-            //score dialog
-            if (!FivePebblesPong.moonGame.gameStarted && FivePebblesPong.moonGame.prevGameStarted)
-            {
-                FivePebblesPong.ME.Logger_p.LogInfo("score: " + FivePebblesPong.moonGame.gameCounter);
-                self.dialogBox.Interrupt(self.Translate("Looks like your score is " + FivePebblesPong.moonGame.gameCounter + "!"), 10);
-            }
+            FivePebblesPong.moonGame?.MoonBehavior(self);
         }
     }
 }

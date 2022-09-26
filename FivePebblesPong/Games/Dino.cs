@@ -12,6 +12,7 @@ namespace FivePebblesPong
         public int gameWidth = 250;
         public bool gameStarted, prevGameStarted;
         public int lastCounter;
+        public static int highScore;
         public int minObstacleInterval = 25;
 
 
@@ -113,6 +114,22 @@ namespace FivePebblesPong
                     continue;
                 obstacles[i].DrawImage(offset);
                 obstacles[i].image.setAlpha = imageAlpha;
+            }
+        }
+
+
+        public void MoonBehavior(SLOracleBehaviorHasMark self)
+        {
+            //moon looks at game, else looks at slugcat
+            if (gameStarted && gameCounter > 75)
+                self.lookPoint = dino.pos;
+
+            //score dialog when player dies
+            if (!gameStarted && prevGameStarted) {
+                if (gameCounter > 1000) //minimum score to not make dialog annoying
+                    self.dialogBox.Interrupt(self.Translate("Looks like your score is " + gameCounter + ". " + (gameCounter > highScore ? "Your new highscore!" : "Your highscore is " + highScore + ".")), 10);
+                if (gameCounter > highScore)
+                    highScore = gameCounter;
             }
         }
     }
