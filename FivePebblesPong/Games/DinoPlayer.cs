@@ -14,7 +14,7 @@ namespace FivePebblesPong
 
         public DinoPlayer(OracleBehavior self, Color color, string imageName, bool reloadImg = false) : base(imageName)
         {
-            this.width = 20;
+            this.width = 10; //20;
             this.height = 22;
 
             //TODO dino walkcycle without sound? also dino death image?

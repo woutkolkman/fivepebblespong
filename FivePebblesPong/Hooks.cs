@@ -28,8 +28,9 @@ namespace FivePebblesPong
             //big sis moon constructor
             On.SLOracleBehavior.ctor += SLOracleBehaviorCtorHook;
 
-            //big sis moon update function
+            //big sis moon update functions
             On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
+            On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMarkUpdateHook;
         }
 
 
@@ -149,7 +150,7 @@ namespace FivePebblesPong
         }
 
 
-        //big sis moon update function
+        //big sis moon update functions
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
             const int MIN_X_POS_PLAYER = 1100;
@@ -185,6 +186,29 @@ namespace FivePebblesPong
                 //TODO, object is not destructed when FPGame was being played and player exits main game
                 FivePebblesPong.moonGame?.Destroy();
                 FivePebblesPong.moonGame = null;
+            }
+        }
+
+
+        static void SLOracleBehaviorHasMarkUpdateHook(On.SLOracleBehaviorHasMark.orig_Update orig, SLOracleBehaviorHasMark self, bool eu)
+        {
+            orig(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            if (FivePebblesPong.moonGame == null)
+                return;
+
+            //moon looks at game, else looks at slugcat
+            if (FivePebblesPong.moonGame.gameStarted && FivePebblesPong.moonGame.gameCounter > 75)
+                self.lookPoint = FivePebblesPong.moonGame.dino.pos;
+
+            //score dialog
+            if (!FivePebblesPong.moonGame.gameStarted && FivePebblesPong.moonGame.prevGameStarted)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("score: " + FivePebblesPong.moonGame.gameCounter);
+                self.dialogBox.Interrupt(self.Translate("Looks like your score is " + FivePebblesPong.moonGame.gameCounter + "!"), 10);
             }
         }
     }

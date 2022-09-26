@@ -40,10 +40,29 @@ namespace FivePebblesPong
         }
 
 
-        public void Update()
+        //returns true if obstacle is hit
+        public bool Update(DinoPlayer player)
         {
             base.pos.x += velocityX;
             base.pos.y += velocityY;
+
+            float pHalfW = player.width / 2;
+            float pHalfH = player.height / 2;
+            Vector2[] coords =
+            {
+                new Vector2(player.pos.x + pHalfW, player.pos.y + pHalfH),
+                new Vector2(player.pos.x - pHalfW, player.pos.y + pHalfH),
+                new Vector2(player.pos.x + pHalfW, player.pos.y - pHalfH),
+                new Vector2(player.pos.x - pHalfW, player.pos.y - pHalfH)
+            };
+
+            float oHalfW = this.width / 2;
+            float oHalfH = this.height / 2;
+            foreach (Vector2 vect in coords)
+                if ((vect.x <= this.pos.x + oHalfW) && (vect.x >= this.pos.x - oHalfW) && (vect.y <= this.pos.y + oHalfH) && (vect.y >= this.pos.y - oHalfH))
+                    return true;
+
+            return false;
         }
     }
 }

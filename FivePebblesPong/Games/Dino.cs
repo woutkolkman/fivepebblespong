@@ -10,8 +10,8 @@ namespace FivePebblesPong
         public PongLine line;
         public float imageAlpha = 0.4f;
         public int gameWidth = 250;
-        public bool gameStarted;
-        public int lastObstacleCounter;
+        public bool gameStarted, prevGameStarted;
+        public int lastCounter;
         public int minObstacleInterval = 25;
 
 
@@ -25,11 +25,11 @@ namespace FivePebblesPong
             this.obstacles = new List<DinoObstacle>();
 
             this.dino = new DinoPlayer(self, Color.white, "FPP_Dino");
-            this.dino.pos = new Vector2(midX + 30 - gameWidth/2, midY); //TODO startpos
-            this.dino.ground = midY - dino.height/2;
+            this.dino.pos = new Vector2(midX + 30 - gameWidth/2, midY);
+            this.dino.ground = midY - this.dino.height/2;
 
             this.line = new PongLine(self, true, gameWidth, 1, 0, Color.white, "FPP_Line", reloadImg: true);
-            this.line.pos = new Vector2(midX, midY - 1 - dino.height/2);
+            this.line.pos = new Vector2(midX, midY - 1 - this.dino.height/2);
         }
 
 
@@ -42,7 +42,7 @@ namespace FivePebblesPong
         public override void Destroy()
         {
             base.Destroy(); //empty
-            this.dino?.Destroy(); //TODO remove
+            this.dino?.Destroy();
             this.line?.Destroy();
             for (int i = 0; i < obstacles.Count; i++)
                 obstacles[i]?.Destroy();
@@ -54,17 +54,33 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
-            if (self.player.input[0].y != 0)
+            prevGameStarted = gameStarted;
+
+            if (self.player.input[0].y != 0 && gameCounter - lastCounter >= 60)
                 gameStarted = true;
 
-            dino.Update(self.player.input[0].y);
-
-            if (!gameStarted)
+            if (!gameStarted) {
                 return;
+            } else if (gameStarted && !prevGameStarted) { //reset game
+                //remove existing obstacles
+                for (int i = 0; i < obstacles.Count; i++)
+                    obstacles[i]?.Destroy();
+                obstacles?.Clear();
+
+                //reset score/ticks
+                gameCounter = 0;
+                lastCounter = 0;
+            }
+
+            this.dino.Update(self.player.input[0].y);
 
             for (int i = 0; i < obstacles.Count; i++) {
                 if (obstacles[i] != null) {
-                    obstacles[i].Update();
+                    if (obstacles[i].Update(this.dino)) {
+                        gameStarted = false; //obstacle was hit, stop game
+                        lastCounter = gameCounter;
+
+                    }
 
                     //obstacle left the screen
                     if (obstacles[i].pos.x < midX - gameWidth/2)
@@ -74,14 +90,12 @@ namespace FivePebblesPong
                     }
                 }
             }
-            //TODO set gameStarted=false after hit
-            //TODO colision
 
             //spawn obstacles
-            if (gameCounter > 200 && UnityEngine.Random.value < 0.05f && gameCounter - lastObstacleCounter >= minObstacleInterval) {
-                lastObstacleCounter = gameCounter;
+            if (gameCounter > 100 && UnityEngine.Random.value < 0.04f && gameCounter - lastCounter >= minObstacleInterval) {
+                lastCounter = gameCounter;
                 obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f*gameCounter), 0f, Color.white, "FPP_Cactus"));
-                obstacles[obstacles.Count-1].pos = new Vector2(midX + gameWidth/2, midY - dino.height/2 + obstacles[obstacles.Count-1].height/2);
+                obstacles[obstacles.Count-1].pos = new Vector2(midX + gameWidth/2, midY - this.dino.height/2 + obstacles[obstacles.Count-1].height/2);
             }
         }
 
@@ -89,8 +103,8 @@ namespace FivePebblesPong
         public override void Draw(Vector2 offset)
         {
             //update image positions
-            dino.DrawImage(offset);
-            dino.image.setAlpha = imageAlpha;
+            this.dino.DrawImage(offset);
+            this.dino.image.setAlpha = imageAlpha;
             line.DrawImage(offset);
             line.image.setAlpha = imageAlpha;
 
