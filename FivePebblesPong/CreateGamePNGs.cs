@@ -2,6 +2,7 @@
 using RWCustom;
 using UnityEngine;
 using System.IO;
+using System;
 
 namespace FivePebblesPong
 {
@@ -130,14 +131,38 @@ namespace FivePebblesPong
         }
 
 
-        public static Texture2D DrawDino(Color color)
+        public static Texture2D DrawDino(Color color, int walk = 0, bool shocked = false)
         {
+            walk %= 3;
             const int width = 20;
             const int height = 22;
             int[] dinoArr = {
-                0x1FE, 0x3FF, 0x37F, 0x3FF, 0x3FF, 0x3FF, 0x3E0, 0x3FC, 0x807C0, 0x81FC0, 0xC3FF0, 0xE7FD0,
+                0x1FE, 0x3FF, 0x37F, 0x3FF, 0x3FF, 0x3FF, 0x3E0, 0x3FC, 0x807C0, 0x81FC0, 0xC3FF0, 0xE7FD0, 
                 0xFFFC0, 0xFFFC0, 0x7FFC0, 0x3FF80, 0x1FF00, 0xFE00, 0x7600, 0x6200, 0x4200, 0x6300
             };
+            if (shocked)
+                Array.Copy(new[] {0x31F, 0x35F, 0x31F, 0x3FF, 0x3FF, 0x3FF}, 0, dinoArr, 1, 6);
+            if (walk == 1)
+                Array.Copy(new[] { 0x7300, 0x6000, 0x4000, 0x6000 }, 0, dinoArr, 18, 4);
+            if (walk == 2)
+                Array.Copy(new[] { 0x6600, 0x3200, 0x200, 0x300 }, 0, dinoArr, 18, 4);
+
+            return ArrayToTexture(ref dinoArr, width, height, color);
+        }
+
+
+        public static Texture2D DrawDinoDucking(Color color, int walk)
+        {
+            walk %= 2;
+            const int width = 27;
+            const int height = 12;
+            int[] dinoArr = {
+                0x4000000, 0x70FF1FE, 0x7FFFF7F, 0x3FFFFFF, 0x1FFFFFF, 0xFFFFFF, 0x7FFFE0, 0x3FF9FC, 
+                0x391000, 0x319800, 0x200000, 0x300000
+            };
+            if (walk == 1)
+                Array.Copy(new[] { 0x271000, 0x361800, 0x40000, 0x60000 }, 0, dinoArr, 8, 4);
+
             return ArrayToTexture(ref dinoArr, width, height, color);
         }
 
@@ -148,9 +173,27 @@ namespace FivePebblesPong
             const int height = 22;
             int[] cactArr = {
                 0x380, 0x7C0, 0x7C0, 0x7C6, 0x7CF, 0xC7CF, 0x1E7CF, 0x1E7CF, 0x1E7CF, 0x1E7CF, 0x1E7CF, 
-                0x1FFFE, 0xFFFE, 0x7FFC, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0,
+                0x1FFFE, 0xFFFE, 0x7FFC, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0, 0x7C0
             };
             return ArrayToTexture(ref cactArr, width, height, color);
+        }
+
+
+        public static Texture2D DrawBird(Color color, int fly)
+        {
+            fly %= 2;
+            const int width = 21;
+            const int height = 18;
+            int[] bird1Arr = {
+                0x2000, 0x3000, 0x3800, 0x19C00, 0x39E00, 0x7DF00, 0xFDF80, 0x1FFF80, 0x7FC0, 0x3FFF, 
+                0x1FF8, 0xFFE, 0x7F0, 0x0, 0x0, 0x0, 0x0, 0x0
+            };
+            int[] bird2Arr = {
+                0x0, 0x0, 0x0, 0xC000, 0x1C000, 0x3E000, 0x7E000, 0xFFF80, 0x3FC0, 0x1FFF, 0xFF8, 
+                0xFFE, 0xFF0, 0xF00, 0xE00, 0xC00, 0xC00, 0x800
+            };
+            int[] arrayRef = (fly == 1 ? bird2Arr : bird1Arr);
+            return ArrayToTexture(ref arrayRef, width, height, color);
         }
 
 
