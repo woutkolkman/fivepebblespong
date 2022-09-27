@@ -57,22 +57,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FPGame.cs" />
+    <Compile Include="Games\FPGame.cs" />
     <Compile Include="CreateGamePNGs.cs" />
-    <Compile Include="FPGameObject.cs" />
+    <Compile Include="GameObjects\FPGameObject.cs" />
     <Compile Include="Games\Breakout.cs" />
     <Compile Include="Games\Dino.cs" />
-    <Compile Include="Games\DinoObstacle.cs" />
-    <Compile Include="Games\DinoPlayer.cs" />
-    <Compile Include="Games\SquareBorderMark.cs" />
+    <Compile Include="GameObjects\DinoObstacle.cs" />
+    <Compile Include="GameObjects\DinoPlayer.cs" />
+    <Compile Include="GameObjects\SquareBorderMark.cs" />
     <Compile Include="PearlSelection.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="FivePebblesPong.cs" />
     <Compile Include="Games\Pong.cs" />
-    <Compile Include="Games\PongBall.cs" />
-    <Compile Include="Games\PongLine.cs" />
-    <Compile Include="Games\PongPaddle.cs" />
+    <Compile Include="GameObjects\PongBall.cs" />
+    <Compile Include="GameObjects\PongLine.cs" />
+    <Compile Include="GameObjects\PongPaddle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
