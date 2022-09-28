@@ -10,17 +10,34 @@ namespace FivePebblesPong
     {
         public int width, height, ground;
         public float velocity, jumpStartV, gravityV;
+        public enum Animation
+        {
+            Standing,
+            Walking,
+            Ducking,
+            Dead
+        }
 
 
-        public DinoPlayer(OracleBehavior self, Color color, string imageName, bool reloadImg = false) : base(imageName)
+        public DinoPlayer(OracleBehavior self, Color color, string imageName) : base(imageName)
         {
             this.width = 10; //20;
             this.height = 22;
             this.jumpStartV = 8f;
             this.gravityV = 0.8f;
 
-            //TODO dino walkcycle without sound? also dino death image?
-            base.SetImage(self, CreateGamePNGs.DrawDino(color), reloadImg);
+            List<Texture2D> textures = new List<Texture2D>() {
+                CreateGamePNGs.DrawDino(color),                 //imageName
+                CreateGamePNGs.DrawDino(color, walk: 1),        //imageName + 1
+                CreateGamePNGs.DrawDino(color, walk: 2),        //imageName + 2
+                CreateGamePNGs.DrawDinoDucking(color, 0),       //imageName + 3
+                CreateGamePNGs.DrawDinoDucking(color, 1),       //imageName + 4
+                CreateGamePNGs.DrawDino(color, shocked: true)   //imageName + 5
+            };
+
+            base.SetImage(self, textures, 15, false);
+
+            SetAnimation(Animation.Standing);
         }
 
 
@@ -31,6 +48,7 @@ namespace FivePebblesPong
 
 
         bool onGround => (pos.y - height/2 <= ground + 0.001f);
+        int prevInput;
         public void Update(int input)
         {
             if (input > 0 && onGround)
@@ -38,11 +56,42 @@ namespace FivePebblesPong
 
             pos.y += velocity;
 
+            if (input != prevInput)
+                SetAnimation(input < 0 ? Animation.Ducking : Animation.Walking);
+            prevInput = input;
+
             if (onGround) {
                 pos.y = ground + height/2;
                 velocity = 0f;
             } else {
                 velocity -= gravityV;
+            }
+        }
+
+
+        public void SetAnimation(Animation a)
+        {
+            height = 22;
+            image.cycleTime = 15;
+            switch(a) {
+                case (Animation.Standing):
+                    image.imageNames = new List<string> { imageName, imageName };
+                    image.cycleTime = int.MaxValue;
+                    break;
+
+                case (Animation.Walking):
+                    image.imageNames = new List<string> { imageName + "1", imageName + "2" };
+                    break;
+
+                case (Animation.Ducking):
+                    image.imageNames = new List<string> { imageName + "3", imageName + "4" };
+                    height = 12;
+                    break;
+
+                case (Animation.Dead):
+                    image.imageNames = new List<string> { imageName + "5", imageName + "5" }; //two of the same images, else game may freeze
+                    image.cycleTime = int.MaxValue;
+                    break;
             }
         }
     }

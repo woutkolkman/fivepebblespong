@@ -8,29 +8,36 @@ namespace FivePebblesPong
 {
     public class DinoObstacle : FPGameObject
     {
-        public int width, height;
+        public int width, height; //hitbox, not imagesize
         public float velocityX, velocityY;
         public enum Type
         {
-            Cactus
+            Cactus,
+            Bird
         }
 
 
         public DinoObstacle(OracleBehavior self, Type type, float velocityX, float velocityY, Color color, string imageName, bool reloadImg = false) : base(imageName)
         {
-            Texture2D img = null;
+            List<Texture2D> imgs = new List<Texture2D>();
             this.velocityX = velocityX;
             this.velocityY = velocityY;
-            this.width = 20;
-            this.height = 22;
 
-            if (type == Type.Cactus)
-                img = CreateGamePNGs.DrawCactus(color);
+            if (type == Type.Cactus) {
+                imgs.Add(CreateGamePNGs.DrawCactus(color));
+                this.width = 19;
+                this.height = 21;
+            } else if (type == Type.Bird) {
+                imgs.Add(CreateGamePNGs.DrawBird(color, 0));
+                imgs.Add(CreateGamePNGs.DrawBird(color, 1));
+                this.width = 20;
+                this.height = 10;
+            }
 
-            if (img == null)
+            if (imgs.Count <= 0)
                 return;
 
-            base.SetImage(self, img, reloadImg);
+            base.SetImage(self, imgs, 10, reloadImg);
         }
 
 

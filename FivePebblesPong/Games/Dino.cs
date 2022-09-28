@@ -71,6 +71,8 @@ namespace FivePebblesPong
                 //reset score/ticks
                 gameCounter = 0;
                 lastCounter = 0;
+
+                dino.SetAnimation(DinoPlayer.Animation.Walking);
             }
 
             this.dino.Update(self.player.input[0].y);
@@ -80,7 +82,7 @@ namespace FivePebblesPong
                     if (obstacles[i].Update(this.dino)) {
                         gameStarted = false; //obstacle was hit, stop game
                         lastCounter = gameCounter;
-
+                        dino.SetAnimation(DinoPlayer.Animation.Dead);
                     }
 
                     //obstacle left the screen
@@ -95,8 +97,20 @@ namespace FivePebblesPong
             //spawn obstacles
             if (gameCounter > 100 && UnityEngine.Random.value < 0.04f && gameCounter - lastCounter >= minObstacleInterval) {
                 lastCounter = gameCounter;
-                obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f*gameCounter), 0f, Color.white, "FPP_Cactus"));
-                obstacles[obstacles.Count-1].pos = new Vector2(midX + gameWidth/2, midY - this.dino.height/2 + obstacles[obstacles.Count-1].height/2);
+
+                //spawn cactus
+                if (gameCounter < 1000 || UnityEngine.Random.value < 0.8f) {
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f * gameCounter), 0f, Color.white, "FPP_Cactus"));
+                    obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + 1 + obstacles[obstacles.Count - 1].height / 2);
+
+                //spawn bird
+                } else {
+                    int offsetFromGround = 21;
+                    if (UnityEngine.Random.value < 0.20f) offsetFromGround = 11;
+                    if (UnityEngine.Random.value < 0.20f) offsetFromGround = 31;
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Bird, -3f - (0.0007f * gameCounter), UnityEngine.Random.Range(-0.1f, 0.1f), Color.white, "FPP_Bird"));
+                    obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + offsetFromGround + obstacles[obstacles.Count - 1].height / 2);
+                }
             }
         }
 
