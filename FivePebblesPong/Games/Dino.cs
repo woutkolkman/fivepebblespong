@@ -135,7 +135,7 @@ namespace FivePebblesPong
         public void MoonBehavior(SLOracleBehaviorHasMark self)
         {
             //moon looks at game, else looks at slugcat
-            if (gameStarted && gameCounter > 75)
+            if (gameStarted && !self.protest && !self.playerIsAnnoyingWhenNoConversation && !self.playerHoldingNeuronNoConvo && self.playerAnnoyingCounter < 20)
                 self.lookPoint = dino.pos;
 
             //score dialog when player dies
