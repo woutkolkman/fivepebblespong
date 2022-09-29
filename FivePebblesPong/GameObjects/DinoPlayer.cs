@@ -72,11 +72,10 @@ namespace FivePebblesPong
         public void SetAnimation(Animation a)
         {
             height = 22;
-            image.cycleTime = 15;
             switch(a) {
                 case (Animation.Standing):
-                    image.imageNames = new List<string> { imageName, imageName };
-                    image.cycleTime = int.MaxValue;
+                    image.imageNames = new List<string> { imageName };
+                    image.currImg = 0;
                     break;
 
                 case (Animation.Walking):
@@ -89,8 +88,8 @@ namespace FivePebblesPong
                     break;
 
                 case (Animation.Dead):
-                    image.imageNames = new List<string> { imageName + "5", imageName + "5" }; //two of the same images, else game may freeze
-                    image.cycleTime = int.MaxValue;
+                    image.imageNames = new List<string> { imageName + "5" };
+                    image.currImg = 0;
                     break;
             }
         }
