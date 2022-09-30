@@ -31,6 +31,7 @@ namespace FivePebblesPong
             //big sis moon update functions
             On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
             On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMarkUpdateHook;
+            On.SLOracleBehaviorNoMark.Update += SLOracleBehaviorNoMarkUpdateHook;
         }
 
 
@@ -105,10 +106,10 @@ namespace FivePebblesPong
                 self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight)
                 return;
 
-            //construct/free GameStarter object
+            //construct/free PebblesGameStarter object
             if (CarriesController && FivePebblesPong.starter == null)
-                FivePebblesPong.starter = new GameStarter();
-            if (!CarriesController && FivePebblesPong.starter != null && FivePebblesPong.starter.state == GameStarter.State.Stop)
+                FivePebblesPong.starter = new PebblesGameStarter();
+            if (!CarriesController && FivePebblesPong.starter != null && FivePebblesPong.starter.state == PebblesGameStarter.State.Stop)
                 FivePebblesPong.starter = null; //TODO, object is not destructed when player leaves early while carrying controller
 
             //run state machine for starting/running/stopping games
@@ -153,44 +154,27 @@ namespace FivePebblesPong
         //big sis moon update functions
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
-            const int MIN_X_POS_PLAYER = 1100;
-
             orig(self, eu);
 
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            //check if slugcat is holding a gamecontroller
-            bool CarriesController = false;
-            for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
-                    CarriesController = true;
-
-            //start/stop game
-            if (CarriesController &&
-                self.hasNoticedPlayer &&
-                self.player.DangerPos.x >= MIN_X_POS_PLAYER && //stop game when leaving
-                (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark))
-            {
-                if (FivePebblesPong.moonDelayUpdateGame > 0) {
-                    FivePebblesPong.moonDelayUpdateGame--;
-                    return;
-                }
-                //TODO gradually reveal game (setAlpha)
-
-                if (FivePebblesPong.moonGame == null)
-                    FivePebblesPong.moonGame = new Dino(self);
-                FivePebblesPong.moonGame?.Update(self);
-                FivePebblesPong.moonGame?.Draw();
-            } else {
-                //TODO, object is not destructed when FPGame was being played and player exits main game
-                FivePebblesPong.moonGame?.Destroy();
-                FivePebblesPong.moonGame = null;
-            }
+            MoonGameStarter.Handle(self);
         }
 
 
         static void SLOracleBehaviorHasMarkUpdateHook(On.SLOracleBehaviorHasMark.orig_Update orig, SLOracleBehaviorHasMark self, bool eu)
+        {
+            orig(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            FivePebblesPong.moonGame?.MoonBehavior(self);
+        }
+
+
+        static void SLOracleBehaviorNoMarkUpdateHook(On.SLOracleBehaviorNoMark.orig_Update orig, SLOracleBehaviorNoMark self, bool eu)
         {
             orig(self, eu);
 

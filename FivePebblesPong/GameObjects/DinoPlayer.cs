@@ -22,7 +22,7 @@ namespace FivePebblesPong
         public DinoPlayer(OracleBehavior self, Color color, string imageName) : base(imageName)
         {
             this.width = 10; //20;
-            this.height = 22;
+            this.height = 22; //frequently overwritten
             this.jumpStartV = 8f;
             this.gravityV = 0.8f;
 

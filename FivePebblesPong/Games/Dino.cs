@@ -26,11 +26,11 @@ namespace FivePebblesPong
             this.obstacles = new List<DinoObstacle>();
 
             this.dino = new DinoPlayer(self, Color.white, "FPP_Dino");
-            this.dino.pos = new Vector2(midX + 30 - gameWidth/2, midY);
-            this.dino.ground = midY - this.dino.height/2;
+            this.dino.pos = new Vector2(midX + 30 - gameWidth / 2, midY);
+            this.dino.ground = midY - this.dino.height / 2;
 
             this.line = new PongLine(self, true, gameWidth, 1, 0, Color.white, "FPP_Line", reloadImg: true);
-            this.line.pos = new Vector2(midX, midY - 1 - this.dino.height/2);
+            this.line.pos = new Vector2(midX, midY - 1 - this.dino.height / 2);
         }
 
 
@@ -53,11 +53,15 @@ namespace FivePebblesPong
 
         public override void Update(SLOracleBehavior self)
         {
+            Update(self, self.player.input[0].y);
+        }
+        public void Update(SLOracleBehavior self, int input)
+        {
             base.Update(self);
 
             prevGameStarted = gameStarted;
 
-            if (self.player.input[0].y != 0 && gameCounter - lastCounter >= 60)
+            if (input != 0 && gameCounter - lastCounter >= 60)
                 gameStarted = true;
 
             if (!gameStarted) {
@@ -75,7 +79,7 @@ namespace FivePebblesPong
                 dino.SetAnimation(DinoPlayer.Animation.Walking);
             }
 
-            this.dino.Update(self.player.input[0].y);
+            this.dino.Update(input);
 
             for (int i = 0; i < obstacles.Count; i++) {
                 if (obstacles[i] != null) {
@@ -86,7 +90,7 @@ namespace FivePebblesPong
                     }
 
                     //obstacle left the screen
-                    if (obstacles[i].pos.x < midX - gameWidth/2)
+                    if (obstacles[i].pos.x < midX - gameWidth / 2)
                     {
                         obstacles[i].Destroy();
                         obstacles.RemoveAt(i);
@@ -103,8 +107,7 @@ namespace FivePebblesPong
                     obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f * gameCounter), 0f, Color.white, "FPP_Cactus"));
                     obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + 1 + obstacles[obstacles.Count - 1].height / 2);
 
-                //spawn bird
-                } else {
+                } else { //spawn bird
                     int offsetFromGround = 21;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 11;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 31;
@@ -132,19 +135,44 @@ namespace FivePebblesPong
         }
 
 
-        public void MoonBehavior(SLOracleBehaviorHasMark self)
+        public void MoonBehavior(SLOracleBehavior self)
         {
+            if (self.protest) //release controller if player grabs neuron
+                self.holdingObject = null;
+
             //moon looks at game, else looks at slugcat
-            if (gameStarted && !self.protest && !self.playerIsAnnoyingWhenNoConversation && !self.playerHoldingNeuronNoConvo && self.playerAnnoyingCounter < 20)
-                self.lookPoint = dino.pos;
+            if (gameStarted && !self.protest)
+            {
+                if ((self is SLOracleBehaviorNoMark) ||
+                    ((self is SLOracleBehaviorHasMark) &&
+                    !(self as SLOracleBehaviorHasMark).playerIsAnnoyingWhenNoConversation &&
+                    !(self as SLOracleBehaviorHasMark).playerHoldingNeuronNoConvo &&
+                    (self as SLOracleBehaviorHasMark).playerAnnoyingCounter < 20))
+                    self.lookPoint = dino.pos;
+            }
 
             //score dialog when player dies
             if (!gameStarted && prevGameStarted) {
-                if (gameCounter > 1000) //minimum score to not make dialog annoying
-                    self.dialogBox.Interrupt(self.Translate("Looks like your score is " + gameCounter + ". " + (gameCounter > highScore ? "Your new highscore!" : "Your highscore is " + highScore + ".")), 10);
+                //moon was playing
+                if (self.holdingObject != null && self.holdingObject is GameController) {
+                    self.holdingObject = null; //release controller to allow player to grab it
+                    return;
+                }
+
+                //player was playing
+                if (gameCounter > 1000 && (self is SLOracleBehaviorHasMark)) //minimum score to not make dialog annoying
+                    (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate("Looks like your score is " + gameCounter + ". " + (gameCounter > highScore ? "Your new highscore!" : "Your highscore is " + highScore + ".")), 10);
                 if (gameCounter > highScore)
                     highScore = gameCounter;
             }
+        }
+
+
+        public int MoonAI()
+        {
+            //if (false) //player controlled
+            //    return self.player.input[0].y;
+            return 1;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace FivePebblesPong
         public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
 
         //start/stop FPGames via state machine
-        public static GameStarter starter;
+        public static PebblesGameStarter starter;
         public static int pebblesNotFullyStartedCounter;
         public static bool pebblesCalibratedProjector;
 
@@ -69,7 +69,7 @@ namespace FivePebblesPong
     }
 
 
-    public class GameStarter
+    public class PebblesGameStarter
     {
         public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
         public FPGame game;
@@ -87,8 +87,8 @@ namespace FivePebblesPong
         public PearlSelection menu;
 
 
-        public GameStarter() { }
-        ~GameStarter() //destructor
+        public PebblesGameStarter() { }
+        ~PebblesGameStarter() //destructor
         {
             game?.Destroy();
             menu?.Destroy();
@@ -291,6 +291,159 @@ namespace FivePebblesPong
                         num -= Mathf.Min(Vector2.Distance(tryPos, (self.oracle.graphicsModule as OracleGraphics).umbCord.coord[j, 0]), 100f);
                 return num;
             }
+        }
+    }
+
+
+    static class MoonGameStarter
+    {
+        const int MIN_X_POS_PLAYER = 1100;
+        const float MAX_GRAB_DIST = 100f;
+        static int SearchDelayCounter = 0;
+        static bool moonMayGrabController = true;
+
+
+        public static void Handle(SLOracleBehavior self)
+        {
+            //check if slugcat is holding a gamecontroller
+            bool playerCarriesController = false;
+            for (int i = 0; i < self.player.grasps.Length; i++)
+                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
+                    playerCarriesController = true;
+
+            bool playerMayPlayGame = (
+                playerCarriesController && self.hasNoticedPlayer &&
+                self.player.DangerPos.x >= MIN_X_POS_PLAYER && //stop game when leaving
+                (FivePebblesPong.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
+            );
+            bool moonMayPlayGame = (
+                self.holdingObject is GameController &&
+                FivePebblesPong.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
+            );
+
+            //start/stop game
+            if (playerMayPlayGame) //player plays
+            {
+                if (FivePebblesPong.moonDelayUpdateGame > 0)
+                {
+                    FivePebblesPong.moonDelayUpdateGame--;
+                    return;
+                }
+                //TODO gradually reveal game (setAlpha)
+
+                if (FivePebblesPong.moonGame == null)
+                    FivePebblesPong.moonGame = new Dino(self);
+                FivePebblesPong.moonGame?.Update(self);
+                FivePebblesPong.moonGame?.Draw();
+                return;
+            }
+            else if (moonMayPlayGame) //moon plays
+            {
+                if (self is SLOracleBehaviorHasMark) //prevents moon from releasing controller
+                    (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
+
+                if (FivePebblesPong.moonGame == null)
+                    FivePebblesPong.moonGame = new Dino(self);
+                FivePebblesPong.moonGame?.Update(self, FivePebblesPong.moonGame.MoonAI());
+                FivePebblesPong.moonGame?.Draw();
+                return;
+            }
+            else //destroy game
+            {
+                //TODO, object is not destructed when FPGame was being played and player exits main game
+                FivePebblesPong.moonGame?.Destroy();
+                FivePebblesPong.moonGame = null;
+            }
+
+            //moon grabs controller
+            if (!moonMayGrabController)
+                return;
+            if ((!FivePebblesPong.moonControllerReacted && self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark) || 
+                FivePebblesPong.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || 
+                (!self.State.SpeakingTerms && self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)) {
+                SearchDelayCounter = 0; //reset count
+                return;
+            }
+            if (self is SLOracleBehaviorHasMark &&
+                ((self as SLOracleBehaviorHasMark).moveToAndPickUpItem != null || (self as SLOracleBehaviorHasMark).DamagedMode || (self as SLOracleBehaviorHasMark).currentConversation != null)) {
+                SearchDelayCounter = 0; //reset count
+                return;
+            }
+            if (SearchDelayCounter < 600) { //don't execute every loop
+                SearchDelayCounter++;
+                return;
+            }
+
+            bool? nullable = GrabObjectType<GameController>(self, MAX_GRAB_DIST);
+            if (nullable.HasValue) //success or failed
+                SearchDelayCounter = 0; //reset count
+        }
+
+
+        //moon grabs object by type, crawling not (yet) implemented
+        public static int moveToItemDelay;
+        public static PhysicalObject grabItem;
+        public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist)
+        {
+            if (grabItem == null)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType(): Searching for grabItem");
+
+                //get object from room
+                for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
+                    for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
+                        if (self.oracle.room.physicalObjects[i][j] is T &&
+                            self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
+                            grabItem = self.oracle.room.physicalObjects[i][j];
+
+                if (grabItem == null)
+                {
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType(): grabItem not found");
+                    return false;
+                }
+            }
+
+            float dist = Vector2.Distance(grabItem.firstChunk.pos, self.oracle.bodyChunks[0].pos);
+            if (dist <= maxDist)
+            {
+                if (moveToItemDelay == 0)
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType(): Trying to grab grabItem, distance: " + dist.ToString());
+
+                moveToItemDelay++;
+
+                //grab object if close enough
+                if ((moveToItemDelay > 40 && Custom.DistLess(grabItem.firstChunk.pos, self.oracle.firstChunk.pos, 40f)) || 
+                    (moveToItemDelay < 20 && !Custom.DistLess(grabItem.firstChunk.lastPos, grabItem.firstChunk.pos, 5f) && Custom.DistLess(grabItem.firstChunk.pos, self.oracle.firstChunk.pos, 20f)))
+                {
+                    self.holdingObject = grabItem;
+                    if (self.holdingObject.graphicsModule != null)
+                        self.holdingObject.graphicsModule.BringSpritesToFront();
+                    if (self.holdingObject is IDrawable)
+                        for (int i = 0; i < self.oracle.abstractPhysicalObject.world.game.cameras.Length; i++)
+                            self.oracle.abstractPhysicalObject.world.game.cameras[i].MoveObjectToContainer(self.holdingObject as IDrawable, null);
+
+                    grabItem = null;
+                    moveToItemDelay = 0;
+                    return true; //success
+                }
+
+                if (moveToItemDelay > 300)
+                {
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType(): Grabbing grabItem canceled (time)");
+                    grabItem = null;
+                    moveToItemDelay = 0;
+                    return false; //failed
+                }
+
+                //move/crawl towards object
+                //TODO, it's hard to apply hooks for this feature
+
+                return null; //still trying
+            }
+            FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType(): grabItem distance too large: " + dist.ToString());
+            grabItem = null;
+            moveToItemDelay = 0;
+            return false; //failed
         }
     }
 }
