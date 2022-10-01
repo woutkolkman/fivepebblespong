@@ -15,6 +15,9 @@ namespace FivePebblesPong
             //creates GameController object
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectRealizeHook;
 
+            //for checking if controller already exists
+            On.Player.ctor += PlayerCtorHook;
+
             //five pebbles constructor
             On.SSOracleBehavior.ctor += SSOracleBehaviorCtorHook;
 
@@ -36,6 +39,7 @@ namespace FivePebblesPong
 
 
         //selects room to place GameController type
+        static bool gameControllerInShelter;
         static void RoomLoadedHook(On.Room.orig_Loaded orig, Room self)
         {
             bool firsttime = self.abstractRoom.firstTimeRealized;
@@ -43,7 +47,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.game != null && self.roomSettings.name.Equals("SS_AI") && firsttime)
+            if (self.game != null && self.roomSettings.name.Equals("SS_AI") && firsttime && !gameControllerInShelter)
             {
                 EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
 
@@ -65,6 +69,30 @@ namespace FivePebblesPong
                 self.realizedObject = new GameController(self);
             }
             orig(self);
+        }
+
+
+        //checks if controller already exists
+        static void PlayerCtorHook(On.Player.orig_ctor orig, Player self, AbstractCreature abstractCreature, World world)
+        {
+            orig(self, abstractCreature, world);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            if (self.playerState.playerNumber == 0) //reset
+                gameControllerInShelter = false;
+
+            if (self.objectInStomach != null && self.objectInStomach.type == EnumExt_FPP.GameController)
+                gameControllerInShelter = true;
+
+            for (int i = 0; i < self.room.physicalObjects.Length; i++)
+                for (int j = 0; j < self.room.physicalObjects[i].Count; j++)
+                    if (self.room.physicalObjects[i][j] is GameController)
+                        gameControllerInShelter = true;
+
+            if (gameControllerInShelter)
+                FivePebblesPong.ME.Logger_p.LogInfo("gameControllerInShelter");
         }
 
 
