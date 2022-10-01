@@ -147,13 +147,15 @@ namespace FivePebblesPong
 
         public void MoonBehavior(SLOracleBehavior self)
         {
-            if (self.protest) //release controller if player grabs neuron
+            //release controller if player grabs neuron
+            if (self.protest)
                 self.holdingObject = null;
 
             //moon looks at game, else looks at slugcat
             if (gameStarted && !self.protest)
             {
-                if ((self is SLOracleBehaviorNoMark) ||
+                self.lookPoint = self.player.DangerPos; //so moon looks at slugcat instead of controller during game
+                if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, self.player.DangerPos) > 60) ||
                     ((self is SLOracleBehaviorHasMark) &&
                     !(self as SLOracleBehaviorHasMark).playerIsAnnoyingWhenNoConversation &&
                     !(self as SLOracleBehaviorHasMark).playerHoldingNeuronNoConvo &&
@@ -167,6 +169,10 @@ namespace FivePebblesPong
                 if (self.holdingObject != null && self.holdingObject is GameController) {
                     if (self is SLOracleBehaviorHasMark)
                         (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate(gameCounter + "!"), 10);
+
+                    //release controller if SLOracleBehavior child doesn't do this automatically
+                    if (self is SLOracleBehaviorNoMark)
+                        self.holdingObject = null;
                     return;
                 }
                 //player was playing
