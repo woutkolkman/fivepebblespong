@@ -138,13 +138,10 @@ namespace FivePebblesPong
         public void Reload(SLOracleBehavior self)
         {
             //if images get deloaded when player left when moon was playing
-            this.dino.image.Destroy();
-            this.dino.image = null;
             this.dino.SetImage(self);
-            this.line.image.Destroy();
-            this.line.image = null;
             this.line.SetImage(self, new Texture2D(1, 1), false); //image gets reloaded
-            //TODO some existing obstacle images may become invisible
+            foreach (DinoObstacle ob in obstacles)
+                ob.SetImage(self);
         }
 
 

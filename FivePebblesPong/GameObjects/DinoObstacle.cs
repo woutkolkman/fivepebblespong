@@ -10,6 +10,8 @@ namespace FivePebblesPong
     {
         public int width, height; //hitbox, not imagesize
         public float velocityX, velocityY;
+        public Color color { get; }
+        public Type type { get; }
         public enum Type
         {
             Cactus,
@@ -17,33 +19,47 @@ namespace FivePebblesPong
         }
 
 
-        public DinoObstacle(OracleBehavior self, Type type, float velocityX, float velocityY, Color color, string imageName, bool reloadImg = false) : base(imageName)
+        public DinoObstacle(OracleBehavior self, Type type, float velocityX, float velocityY, Color color, string imageName) : base(imageName)
         {
-            List<Texture2D> imgs = new List<Texture2D>();
             this.velocityX = velocityX;
             this.velocityY = velocityY;
+            this.color = color;
+            this.type = type;
 
-            if (type == Type.Cactus) {
-                imgs.Add(CreateGamePNGs.DrawCactus(color));
-                this.width = 19;
-                this.height = 21;
-            } else if (type == Type.Bird) {
-                imgs.Add(CreateGamePNGs.DrawBird(color, 0));
-                imgs.Add(CreateGamePNGs.DrawBird(color, 1));
-                this.width = 20;
-                this.height = 10;
-            }
-
-            if (imgs.Count <= 0)
+            if (!SetImage(self))
                 return;
-
-            base.SetImage(self, imgs, 10, reloadImg);
         }
 
 
         ~DinoObstacle() //destructor
         {
             base.Destroy(); //if not done already
+        }
+
+
+        public bool SetImage(OracleBehavior self)
+        {
+            List<Texture2D> imgs = new List<Texture2D>();
+
+            if (this.type == Type.Cactus)
+            {
+                imgs.Add(CreateGamePNGs.DrawCactus(this.color));
+                this.width = 19;
+                this.height = 21;
+            }
+            else if (this.type == Type.Bird)
+            {
+                imgs.Add(CreateGamePNGs.DrawBird(this.color, 0));
+                imgs.Add(CreateGamePNGs.DrawBird(this.color, 1));
+                this.width = 20;
+                this.height = 10;
+            }
+
+            if (imgs.Count <= 0)
+                return false;
+
+            base.SetImage(self, imgs, 10, false);
+            return true;
         }
 
 

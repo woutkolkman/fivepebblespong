@@ -10,7 +10,7 @@ namespace FivePebblesPong
     {
         public int width, height, ground;
         public float velocity, jumpStartV, gravityV;
-        public Color imgColor { get; }
+        public Color color { get; }
         public enum Animation
         {
             Standing,
@@ -28,7 +28,7 @@ namespace FivePebblesPong
             this.jumpStartV = 8f;
             this.gravityV = 0.8f;
 
-            imgColor = color;
+            this.color = color;
             SetImage(self);
 
             SetAnimation(Animation.Standing);
@@ -44,12 +44,12 @@ namespace FivePebblesPong
         public void SetImage(OracleBehavior self)
         {
             List<Texture2D> textures = new List<Texture2D>() {
-                CreateGamePNGs.DrawDino(imgColor),                 //imageName
-                CreateGamePNGs.DrawDino(imgColor, walk: 1),        //imageName + 1
-                CreateGamePNGs.DrawDino(imgColor, walk: 2),        //imageName + 2
-                CreateGamePNGs.DrawDinoDucking(imgColor, 0),       //imageName + 3
-                CreateGamePNGs.DrawDinoDucking(imgColor, 1),       //imageName + 4
-                CreateGamePNGs.DrawDino(imgColor, shocked: true)   //imageName + 5
+                CreateGamePNGs.DrawDino(this.color),                 //imageName
+                CreateGamePNGs.DrawDino(this.color, walk: 1),        //imageName + 1
+                CreateGamePNGs.DrawDino(this.color, walk: 2),        //imageName + 2
+                CreateGamePNGs.DrawDinoDucking(this.color, 0),       //imageName + 3
+                CreateGamePNGs.DrawDinoDucking(this.color, 1),       //imageName + 4
+                CreateGamePNGs.DrawDino(this.color, shocked: true)   //imageName + 5
             };
             base.SetImage(self, textures, 15, false);
         }

@@ -41,7 +41,7 @@ namespace FivePebblesPong
         //moongame if controller is taken to moon
         public static Dino moonGame;
         public static bool moonControllerReacted;
-        public const int MOON_DELAY_UPDATE_GAME_RESET = 2000;
+        public const int MOON_DELAY_UPDATE_GAME_RESET = 1500;
         public static int moonDelayUpdateGame;
 
 
@@ -298,7 +298,6 @@ namespace FivePebblesPong
     static class MoonGameStarter
     {
         const int MIN_X_POS_PLAYER = 1100;
-        const int PLAYER_LEAVING_SCREEN_X_POS = 1016;
         const float MAX_GRAB_DIST = 100f;
         static int SearchDelayCounter = 0;
         static bool moonMayGrabController = true;
@@ -324,7 +323,7 @@ namespace FivePebblesPong
             );
 
             //reload if slugcat left screen when moon was playing
-            if (FivePebblesPong.moonGame != null && prevPlayerX < PLAYER_LEAVING_SCREEN_X_POS && self.player.DangerPos.x >= PLAYER_LEAVING_SCREEN_X_POS) {
+            if (FivePebblesPong.moonGame != null && prevPlayerX < MIN_X_POS_PLAYER && self.player.DangerPos.x >= MIN_X_POS_PLAYER) {
                 FivePebblesPong.moonGame.Reload(self);
             }
             prevPlayerX = self.player.DangerPos.x;
