@@ -41,7 +41,7 @@ namespace FivePebblesPong
         //moongame if controller is taken to moon
         public static Dino moonGame;
         public static bool moonControllerReacted;
-        public const int MOON_DELAY_UPDATE_GAME_RESET = 100; //TODO set to 2000
+        public const int MOON_DELAY_UPDATE_GAME_RESET = 2000;
         public static int moonDelayUpdateGame;
 
 
@@ -298,9 +298,11 @@ namespace FivePebblesPong
     static class MoonGameStarter
     {
         const int MIN_X_POS_PLAYER = 1100;
+        const int PLAYER_LEAVING_SCREEN_X_POS = 1016;
         const float MAX_GRAB_DIST = 100f;
         static int SearchDelayCounter = 0;
         static bool moonMayGrabController = true;
+        static float prevPlayerX;
 
 
         public static void Handle(SLOracleBehavior self)
@@ -321,25 +323,39 @@ namespace FivePebblesPong
                 FivePebblesPong.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
 
+            //reload if slugcat left screen when moon was playing
+            if (FivePebblesPong.moonGame != null && prevPlayerX < PLAYER_LEAVING_SCREEN_X_POS && self.player.DangerPos.x >= PLAYER_LEAVING_SCREEN_X_POS) {
+                FivePebblesPong.moonGame.Reload(self);
+            }
+            prevPlayerX = self.player.DangerPos.x;
+
             //start/stop game
             if (playerMayPlayGame) //player plays
             {
                 if (FivePebblesPong.moonDelayUpdateGame > 0)
                 {
+                    //wait and gradually reveal game using imageAlpha
                     FivePebblesPong.moonDelayUpdateGame--;
-                    return;
+                    if (FivePebblesPong.moonGame == null && FivePebblesPong.moonDelayUpdateGame < 400) {
+                        FivePebblesPong.moonGame = new Dino(self);
+                        FivePebblesPong.moonGame.imageAlpha = 0f;
+                    }
+                    if (FivePebblesPong.moonGame != null && FivePebblesPong.moonGame.imageAlpha < 0.4f)
+                        FivePebblesPong.moonGame.imageAlpha += 0.001f;
+                    FivePebblesPong.moonGame?.Draw();
                 }
-                //TODO gradually reveal game (setAlpha)
-
-                if (FivePebblesPong.moonGame == null)
-                    FivePebblesPong.moonGame = new Dino(self);
-                FivePebblesPong.moonGame?.Update(self);
-                FivePebblesPong.moonGame?.Draw();
+                else {
+                    if (FivePebblesPong.moonGame == null)
+                        FivePebblesPong.moonGame = new Dino(self);
+                    FivePebblesPong.moonGame?.Update(self);
+                    FivePebblesPong.moonGame?.Draw();
+                }
                 return;
             }
             else if (moonMayPlayGame) //moon plays
             {
-                if (self is SLOracleBehaviorHasMark) //prevents moon from releasing controller
+                //prevent moon from releasing controller if not game over
+                if (self is SLOracleBehaviorHasMark && FivePebblesPong.moonGame != null && FivePebblesPong.moonGame.dino != null && FivePebblesPong.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
                     (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
 
                 if (FivePebblesPong.moonGame == null)
@@ -350,7 +366,7 @@ namespace FivePebblesPong
             }
             else //destroy game
             {
-                //TODO, object is not destructed when FPGame was being played and player exits main game
+                //TODO, object is not immediately destructed when FPGame was being played and player exits Rain World
                 FivePebblesPong.moonGame?.Destroy();
                 FivePebblesPong.moonGame = null;
             }

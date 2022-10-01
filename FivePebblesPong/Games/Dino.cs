@@ -135,6 +135,19 @@ namespace FivePebblesPong
         }
 
 
+        public void Reload(SLOracleBehavior self)
+        {
+            //if images get deloaded when player left when moon was playing
+            this.dino.image.Destroy();
+            this.dino.image = null;
+            this.dino.SetImage(self);
+            this.line.image.Destroy();
+            this.line.image = null;
+            this.line.SetImage(self, new Texture2D(1, 1), false); //image gets reloaded
+            //TODO some existing obstacle images may become invisible
+        }
+
+
         public void MoonBehavior(SLOracleBehavior self)
         {
             if (self.protest) //release controller if player grabs neuron
@@ -153,11 +166,9 @@ namespace FivePebblesPong
 
             //score dialog when player dies
             if (!gameStarted && prevGameStarted) {
-                //moon was playing
-                if (self.holdingObject != null && self.holdingObject is GameController) {
-                    self.holdingObject = null; //release controller to allow player to grab it
+                //moon was playing, don't start dialogue
+                if (self.holdingObject != null && self.holdingObject is GameController)
                     return;
-                }
 
                 //player was playing
                 if (gameCounter > 1000 && (self is SLOracleBehaviorHasMark)) //minimum score to not make dialog annoying
@@ -172,7 +183,28 @@ namespace FivePebblesPong
         {
             //if (false) //player controlled
             //    return self.player.input[0].y;
-            return 1;
+
+            if (dino.curAnim == DinoPlayer.Animation.Dead)
+                return 0; //game will be exited soon
+            if (!gameStarted)
+                return 1; //starts game
+
+            foreach (DinoObstacle ob in obstacles)
+            {
+                float positiveDist = (ob.pos.x - ob.width/2) - (dino.pos.x + (dino.width/2));
+                float negativeDist = (ob.pos.x + ob.width/2) - (dino.pos.x - (dino.width/2));
+                float minDist = 15f + (ob.velocityX * -1);
+                if (!(positiveDist <= minDist && negativeDist >= 0))
+                    continue;
+
+                float bottom = ob.pos.y - ob.height / 2;
+                float top = ob.pos.y + ob.height / 2;
+                if (bottom > dino.pos.y)
+                    return -1;
+                if (bottom < dino.pos.y)
+                    return 1;
+            }
+            return 0;
         }
     }
 }

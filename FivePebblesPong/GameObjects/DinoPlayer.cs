@@ -10,6 +10,7 @@ namespace FivePebblesPong
     {
         public int width, height, ground;
         public float velocity, jumpStartV, gravityV;
+        public Color imgColor { get; }
         public enum Animation
         {
             Standing,
@@ -17,6 +18,7 @@ namespace FivePebblesPong
             Ducking,
             Dead
         }
+        public Animation curAnim;
 
 
         public DinoPlayer(OracleBehavior self, Color color, string imageName) : base(imageName)
@@ -26,16 +28,8 @@ namespace FivePebblesPong
             this.jumpStartV = 8f;
             this.gravityV = 0.8f;
 
-            List<Texture2D> textures = new List<Texture2D>() {
-                CreateGamePNGs.DrawDino(color),                 //imageName
-                CreateGamePNGs.DrawDino(color, walk: 1),        //imageName + 1
-                CreateGamePNGs.DrawDino(color, walk: 2),        //imageName + 2
-                CreateGamePNGs.DrawDinoDucking(color, 0),       //imageName + 3
-                CreateGamePNGs.DrawDinoDucking(color, 1),       //imageName + 4
-                CreateGamePNGs.DrawDino(color, shocked: true)   //imageName + 5
-            };
-
-            base.SetImage(self, textures, 15, false);
+            imgColor = color;
+            SetImage(self);
 
             SetAnimation(Animation.Standing);
         }
@@ -44,6 +38,20 @@ namespace FivePebblesPong
         ~DinoPlayer() //destructor
         {
             base.Destroy(); //if not done already
+        }
+
+
+        public void SetImage(OracleBehavior self)
+        {
+            List<Texture2D> textures = new List<Texture2D>() {
+                CreateGamePNGs.DrawDino(imgColor),                 //imageName
+                CreateGamePNGs.DrawDino(imgColor, walk: 1),        //imageName + 1
+                CreateGamePNGs.DrawDino(imgColor, walk: 2),        //imageName + 2
+                CreateGamePNGs.DrawDinoDucking(imgColor, 0),       //imageName + 3
+                CreateGamePNGs.DrawDinoDucking(imgColor, 1),       //imageName + 4
+                CreateGamePNGs.DrawDino(imgColor, shocked: true)   //imageName + 5
+            };
+            base.SetImage(self, textures, 15, false);
         }
 
 
@@ -92,6 +100,7 @@ namespace FivePebblesPong
                     image.currImg = 0;
                     break;
             }
+            curAnim = a;
         }
     }
 }
