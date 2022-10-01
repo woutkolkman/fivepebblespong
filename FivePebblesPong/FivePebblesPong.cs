@@ -319,6 +319,7 @@ namespace FivePebblesPong
             );
             bool moonMayPlayGame = (
                 self.holdingObject is GameController &&
+                self.player.room.roomSettings.name.Equals("SL_AI") && //memory gets freed if player leaves
                 FivePebblesPong.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
 
