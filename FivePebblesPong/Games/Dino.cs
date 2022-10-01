@@ -8,7 +8,7 @@ namespace FivePebblesPong
         public DinoPlayer dino;
         public List<DinoObstacle> obstacles;
         public PongLine line;
-        public float imageAlpha = 0.4f;
+        public float imageAlpha = 1f;
         public int gameWidth = 250;
         public bool gameStarted, prevGameStarted;
         public int lastCounter;
@@ -163,10 +163,12 @@ namespace FivePebblesPong
 
             //score dialog when player dies
             if (!gameStarted && prevGameStarted) {
-                //moon was playing, don't start dialogue
-                if (self.holdingObject != null && self.holdingObject is GameController)
+                //moon was playing
+                if (self.holdingObject != null && self.holdingObject is GameController) {
+                    if (self is SLOracleBehaviorHasMark)
+                        (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate(gameCounter + "!"), 10);
                     return;
-
+                }
                 //player was playing
                 if (gameCounter > 1000 && (self is SLOracleBehaviorHasMark)) //minimum score to not make dialog annoying
                     (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate("Looks like your score is " + gameCounter + ". " + (gameCounter > highScore ? "Your new highscore!" : "Your highscore is " + highScore + ".")), 10);

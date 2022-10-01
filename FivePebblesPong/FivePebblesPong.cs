@@ -302,6 +302,7 @@ namespace FivePebblesPong
         static int SearchDelayCounter = 0;
         static bool moonMayGrabController = true;
         static float prevPlayerX;
+        static bool destroyFadeGame;
 
 
         public static void Handle(SLOracleBehavior self)
@@ -323,33 +324,34 @@ namespace FivePebblesPong
                 FivePebblesPong.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
 
-            //reload if slugcat left screen when moon was playing
+            //reload images if slugcat left screen when moon was playing
             if (FivePebblesPong.moonGame != null && prevPlayerX < MIN_X_POS_PLAYER && self.player.DangerPos.x >= MIN_X_POS_PLAYER) {
                 FivePebblesPong.moonGame.Reload(self);
             }
             prevPlayerX = self.player.DangerPos.x;
 
+            //special effects (flicker, revealgame)
+            float revealGameAlpha = (400 - FivePebblesPong.moonDelayUpdateGame) * (0.5f / 400);
+            if (revealGameAlpha < 0f)
+                revealGameAlpha = 0f;
+            if (FivePebblesPong.moonGame != null)
+                FivePebblesPong.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(destroyFadeGame);
+
             //start/stop game
+            destroyFadeGame = false;
             if (playerMayPlayGame) //player plays
             {
-                if (FivePebblesPong.moonDelayUpdateGame > 0)
-                {
-                    //wait and gradually reveal game using imageAlpha
+                if (revealGameAlpha > 0.001f && FivePebblesPong.moonGame == null)
+                    FivePebblesPong.moonGame = new Dino(self) { imageAlpha = 0f };
+
+                //wait before allowing game to start
+                if (FivePebblesPong.moonDelayUpdateGame > 0) {
                     FivePebblesPong.moonDelayUpdateGame--;
-                    if (FivePebblesPong.moonGame == null && FivePebblesPong.moonDelayUpdateGame < 400) {
-                        FivePebblesPong.moonGame = new Dino(self);
-                        FivePebblesPong.moonGame.imageAlpha = 0f;
-                    }
-                    if (FivePebblesPong.moonGame != null && FivePebblesPong.moonGame.imageAlpha < 0.4f)
-                        FivePebblesPong.moonGame.imageAlpha += 0.001f;
-                    FivePebblesPong.moonGame?.Draw();
-                }
-                else {
-                    if (FivePebblesPong.moonGame == null)
-                        FivePebblesPong.moonGame = new Dino(self);
+                } else {
                     FivePebblesPong.moonGame?.Update(self);
-                    FivePebblesPong.moonGame?.Draw();
                 }
+
+                FivePebblesPong.moonGame?.Draw();
                 return;
             }
             else if (moonMayPlayGame) //moon plays
@@ -359,16 +361,20 @@ namespace FivePebblesPong
                     (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
 
                 if (FivePebblesPong.moonGame == null)
-                    FivePebblesPong.moonGame = new Dino(self);
+                    FivePebblesPong.moonGame = new Dino(self) { imageAlpha = 0f };
                 FivePebblesPong.moonGame?.Update(self, FivePebblesPong.moonGame.MoonAI());
                 FivePebblesPong.moonGame?.Draw();
                 return;
             }
-            else //destroy game
+            else if (FivePebblesPong.moonGame != null) //destroy game
             {
                 //TODO, object is not immediately destructed when FPGame was being played and player exits Rain World
-                FivePebblesPong.moonGame?.Destroy();
-                FivePebblesPong.moonGame = null;
+                destroyFadeGame = true;
+                FivePebblesPong.moonGame.Draw();
+                if (FivePebblesPong.moonGame.imageAlpha <= 0f) {
+                    FivePebblesPong.moonGame.Destroy();
+                    FivePebblesPong.moonGame = null;
+                }
             }
 
             //moon grabs controller
@@ -385,7 +391,7 @@ namespace FivePebblesPong
                 SearchDelayCounter = 0; //reset count
                 return;
             }
-            if (SearchDelayCounter < 600) { //don't execute every loop
+            if (SearchDelayCounter < 300) { //don't execute every loop
                 SearchDelayCounter++;
                 return;
             }
@@ -393,6 +399,30 @@ namespace FivePebblesPong
             bool? nullable = GrabObjectType<GameController>(self, MAX_GRAB_DIST);
             if (nullable.HasValue) //success or failed
                 SearchDelayCounter = 0; //reset count
+        }
+
+
+        //also copied via dnSpy and made static
+        private static int flickerCounter;
+        private static float flickerFade, flickerLastFade, flicker;
+        public static float ProjectorFlickerUpdate(bool kill)
+        {
+            flickerCounter++;
+            flickerLastFade = flickerFade;
+            flicker = Mathf.Max(0f, flicker - 0.071428575f);
+            if (kill) {
+                if (flickerFade <= 0f && flickerLastFade <= 0f)
+                    return flickerFade;
+                flickerFade = Mathf.Max(0f, flickerFade - 0.125f);
+            } else {
+                flickerFade = 0.7f * Mathf.Lerp(0.95f - 0.7f * flicker * UnityEngine.Random.value, 1f, UnityEngine.Random.value);
+                if (UnityEngine.Random.value < 0.033333335f) {
+                    flicker = Mathf.Pow(UnityEngine.Random.value, 0.5f);
+                } else {
+                    flicker = Mathf.Max(0.5f, flicker);
+                }
+            }
+            return flickerFade;
         }
 
 
