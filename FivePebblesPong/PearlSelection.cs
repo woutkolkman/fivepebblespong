@@ -23,8 +23,7 @@ namespace FivePebblesPong
             //gather pearls from current room
             for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
                 for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
-                    if (self.oracle.room.physicalObjects[i][j] is PebblesPearl &&
-                        self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
+                    if (self.oracle.room.physicalObjects[i][j] is PebblesPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
                         pearls.Add(self.oracle.room.physicalObjects[i][j]);
 
             //prevent showing pearl dialog

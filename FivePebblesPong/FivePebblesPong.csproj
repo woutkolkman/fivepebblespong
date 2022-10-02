@@ -65,6 +65,7 @@
     <Compile Include="GameObjects\DinoObstacle.cs" />
     <Compile Include="GameObjects\DinoPlayer.cs" />
     <Compile Include="GameObjects\SquareBorderMark.cs" />
+    <Compile Include="MoonGameStarter.cs" />
     <Compile Include="PearlSelection.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="GameController.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="GameObjects\PongBall.cs" />
     <Compile Include="GameObjects\PongLine.cs" />
     <Compile Include="GameObjects\PongPaddle.cs" />
+    <Compile Include="PebblesGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

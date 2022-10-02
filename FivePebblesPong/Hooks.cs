@@ -15,7 +15,7 @@ namespace FivePebblesPong
             //creates GameController object
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectRealizeHook;
 
-            //for checking if controller already exists
+            //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
 
             //five pebbles constructor
@@ -102,9 +102,9 @@ namespace FivePebblesPong
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            FivePebblesPong.pebblesNotFullyStartedCounter = 0;
-            FivePebblesPong.starter = null;
-            FivePebblesPong.pebblesCalibratedProjector = false;
+            PebblesGameStarter.pebblesNotFullyStartedCounter = 0;
+            PebblesGameStarter.starter = null;
+            PebblesGameStarter.pebblesCalibratedProjector = false;
         }
 
 
@@ -135,13 +135,13 @@ namespace FivePebblesPong
                 return;
 
             //construct/free PebblesGameStarter object
-            if (CarriesController && FivePebblesPong.starter == null)
-                FivePebblesPong.starter = new PebblesGameStarter();
-            if (!CarriesController && FivePebblesPong.starter != null && FivePebblesPong.starter.state == PebblesGameStarter.State.Stop)
-                FivePebblesPong.starter = null; //TODO, object is not destructed when player leaves early while carrying controller
+            if (CarriesController && PebblesGameStarter.starter == null)
+                PebblesGameStarter.starter = new PebblesGameStarter();
+            if (!CarriesController && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
+                PebblesGameStarter.starter = null; //TODO, object is not destructed when player leaves early while carrying controller
 
             //run state machine for starting/running/stopping games
-            FivePebblesPong.starter?.StateMachine(self, CarriesController);
+            PebblesGameStarter.starter?.StateMachine(self, CarriesController);
         }
 
 
@@ -157,7 +157,7 @@ namespace FivePebblesPong
             {
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It's an electronic device with buttons. Where did you find this?"), 0));
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It looks like something that Five Pebbles would like..."), 0));
-                FivePebblesPong.moonControllerReacted = true;
+                MoonGameStarter.moonControllerReacted = true;
             }
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
@@ -174,8 +174,8 @@ namespace FivePebblesPong
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            FivePebblesPong.moonControllerReacted = false;
-            FivePebblesPong.moonDelayUpdateGame = FivePebblesPong.MOON_DELAY_UPDATE_GAME_RESET;
+            MoonGameStarter.moonControllerReacted = false;
+            MoonGameStarter.moonDelayUpdateGame = MoonGameStarter.moonDelayUpdateGameReset;
         }
 
 
@@ -198,7 +198,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            FivePebblesPong.moonGame?.MoonBehavior(self);
+            MoonGameStarter.moonGame?.MoonBehavior(self);
         }
 
 
@@ -209,7 +209,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            FivePebblesPong.moonGame?.MoonBehavior(self);
+            MoonGameStarter.moonGame?.MoonBehavior(self);
         }
     }
 }
