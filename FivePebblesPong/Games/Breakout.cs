@@ -10,7 +10,7 @@ namespace FivePebblesPong
         public PongBall ball;
         public PongLine lineMid;
         public PongLine lineEnd;
-        const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
+        const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
         public List<PongPaddle> bricks;
 
@@ -87,8 +87,8 @@ namespace FivePebblesPong
             //move puppet and look at player/ball
             self.SetNewDestination(paddle.pos); //moves handle closer occasionally
             self.currentGetTo = paddle.pos;
-            self.currentGetTo.x += pX * POS_OFFSET_SPEED; //keep up with fast paddle
-            self.currentGetTo.y += pY * POS_OFFSET_SPEED; //keep up with fast paddle
+            self.currentGetTo.x += pX * paddle.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+            self.currentGetTo.y += pY * paddle.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             if (self.currentGetTo.x > paddle.maxX) //keep puppet behind line
                 self.currentGetTo.x = paddle.maxX;
             self.floatyMovement = false;

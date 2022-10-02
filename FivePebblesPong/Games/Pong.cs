@@ -11,7 +11,7 @@ namespace FivePebblesPong
         public PongLine line;
         public SquareBorderMark border;
         public bool playerLastWin = true;
-        const float POS_OFFSET_SPEED = 80; //keep up with fast paddle by altering getTo position
+        const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
         const int GETREADY_WAIT = 120; //frames
         public static bool compliment = true;
         public int pebblesWin = 0;
@@ -84,7 +84,7 @@ namespace FivePebblesPong
             base.Update(self);
 
             //increase ball speed gradually
-            ball.movementSpeed = 5.5f + (0.001f * base.gameCounter);
+            ball.movementSpeed = 6f + (0.001f * base.gameCounter);
 
             this.StateMachine(self);
             if (state == State.GetReady)
@@ -107,7 +107,7 @@ namespace FivePebblesPong
             //move puppet and look at player/ball
             self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
             self.currentGetTo = pebblesPdl.pos;
-            self.currentGetTo.y += pebblesInput * POS_OFFSET_SPEED; //keep up with fast paddle
+            self.currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             self.floatyMovement = false;
             self.lookPoint = (state == State.Playing) ? ball.pos : self.player.DangerPos;
         }

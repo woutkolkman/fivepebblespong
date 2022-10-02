@@ -93,6 +93,7 @@ namespace FivePebblesPong
 
             if (gameControllerInShelter)
                 FivePebblesPong.ME.Logger_p.LogInfo("gameControllerInShelter");
+            //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
         }
 
 
