@@ -42,12 +42,13 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
-            float dTh = 2.5f; //damping
             float pTh = 1.5f; //propotional
+            float dTh = 2.5f; //damping
 
             //check if pearl is grabbed, else set position
             pearlGrabbed = -1;
-            for (int i = 0; i < pearls.Count; i++) {
+            for (int i = 0; i < pearls.Count; i++)
+            {
                 if (pearls[i].grabbedBy.Count > 0)
                 {
                     if (pearls[i].grabbedBy[0].grabber == self.player)
@@ -57,11 +58,20 @@ namespace FivePebblesPong
                 //generate sinus
                 float x = minX + (i * (lenX / pearls.Count));
                 float y = midY + (lenY/2) * (float) Math.Sin((x + base.gameCounter)/50);
+                Vector2 target = new Vector2(x, y);
+
+                //if distance is small, hard set position so pearl does not "bounce"
+                if (Vector2.Distance(pearls[i].firstChunk.pos, target) < 2f)
+                {
+                    pearls[i].firstChunk.pos = target;
+                    pearls[i].firstChunk.vel = new Vector2();
+                    continue;
+                }
 
                 //set velocity
-                pearls[i].bodyChunks[0].vel.x /= dTh;
-                pearls[i].bodyChunks[0].vel.y /= dTh;
-                pearls[i].bodyChunks[0].vel += pTh * Custom.DirVec(pearls[i].bodyChunks[0].pos, new Vector2(x, y));
+                pearls[i].firstChunk.vel.x /= dTh;
+                pearls[i].firstChunk.vel.y /= dTh;
+                pearls[i].firstChunk.vel += pTh * Custom.DirVec(pearls[i].firstChunk.pos, target);
             }
         }
     }
