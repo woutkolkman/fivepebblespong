@@ -40,18 +40,7 @@
     <Reference Include="HOOKS-Assembly-CSharp">
       <HintPath>..\..\references\HOOKS-Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>..\..\references\MonoMod.RuntimeDetour.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>..\..\references\MonoMod.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\references\UnityEngine.dll</HintPath>
     </Reference>

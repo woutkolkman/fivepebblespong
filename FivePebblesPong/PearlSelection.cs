@@ -9,6 +9,7 @@ namespace FivePebblesPong
     {
         public List<PhysicalObject> pearls;
         public int pearlGrabbed;
+        public bool ignoreVector00;
         public enum Type
         {
             SinusY,
@@ -108,6 +109,10 @@ namespace FivePebblesPong
                         pearlGrabbed = i;
                     continue;
                 }
+
+                //don't set position if vector is 0,0
+                if (ignoreVector00 && positions[i] == new Vector2())
+                    continue;
 
                 //if distance is small, hard set position so pearl does not "bounce"
                 float dist = Vector2.Distance(pearls[i].firstChunk.pos, positions[i]);
