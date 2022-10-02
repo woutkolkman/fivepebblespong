@@ -26,6 +26,7 @@ Add references to files as described in the guide above:
 - BepInEx.dll
 - HOOKS-Assembly-CSharp.dll
 - UnityEngine.dll
+
 You can store these, for example, in a folder "references" next to the folder containing this source code.
 
 You can build the code using the shortcut CTRL + SHIFT + B.
