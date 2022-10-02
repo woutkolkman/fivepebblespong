@@ -44,6 +44,6 @@ Stuff that may need improvements are:
 - Translations? And a way of applying those.
 - Maybe better code structure or folder hierarchy.
 - Multiplayer support?
-- Your own improvements (with your explanation and reason). 
+- Your own improvements (with your explanation and reason).
 
-If your additions need extra files or assets, please propose a system for users to easily add these files to Rain World for your additions to work.
+If your additions need extra files or assets, please propose a system for users to easily add these files to Rain World for your additions to work. The current graphics are generated via code and saved in "\Rain World\Assets\Futile\Resources\Illustrations\", where the game can load them.
