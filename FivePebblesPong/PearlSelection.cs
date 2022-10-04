@@ -124,12 +124,15 @@ namespace FivePebblesPong
                 }
 
                 //set velocity
-                float damping = 1f - dist/15;
-                if (damping < 0)
-                    damping = 0;
-                pearls[i].firstChunk.vel.x /= (1.2f + damping);
-                pearls[i].firstChunk.vel.y /= (1.1f + damping);
-                pearls[i].firstChunk.vel += 1.5f * Custom.DirVec(pearls[i].firstChunk.pos, positions[i]);
+                const float minDamping = 1.1f;
+                const float maxDamping = 1.9f;
+                const float multiplier = 1.5f;
+                float damping = maxDamping - dist/10;
+                if (damping < minDamping)
+                    damping = minDamping;
+                pearls[i].firstChunk.vel.x /= (damping);
+                pearls[i].firstChunk.vel.y /= (damping);
+                pearls[i].firstChunk.vel += multiplier * Custom.DirVec(pearls[i].firstChunk.pos, positions[i]);
             }
         }
     }
