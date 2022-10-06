@@ -16,6 +16,8 @@ Add references to files as described in the guide above:
 - BepInEx.dll
 - HOOKS-Assembly-CSharp.dll
 - UnityEngine.dll
+- MonoMod.RuntimeDetour.dll
+- MonoMod.Utils.dll
 
 You can store these, for example, in a folder "references" next to the folder containing this source code.
 

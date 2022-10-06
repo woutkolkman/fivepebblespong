@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
+using System.Reflection;
+using MonoMod.RuntimeDetour;
 
 namespace FivePebblesPong
 {
     class Hooks
     {
+        static BindingFlags propFlags = BindingFlags.Instance | BindingFlags.Public;
+        static BindingFlags myMethodFlags = BindingFlags.Static | BindingFlags.Public;
+
+
         public static void Apply()
         {
             //selects room to place GameController type
@@ -32,6 +38,16 @@ namespace FivePebblesPong
             On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
             On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMarkUpdateHook;
             On.SLOracleBehaviorNoMark.Update += SLOracleBehaviorNoMarkUpdateHook;
+
+            //Moon OracleGetToPos RuntimeDetour
+            Hook SLOracleBehaviorHasMarkOracleGetToPosHook = new Hook(
+                typeof(SLOracleBehaviorHasMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
+                typeof(Hooks).GetMethod("SLOracleBehaviorHasMark_OracleGetToPos_get", myMethodFlags)
+            );
+            Hook SLOracleBehaviorNoMarkOracleGetToPosHook = new Hook(
+                typeof(SLOracleBehaviorNoMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
+                typeof(Hooks).GetMethod("SLOracleBehaviorNoMark_OracleGetToPos_get", myMethodFlags)
+            );
         }
 
 
@@ -155,7 +171,6 @@ namespace FivePebblesPong
             {
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It's an electronic device with buttons. Where did you find this?"), 0));
                 self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It looks like something that Five Pebbles would like..."), 0));
-                MoonGameStarter.moonControllerReacted = true;
             }
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
@@ -172,7 +187,6 @@ namespace FivePebblesPong
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            MoonGameStarter.moonControllerReacted = false;
             MoonGameStarter.moonDelayUpdateGame = MoonGameStarter.moonDelayUpdateGameReset;
         }
 
@@ -208,6 +222,22 @@ namespace FivePebblesPong
                 return;
 
             MoonGameStarter.moonGame?.MoonBehavior(self);
+        }
+
+
+        public delegate Vector2 orig_OracleGetToPos_HasMark(SLOracleBehaviorHasMark self);
+        public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
+        public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
+        {
+            if (MoonGameStarter.grabItem != null)
+                return MoonGameStarter.grabItem.firstChunk.pos;
+            return orig(self);
+        }
+        public static Vector2 SLOracleBehaviorNoMark_OracleGetToPos_get(orig_OracleGetToPos_NoMark orig, SLOracleBehaviorNoMark self)
+        {
+            if (MoonGameStarter.grabItem != null)
+                return MoonGameStarter.grabItem.firstChunk.pos;
+            return orig(self);
         }
     }
 }

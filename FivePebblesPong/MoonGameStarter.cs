@@ -7,16 +7,16 @@ namespace FivePebblesPong
     {
         //moongame if controller is taken to moon
         public static Dino moonGame;
-        public static bool moonControllerReacted;
         public static int moonDelayUpdateGameReset = 1200;
         public static int moonDelayUpdateGame = moonDelayUpdateGameReset;
 
-        static int minXPosPlayer = 1100;
-        static float maxControllerGrabDist = 100f;
-        static int SearchDelayCounter = 0;
-        static bool moonMayGrabController = true;
-        static float prevPlayerX;
-        static bool destroyFadeGame;
+        public static int minXPosPlayer = 1100;
+        public static float maxControllerGrabDist = 90f;
+        public static int SearchDelayCounter = 0;
+        public static int SearchDelay = 600;
+        public static bool moonMayGrabController = true;
+        public static float prevPlayerX;
+        public static bool fadeGame; //if true, game will fade until invisible
 
 
         public static void Handle(SLOracleBehavior self)
@@ -29,8 +29,7 @@ namespace FivePebblesPong
 
             bool playerMayPlayGame = (
                 playerCarriesController && self.hasNoticedPlayer &&
-                self.player.DangerPos.x >= minXPosPlayer && //stop game when leaving
-                (MoonGameStarter.moonControllerReacted || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
+                self.player.DangerPos.x >= minXPosPlayer //stop game when leaving
             );
             bool moonMayPlayGame = (
                 self.holdingObject is GameController &&
@@ -48,31 +47,27 @@ namespace FivePebblesPong
             if (revealGameAlpha < 0f)
                 revealGameAlpha = 0f;
             if (MoonGameStarter.moonGame != null)
-                MoonGameStarter.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(destroyFadeGame);
+                MoonGameStarter.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(fadeGame);
 
             //start/stop game
-            destroyFadeGame = false;
+            fadeGame = false;
             if (playerMayPlayGame) //player plays
             {
                 if (revealGameAlpha > 0.001f && MoonGameStarter.moonGame == null)
                     MoonGameStarter.moonGame = new Dino(self) { imageAlpha = 0f };
 
                 //wait before allowing game to start
-                if (MoonGameStarter.moonDelayUpdateGame > 0)
-                {
+                if (MoonGameStarter.moonDelayUpdateGame > 0) {
                     MoonGameStarter.moonDelayUpdateGame--;
-                }
-                else
-                {
+                } else {
                     MoonGameStarter.moonGame?.Update(self);
                 }
 
                 MoonGameStarter.moonGame?.Draw();
-                return;
             }
             else if (moonMayPlayGame) //moon plays
             {
-                //prevent moon from releasing controller if not game over
+                //prevent moon from auto releasing controller if not game over
                 if (self is SLOracleBehaviorHasMark && MoonGameStarter.moonGame != null && MoonGameStarter.moonGame.dino != null && MoonGameStarter.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
                     (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
 
@@ -80,12 +75,11 @@ namespace FivePebblesPong
                     MoonGameStarter.moonGame = new Dino(self) { imageAlpha = 0f };
                 MoonGameStarter.moonGame?.Update(self, MoonGameStarter.moonGame.MoonAI());
                 MoonGameStarter.moonGame?.Draw();
-                return;
             }
             else if (MoonGameStarter.moonGame != null) //destroy game
             {
                 //TODO, object is not immediately destructed when FPGame was being played and player exits Rain World
-                destroyFadeGame = true;
+                fadeGame = true;
                 MoonGameStarter.moonGame.Draw();
                 if (MoonGameStarter.moonGame.imageAlpha <= 0f)
                 {
@@ -95,30 +89,20 @@ namespace FivePebblesPong
             }
 
             //moon grabs controller
-            if (!moonMayGrabController)
-                return;
+            if (SearchDelayCounter < SearchDelay) //search after specified delay
+                SearchDelayCounter++;
 
-            if ((!MoonGameStarter.moonControllerReacted && self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark) ||
-                MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null ||
-                (!self.State.SpeakingTerms && self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark))
-            {
+            if (!moonMayGrabController || MoonGameStarter.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
                 SearchDelayCounter = 0; //reset count
-                return;
-            }
+
+            if (MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
+                SearchDelayCounter = 0; //reset count
 
             if (self is SLOracleBehaviorHasMark &&
                 ((self as SLOracleBehaviorHasMark).moveToAndPickUpItem != null || (self as SLOracleBehaviorHasMark).DamagedMode || (self as SLOracleBehaviorHasMark).currentConversation != null))
-            {
                 SearchDelayCounter = 0; //reset count
-                return;
-            }
 
-            if (SearchDelayCounter < 300) { //don't execute every loop
-                SearchDelayCounter++;
-                return;
-            }
-
-            bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist);
+            bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist, SearchDelayCounter < SearchDelay);
             if (nullable.HasValue) //success or failed
                 SearchDelayCounter = 0; //reset count
         }
@@ -150,9 +134,18 @@ namespace FivePebblesPong
 
         //moon grabs object by type, crawling not (yet) implemented
         public static int moveToItemDelay;
-        public static PhysicalObject grabItem;
-        public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist)
+        public static PhysicalObject grabItem; //if not null, moon moves to this position
+        public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist, bool cancel = false)
         {
+            if (cancel)
+            {
+                if (grabItem != null)
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing grabItem was canceled");
+                grabItem = null;
+                moveToItemDelay = 0;
+                return null; //try again later
+            }
+
             if (grabItem == null)
             {
                 FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Searching for grabItem");
@@ -168,6 +161,14 @@ namespace FivePebblesPong
                     FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem not found");
                     return false;
                 }
+            }
+
+            if (grabItem.grabbedBy.Count > 0)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem was grabbed by another");
+                grabItem = null;
+                moveToItemDelay = 0;
+                return false; //failed
             }
 
             float dist = Vector2.Distance(grabItem.firstChunk.pos, self.oracle.bodyChunks[0].pos);
@@ -202,8 +203,7 @@ namespace FivePebblesPong
                     return false; //failed
                 }
 
-                //move/crawl towards object
-                //TODO, it's hard to apply hooks for this feature
+                //moves/crawls towards object via RuntimeDetour, if grabItem != null
 
                 return null; //still trying
             }
