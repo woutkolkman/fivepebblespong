@@ -64,7 +64,7 @@ namespace FivePebblesPong
 
             //load png(s), if image is invalid, exception(?) occurs
             if (self is SLOracleBehavior) {
-                image = ProjectedImageBloom.AddImage(self.oracle.myScreen, names, cycleTime);
+                image = ProjectedImageV2.AddImage(self.oracle.myScreen, names, cycleTime);
             } else {
                 image = self.oracle.myScreen.AddImage(names, cycleTime);
             }
@@ -82,9 +82,9 @@ namespace FivePebblesPong
 
 
     //class was created because regular ProjectedImages don't work as well in moons room
-    public class ProjectedImageBloom : ProjectedImage
+    public class ProjectedImageV2 : ProjectedImage
     {
-        public ProjectedImageBloom(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
+        public ProjectedImageV2(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
 
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -92,15 +92,51 @@ namespace FivePebblesPong
             sLeaser.sprites = new FSprite[1];
             sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
             sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["Projection"];
-            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Bloom")); //default is "Foreground"
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("HUD")); //default is "Foreground"
         }
 
 
-        public static ProjectedImageBloom AddImage(ProjectionScreen self, List<string> names, int cycleTime)
+        public static ProjectedImageV2 AddImage(ProjectionScreen self, List<string> names, int cycleTime)
         {
-            self.images.Add(new ProjectedImageBloom(names, cycleTime));
+            self.images.Add(new ProjectedImageV2(names, cycleTime));
             self.room.AddObject(self.images[self.images.Count - 1]);
-            return self.images[self.images.Count - 1] as ProjectedImageBloom;
+            return self.images[self.images.Count - 1] as ProjectedImageV2;
+        }
+    }
+
+
+    //glow effect for moongame, glow effect could not be combined with ProjectedImageV2 when ReturnFContainer != "Foreground"
+    public class Glow : CosmeticSprite
+    {
+        public Color color = Color.white;
+        public float scaleX = 25f, scaleY = 25f;
+        public float alpha = 1f;
+
+
+        public Glow(Room room) : base()
+        {
+            room.AddObject(this);
+        }
+
+
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+        {
+            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites[0] = new FSprite("Futile_White", true);
+            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["LightSource"];
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
+        }
+
+
+        public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+        {
+            sLeaser.sprites[0].x = this.pos.x - camPos.x;
+            sLeaser.sprites[0].y = this.pos.y - camPos.y;
+            sLeaser.sprites[0].scaleX = this.scaleX;
+            sLeaser.sprites[0].scaleY = this.scaleY;
+            sLeaser.sprites[0].color = this.color;
+            sLeaser.sprites[0].alpha = this.alpha;
+            base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
     }
 }

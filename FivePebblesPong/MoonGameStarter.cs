@@ -15,7 +15,6 @@ namespace FivePebblesPong
         public static int SearchDelayCounter = 0;
         public static int SearchDelay = 600;
         public static bool moonMayGrabController = true;
-        public static float prevPlayerX;
         public static bool fadeGame; //if true, game will fade until invisible
 
 
@@ -36,11 +35,6 @@ namespace FivePebblesPong
                 self.player.room.roomSettings.name.Equals("SL_AI") && //memory gets freed if player leaves
                 MoonGameStarter.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
-
-            //reload images if slugcat left screen when moon was playing
-            if (MoonGameStarter.moonGame != null && prevPlayerX < minXPosPlayer && self.player.DangerPos.x >= minXPosPlayer)
-                MoonGameStarter.moonGame.Reload(self);
-            prevPlayerX = self.player.DangerPos.x;
 
             //special effects (flicker, revealgame)
             float revealGameAlpha = (400 - MoonGameStarter.moonDelayUpdateGame) * (0.5f / 400);
@@ -93,14 +87,14 @@ namespace FivePebblesPong
                 SearchDelayCounter++;
 
             if (!moonMayGrabController || MoonGameStarter.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
-                SearchDelayCounter = 0; //reset count
+                SearchDelayCounter = 0; //cancel grabbing
 
             if (MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
-                SearchDelayCounter = 0; //reset count
+                SearchDelayCounter = 0; //cancel grabbing
 
             if (self is SLOracleBehaviorHasMark &&
                 ((self as SLOracleBehaviorHasMark).moveToAndPickUpItem != null || (self as SLOracleBehaviorHasMark).DamagedMode || (self as SLOracleBehaviorHasMark).currentConversation != null))
-                SearchDelayCounter = 0; //reset count
+                SearchDelayCounter = 0; //cancel grabbing
 
             bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist, SearchDelayCounter < SearchDelay);
             if (nullable.HasValue) //success or failed
@@ -132,7 +126,7 @@ namespace FivePebblesPong
         }
 
 
-        //moon grabs object by type, crawling not (yet) implemented
+        //moon grabs random object by type
         public static int moveToItemDelay;
         public static PhysicalObject grabItem; //if not null, moon moves to this position
         public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist, bool cancel = false)
@@ -159,7 +153,7 @@ namespace FivePebblesPong
                 if (grabItem == null)
                 {
                     FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem not found");
-                    return false;
+                    return false; //failed
                 }
             }
 

@@ -14,6 +14,8 @@ namespace FivePebblesPong
         public int lastCounter;
         public static int highScore;
         public int minObstacleInterval = 25;
+        public readonly Color color;
+        public Glow glow;
 
 
         public Dino(SLOracleBehavior self) : base()
@@ -24,13 +26,16 @@ namespace FivePebblesPong
             base.maxX = 1820;
 
             this.obstacles = new List<DinoObstacle>();
+            this.color = new Color(0f, 0.89411765f, 1f); //color of bootlabel moon
 
-            this.dino = new DinoPlayer(self, Color.white, "FPP_Dino");
+            this.dino = new DinoPlayer(self, color, "FPP_Dino");
             this.dino.pos = new Vector2(midX + 30 - gameWidth / 2, midY);
             this.dino.ground = midY - this.dino.height / 2;
 
-            this.line = new PongLine(self, true, gameWidth, 1, 0, Color.white, "FPP_Line", reloadImg: true);
+            this.line = new PongLine(self, true, gameWidth, 1, 0, color, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY - 1 - this.dino.height / 2);
+
+            this.glow = new Glow(self.oracle.room) { color = this.color, scaleX = 60f, scaleY = 25f };
         }
 
 
@@ -45,6 +50,7 @@ namespace FivePebblesPong
             base.Destroy(); //empty
             this.dino?.Destroy();
             this.line?.Destroy();
+            this.glow?.Destroy();
             for (int i = 0; i < obstacles.Count; i++)
                 obstacles[i]?.Destroy();
             obstacles?.Clear();
@@ -104,14 +110,14 @@ namespace FivePebblesPong
 
                 //spawn cactus
                 if (gameCounter < 1000 || UnityEngine.Random.value < 0.8f) {
-                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f * gameCounter), 0f, Color.white, "FPP_Cactus"));
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f * gameCounter), 0f, color, "FPP_Cactus"));
                     obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + 1 + obstacles[obstacles.Count - 1].height / 2);
 
                 } else { //spawn bird
                     int offsetFromGround = 21;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 11;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 31;
-                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Bird, -3f - (0.0007f * gameCounter), UnityEngine.Random.Range(-0.1f, 0.1f), Color.white, "FPP_Bird"));
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Bird, -3f - (0.0007f * gameCounter), UnityEngine.Random.Range(-0.1f, 0.1f), color, "FPP_Bird"));
                     obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + offsetFromGround + obstacles[obstacles.Count - 1].height / 2);
                 }
             }
@@ -125,6 +131,8 @@ namespace FivePebblesPong
             this.dino.image.setAlpha = imageAlpha;
             line.DrawImage(offset);
             line.image.setAlpha = imageAlpha;
+            glow.pos = new Vector2(midX, midY) + offset;
+            glow.alpha = imageAlpha;
 
             for (int i = 0; i < obstacles.Count; i++) {
                 if (obstacles[i] == null)
@@ -132,16 +140,6 @@ namespace FivePebblesPong
                 obstacles[i].DrawImage(offset);
                 obstacles[i].image.setAlpha = imageAlpha;
             }
-        }
-
-
-        public void Reload(SLOracleBehavior self)
-        {
-            //if images get deloaded when player left when moon was playing
-            this.dino.SetImage(self);
-            this.line.SetImage(self, new Texture2D(1, 1), false); //image gets reloaded
-            foreach (DinoObstacle ob in obstacles)
-                ob.SetImage(self);
         }
 
 
@@ -168,7 +166,7 @@ namespace FivePebblesPong
             if (!gameStarted && prevGameStarted) {
                 //moon was playing
                 if (self.holdingObject != null && self.holdingObject is GameController) {
-                    if (self is SLOracleBehaviorHasMark)
+                    if (self is SLOracleBehaviorHasMark && self.State.SpeakingTerms && self.oracle.health >= 1f)
                         (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate(gameCounter + "!"), 10);
 
                     //release controller if SLOracleBehavior child doesn't do this automatically
@@ -177,7 +175,7 @@ namespace FivePebblesPong
                     return;
                 }
                 //player was playing
-                if (gameCounter > 1000 && (self is SLOracleBehaviorHasMark)) //minimum score to not make dialog annoying
+                if (gameCounter > 1000 && (self is SLOracleBehaviorHasMark) && self.State.SpeakingTerms && self.oracle.health >= 1f) //minimum score to not make dialog annoying
                     (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate("Looks like your score is " + gameCounter + ". " + (gameCounter > highScore ? "Your new highscore!" : "Your highscore is " + highScore + ".")), 10);
                 if (gameCounter > highScore)
                     highScore = gameCounter;
