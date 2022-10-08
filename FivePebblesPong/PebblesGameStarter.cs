@@ -10,6 +10,7 @@ namespace FivePebblesPong
         public static PebblesGameStarter starter; //object gets created when player is holding gamecontroller in pebbles room
         public static int pebblesNotFullyStartedCounter;
         public static bool pebblesCalibratedProjector;
+        public static bool controllerInStomachReacted;
 
         public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
         public FPGame game;
@@ -59,8 +60,7 @@ namespace FivePebblesPong
                     {
                         switch (PebblesGameStarter.pebblesNotFullyStartedCounter)
                         {
-                            case 0: self.dialogBox.Interrupt(self.Translate("Well, a little game shouldn't hurt."), 10); break;
-                            //or "Fine, I needed a break.", "That's also not edible."
+                            case 0: self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "Well, a little game shouldn't hurt." : "Fine, I needed a break."), 10); break;
                             case 1: self.dialogBox.Interrupt(self.Translate("Have you made up your mind?"), 10); break;
                             case 2: self.dialogBox.Interrupt(self.Translate("You're just playing with that, aren't you.."), 10); break;
                             case 3:
@@ -85,8 +85,11 @@ namespace FivePebblesPong
                     }
                     menu?.Update(self);
 
-                    if (menu != null)
+                    if (menu != null) {
                         game = FivePebblesPong.GetNewFPGame(self, menu.pearlGrabbed);
+                        if (menu.gameCounter == 2000)
+                            self.dialogBox.Interrupt(self.Translate("You may pick one."), 10);
+                    }
 
                     if (game != null)
                         state = State.Calibrate;
@@ -157,20 +160,32 @@ namespace FivePebblesPong
                         game?.Destroy();
                         game = null;
 
-                        if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
+                        if (!controllerInStomachReacted && self.player.objectInStomach != null && self.player.objectInStomach.type == EnumExt_FPP.GameController)
+                        {
+                            self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "It's yours now, please keep it." : "That's also not edible."), 10);
+                            controllerInStomachReacted = true;
+                            if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
+                                PebblesGameStarter.pebblesNotFullyStartedCounter++;
+                        }
+                        else if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
                         {
                             switch (UnityEngine.Random.Range(0, 3))
                             {
                                 case 0: self.dialogBox.Interrupt(self.Translate("You are not very decisive..."), 10); break;
                                 case 1: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
-                                case 2: self.dialogBox.Interrupt(self.Translate("I'll take that as a no."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("I will take that as a no."), 10); break;
                                 case 3: self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10); break;
                             }
                             PebblesGameStarter.pebblesNotFullyStartedCounter++;
                         }
                         else
                         {
-                            self.dialogBox.Interrupt(self.Translate("Ok, where was I?"), 10);
+                            switch (UnityEngine.Random.Range(0, 2))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("Ok, where was I?"), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("Now, what was I saying?"), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("Break is over."), 10); break;
+                            }
                         }
                     }
 
