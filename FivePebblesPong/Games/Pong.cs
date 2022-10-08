@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FivePebblesPong
@@ -11,11 +12,15 @@ namespace FivePebblesPong
         public PongLine line;
         public SquareBorderMark border;
         public bool playerLastWin = true;
-        const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
-        const int GETREADY_WAIT = 120; //frames
+        public const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
+        public const int GETREADY_WAIT = 120; //frames
         public static bool compliment = true;
         public int pebblesWin = 0;
         public int playerWin = 0;
+        public PearlSelection scoreBoard;
+        public List<Vector2> scoreCount;
+        public const float SCORE_HEIGHT = 135;
+        public static bool grabbedScoreReacted = false;
 
         public enum State
         {
@@ -42,6 +47,9 @@ namespace FivePebblesPong
 
             this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
+
+            scoreBoard = new PearlSelection(self);
+            scoreCount = new List<Vector2>();
         }
 
 
@@ -76,6 +84,8 @@ namespace FivePebblesPong
             this.ball?.Destroy();
             this.line?.Destroy();
             this.border?.Destroy();
+            this.scoreCount.Clear();
+            this.scoreBoard?.Destroy();
         }
 
 
@@ -110,6 +120,14 @@ namespace FivePebblesPong
             self.currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             self.floatyMovement = false;
             self.lookPoint = (state == State.Playing) ? ball.pos : self.player.DangerPos;
+
+            //update score
+            scoreBoard?.Update(self, scoreCount);
+            if (!grabbedScoreReacted && playerWin <= 0 && scoreBoard != null && scoreBoard.pearlGrabbed != -1)
+            {
+                grabbedScoreReacted = true;
+                self.dialogBox.Interrupt(self.Translate("No cheating!"), 10);
+            }
         }
 
 
@@ -157,6 +175,7 @@ namespace FivePebblesPong
                 case State.PlayerWin:
                     state = State.GetReady;
                     playerLastWin = true;
+                    scoreCount.Add(new Vector2(midX - 60 - 15 * (playerWin%10), SCORE_HEIGHT + 15 * (playerWin / 10)));
                     playerWin++;
                     if (compliment) {
                         if (pebblesWin < 10) {
@@ -172,6 +191,7 @@ namespace FivePebblesPong
                 case State.PebblesWin:
                     state = State.GetReady;
                     playerLastWin = false;
+                    scoreCount.Add(new Vector2(midX + 60 + 15 * (pebblesWin%10), SCORE_HEIGHT + 15 * (pebblesWin / 10)));
                     pebblesWin++;
                     if (pebblesWin == 10) {
                         self.dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);

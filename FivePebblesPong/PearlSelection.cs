@@ -8,8 +8,8 @@ namespace FivePebblesPong
     public class PearlSelection : FPGame
     {
         public List<PhysicalObject> pearls;
-        public int pearlGrabbed;
-        public bool ignoreVector00;
+        public int pearlGrabbed; //-1 if no pearl was grabbed
+        public bool ignoreVector00; //if true, new Vector2() (default 0,0) is not assigned to pearl
         public enum Type
         {
             SinusY,
@@ -116,7 +116,7 @@ namespace FivePebblesPong
 
                 //if distance is small, hard set position so pearl does not "bounce"
                 float dist = Vector2.Distance(pearls[i].firstChunk.pos, positions[i]);
-                if (dist < 2f)
+                if (dist < 3f)
                 {
                     pearls[i].firstChunk.pos = positions[i];
                     pearls[i].firstChunk.vel = new Vector2();

@@ -31,10 +31,10 @@ namespace FivePebblesPong
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
 
-            //big sis moon constructor
+            //moon constructor
             On.SLOracleBehavior.ctor += SLOracleBehaviorCtorHook;
 
-            //big sis moon update functions
+            //moon update functions
             On.SLOracleBehavior.Update += SLOracleBehaviorUpdateHook;
             On.SLOracleBehaviorHasMark.Update += SLOracleBehaviorHasMarkUpdateHook;
             On.SLOracleBehaviorNoMark.Update += SLOracleBehaviorNoMarkUpdateHook;
@@ -179,7 +179,7 @@ namespace FivePebblesPong
         }
 
 
-        //big sis moon constructor
+        //moon constructor
         static void SLOracleBehaviorCtorHook(On.SLOracleBehavior.orig_ctor orig, SLOracleBehavior self, Oracle oracle)
         {
             orig(self, oracle);
@@ -190,7 +190,7 @@ namespace FivePebblesPong
         }
 
 
-        //big sis moon update functions
+        //moon update functions
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
             orig(self, eu);
@@ -224,6 +224,7 @@ namespace FivePebblesPong
         }
 
 
+        //RuntimeDetour for moon to move towards item which should be picked up
         public delegate Vector2 orig_OracleGetToPos_HasMark(SLOracleBehaviorHasMark self);
         public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
         public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
