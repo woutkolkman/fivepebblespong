@@ -149,10 +149,10 @@ namespace FivePebblesPong
                 return;
 
             //construct/free PebblesGameStarter object
-            if (CarriesController && PebblesGameStarter.starter == null)
+            if ((CarriesController && self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter == null)
                 PebblesGameStarter.starter = new PebblesGameStarter();
-            if (!CarriesController && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
-                PebblesGameStarter.starter = null; //TODO, object is not destructed when player leaves early while carrying controller
+            if ((!CarriesController || !self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
+                PebblesGameStarter.starter = null;
 
             //run state machine for starting/running/stopping games
             PebblesGameStarter.starter?.StateMachine(self, CarriesController);
@@ -195,10 +195,8 @@ namespace FivePebblesPong
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
             orig(self, eu);
-
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-
             MoonGameStarter.Handle(self);
         }
 
@@ -206,10 +204,8 @@ namespace FivePebblesPong
         static void SLOracleBehaviorHasMarkUpdateHook(On.SLOracleBehaviorHasMark.orig_Update orig, SLOracleBehaviorHasMark self, bool eu)
         {
             orig(self, eu);
-
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-
             MoonGameStarter.moonGame?.MoonBehavior(self);
         }
 
@@ -217,10 +213,8 @@ namespace FivePebblesPong
         static void SLOracleBehaviorNoMarkUpdateHook(On.SLOracleBehaviorNoMark.orig_Update orig, SLOracleBehaviorNoMark self, bool eu)
         {
             orig(self, eu);
-
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-
             MoonGameStarter.moonGame?.MoonBehavior(self);
         }
 
@@ -229,13 +223,13 @@ namespace FivePebblesPong
         public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
         public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
         {
-            if (MoonGameStarter.grabItem != null)
+            if (FivePebblesPong.HasEnumExt && MoonGameStarter.grabItem != null)
                 return MoonGameStarter.grabItem.firstChunk.pos;
             return orig(self);
         }
         public static Vector2 SLOracleBehaviorNoMark_OracleGetToPos_get(orig_OracleGetToPos_NoMark orig, SLOracleBehaviorNoMark self)
         {
-            if (MoonGameStarter.grabItem != null)
+            if (FivePebblesPong.HasEnumExt && MoonGameStarter.grabItem != null)
                 return MoonGameStarter.grabItem.firstChunk.pos;
             return orig(self);
         }

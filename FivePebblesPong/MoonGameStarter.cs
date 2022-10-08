@@ -15,7 +15,7 @@ namespace FivePebblesPong
         public static int SearchDelayCounter = 0;
         public static int SearchDelay = 600;
         public static bool moonMayGrabController = true;
-        public static bool fadeGame; //if true, game will fade until invisible
+        public static bool fadeGame; //if true, game will fade until it is invisible
 
 
         public static void Handle(SLOracleBehavior self)
@@ -72,7 +72,6 @@ namespace FivePebblesPong
             }
             else if (MoonGameStarter.moonGame != null) //destroy game
             {
-                //TODO, object is not immediately destructed when FPGame was being played and player exits Rain World
                 fadeGame = true;
                 MoonGameStarter.moonGame.Draw();
                 if (MoonGameStarter.moonGame.imageAlpha <= 0f)

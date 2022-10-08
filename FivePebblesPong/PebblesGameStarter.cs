@@ -49,7 +49,7 @@ namespace FivePebblesPong
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (CarriesController && PebblesGameStarter.pebblesNotFullyStartedCounter < 4)
+                    if (CarriesController && self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.pebblesNotFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
 
@@ -90,7 +90,7 @@ namespace FivePebblesPong
 
                     if (game != null)
                         state = State.Calibrate;
-                    if (!CarriesController)
+                    if (!CarriesController || !self.player.room.roomSettings.name.Equals("SS_AI"))
                         state = State.StopDialog;
                     if (state != State.SelectGame)
                     {
@@ -145,7 +145,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (!CarriesController)
+                    if (!CarriesController || !self.player.room.roomSettings.name.Equals("SS_AI"))
                         state = State.StopDialog;
                     break;
 
