@@ -43,8 +43,14 @@ namespace FivePebblesPong
         public int showMediaCounter = 0;
 
 
-        public void StateMachine(SSOracleBehavior self, bool CarriesController)
+        public void StateMachine(SSOracleBehavior self)
         {
+            //check if slugcat is holding a gamecontroller
+            bool CarriesController = false;
+            for (int i = 0; i < self.player.grasps.Length; i++)
+                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
+                    CarriesController = true;
+
             State stateBeforeRun = state;
             switch (state)
             {

@@ -117,9 +117,9 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
             PebblesGameStarter.pebblesNotFullyStartedCounter = 0;
-            PebblesGameStarter.starter = null;
             PebblesGameStarter.pebblesCalibratedProjector = false;
             PebblesGameStarter.controllerInStomachReacted = false;
+            PebblesGameStarter.starter = null;
         }
 
 
@@ -135,28 +135,25 @@ namespace FivePebblesPong
             if (self.timeSinceSeenPlayer <= 300 || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
                 return;
 
-            //check if slugcat is holding a gamecontroller
-            bool CarriesController = false;
-            for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
-                    CarriesController = true;
-
             //prevent freezing/locking up the game
             if (self.currSubBehavior is SSOracleBehavior.ThrowOutBehavior ||
                 self.action == SSOracleBehavior.Action.ThrowOut_ThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_Polite_ThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_SecondThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight)
+            {
+                PebblesGameStarter.starter = null; //free PebblesGameStarter object at end of sequence, when player needs to leave
                 return;
+            }
 
-            //construct/free PebblesGameStarter object
-            if ((CarriesController && self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter == null)
+            //construct/free PebblesGameStarter object when player enters/leaves room
+            if (self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.starter == null)
                 PebblesGameStarter.starter = new PebblesGameStarter();
-            if ((!CarriesController || !self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
+            if (!self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
                 PebblesGameStarter.starter = null;
 
             //run state machine for starting/running/stopping games
-            PebblesGameStarter.starter?.StateMachine(self, CarriesController);
+            PebblesGameStarter.starter?.StateMachine(self);
         }
 
 
