@@ -3,22 +3,29 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
-    static class MoonGameStarter
+    public class MoonGameStarter
     {
-        //moongame if controller is taken to moon
-        public static Dino moonGame;
+        public static MoonGameStarter starter; //object gets created when player is in moons room
         public static int moonDelayUpdateGameReset = 1200;
         public static int moonDelayUpdateGame = moonDelayUpdateGameReset;
 
-        public static int minXPosPlayer = 1100;
-        public static float maxControllerGrabDist = 90f;
-        public static int SearchDelayCounter = 0;
-        public static int SearchDelay = 600;
-        public static bool moonMayGrabController = true;
-        public static bool fadeGame; //if true, game will fade until it is invisible
+        public Dino moonGame;
+        public int minXPosPlayer = 1100;
+        public float maxControllerGrabDist = 90f;
+        public int SearchDelayCounter = 0;
+        public int SearchDelay = 600;
+        public bool moonMayGrabController = true;
+        public bool fadeGame; //if true, game will fade until it is invisible
 
 
-        public static void Handle(SLOracleBehavior self)
+        public MoonGameStarter() { }
+        ~MoonGameStarter()
+        {
+            this.moonGame?.Destroy();
+        }
+
+
+        public void Handle(SLOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
             bool playerCarriesController = false;
@@ -40,44 +47,44 @@ namespace FivePebblesPong
             float revealGameAlpha = (400 - MoonGameStarter.moonDelayUpdateGame) * (0.5f / 400);
             if (revealGameAlpha < 0f)
                 revealGameAlpha = 0f;
-            if (MoonGameStarter.moonGame != null)
-                MoonGameStarter.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(fadeGame);
+            if (this.moonGame != null)
+                this.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(fadeGame);
 
             //start/stop game
             fadeGame = false;
             if (playerMayPlayGame) //player plays
             {
-                if (revealGameAlpha > 0.001f && MoonGameStarter.moonGame == null)
-                    MoonGameStarter.moonGame = new Dino(self) { imageAlpha = 0f };
+                if (revealGameAlpha > 0.001f && this.moonGame == null)
+                    this.moonGame = new Dino(self) { imageAlpha = 0f };
 
                 //wait before allowing game to start
                 if (MoonGameStarter.moonDelayUpdateGame > 0) {
                     MoonGameStarter.moonDelayUpdateGame--;
                 } else {
-                    MoonGameStarter.moonGame?.Update(self);
+                    this.moonGame?.Update(self);
                 }
 
-                MoonGameStarter.moonGame?.Draw();
+                this.moonGame?.Draw();
             }
             else if (moonMayPlayGame) //moon plays
             {
                 //prevent moon from auto releasing controller if not game over
-                if (self is SLOracleBehaviorHasMark && MoonGameStarter.moonGame != null && MoonGameStarter.moonGame.dino != null && MoonGameStarter.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
+                if (self is SLOracleBehaviorHasMark && this.moonGame != null && this.moonGame.dino != null && this.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
                     (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
 
-                if (MoonGameStarter.moonGame == null)
-                    MoonGameStarter.moonGame = new Dino(self) { imageAlpha = 0f };
-                MoonGameStarter.moonGame?.Update(self, MoonGameStarter.moonGame.MoonAI());
-                MoonGameStarter.moonGame?.Draw();
+                if (this.moonGame == null)
+                    this.moonGame = new Dino(self) { imageAlpha = 0f };
+                this.moonGame?.Update(self, this.moonGame.MoonAI());
+                this.moonGame?.Draw();
             }
-            else if (MoonGameStarter.moonGame != null) //destroy game
+            else if (this.moonGame != null) //destroy game
             {
                 fadeGame = true;
-                MoonGameStarter.moonGame.Draw();
-                if (MoonGameStarter.moonGame.imageAlpha <= 0f)
+                this.moonGame.Draw();
+                if (this.moonGame.imageAlpha <= 0f)
                 {
-                    MoonGameStarter.moonGame.Destroy();
-                    MoonGameStarter.moonGame = null;
+                    this.moonGame.Destroy();
+                    this.moonGame = null;
                 }
             }
 
@@ -85,7 +92,7 @@ namespace FivePebblesPong
             if (SearchDelayCounter < SearchDelay) //search after specified delay
                 SearchDelayCounter++;
 
-            if (!moonMayGrabController || MoonGameStarter.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
+            if (!moonMayGrabController || this.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
                 SearchDelayCounter = 0; //cancel grabbing
 
             if (MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
@@ -101,7 +108,7 @@ namespace FivePebblesPong
         }
 
 
-        //also copied via dnSpy and made static
+        //also copied via dnSpy and made static, you should only need ProjectorFlickerUpdate() returned value
         private static int flickerCounter;
         private static float flickerFade, flickerLastFade, flicker;
         public static float ProjectorFlickerUpdate(bool kill)

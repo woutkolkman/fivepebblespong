@@ -189,6 +189,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
             MoonGameStarter.moonDelayUpdateGame = MoonGameStarter.moonDelayUpdateGameReset;
+            MoonGameStarter.starter = null;
         }
 
 
@@ -198,7 +199,13 @@ namespace FivePebblesPong
             orig(self, eu);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            MoonGameStarter.Handle(self);
+
+            if (self.player.room.roomSettings.name.Equals("SL_AI") && MoonGameStarter.starter == null)
+                MoonGameStarter.starter = new MoonGameStarter();
+            if (!self.player.room.roomSettings.name.Equals("SL_AI") && MoonGameStarter.starter != null && MoonGameStarter.starter.moonGame == null)
+                MoonGameStarter.starter = null;
+
+            MoonGameStarter.starter?.Handle(self);
         }
 
 
@@ -207,7 +214,7 @@ namespace FivePebblesPong
             orig(self, eu);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            MoonGameStarter.moonGame?.MoonBehavior(self);
+            MoonGameStarter.starter?.moonGame?.MoonBehavior(self);
         }
 
 
@@ -216,7 +223,7 @@ namespace FivePebblesPong
             orig(self, eu);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            MoonGameStarter.moonGame?.MoonBehavior(self);
+            MoonGameStarter.starter?.moonGame?.MoonBehavior(self);
         }
 
 

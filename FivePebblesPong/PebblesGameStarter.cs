@@ -83,9 +83,9 @@ namespace FivePebblesPong
                         menu = new PearlSelection(self);
                         self.dialogBox.Interrupt(self.Translate("Pick one."), 10);
                     }
-                    menu?.Update(self);
 
                     if (menu != null) {
+                        menu.Update(self);
                         game = FivePebblesPong.GetNewFPGame(self, menu.pearlGrabbed);
                         if (menu.gameCounter == 2000)
                             self.dialogBox.Interrupt(self.Translate("You may pick one."), 10);
