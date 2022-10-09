@@ -63,9 +63,21 @@ namespace FivePebblesPong
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
             //load png(s), if image is invalid, exception(?) occurs
-            if (self is SLOracleBehavior) {
+            if (self is SLOracleBehavior)
+            {
                 image = ProjectedImageV2.AddImage(self.oracle.myScreen, names, cycleTime);
-            } else {
+
+                //get glow color from texture, TODO not efficient
+                Color? color = null;
+                if (!textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2).Equals(Color.clear))
+                    color = textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2); //center of texture
+                for (int i = CreateGamePNGs.EDGE_DIST + textures[0].width * CreateGamePNGs.EDGE_DIST; i < textures[0].GetPixels().Length && color == null; i++)
+                    if (!textures[0].GetPixels()[i].Equals(Color.clear))
+                        color = textures[0].GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
+                (image as ProjectedImageV2).glowColor = color ?? Color.white;
+            }
+            else
+            {
                 image = self.oracle.myScreen.AddImage(names, cycleTime);
             }
             image.pos = prevPos;
@@ -84,15 +96,28 @@ namespace FivePebblesPong
     //class was created because regular ProjectedImages don't work as well in moons room
     public class ProjectedImageV2 : ProjectedImage
     {
+        public Color glowColor = Color.white;
+        public float glowWidth, glowHeight;
+
+
         public ProjectedImageV2(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
 
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
-            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites = new FSprite[2];
             sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
-            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["Projection"];
-            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("HUD")); //default is "Foreground"
+            sLeaser.sprites[1] = new FSprite("Futile_White", true);
+            sLeaser.sprites[1].shader = rCam.game.rainWorld.Shaders["LightSource"];
+
+            glowWidth = sLeaser.sprites[0].width - 2 * CreateGamePNGs.EDGE_DIST;
+            glowHeight = sLeaser.sprites[0].height - 2 * CreateGamePNGs.EDGE_DIST;
+            if (glowWidth < 15) glowWidth = 15;
+            if (glowWidth > 50) glowWidth -= (glowWidth - 50) / 1.2f;
+            if (glowHeight < 15) glowHeight = 15;
+            if (glowHeight > 50) glowHeight -= (glowHeight - 50) / 1.2f;
+
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
         }
 
 
@@ -102,41 +127,26 @@ namespace FivePebblesPong
             self.room.AddObject(self.images[self.images.Count - 1]);
             return self.images[self.images.Count - 1] as ProjectedImageV2;
         }
-    }
-
-
-    //glow effect for moongame, glow effect could not be combined with ProjectedImageV2 when ReturnFContainer != "Foreground"
-    public class Glow : CosmeticSprite
-    {
-        public Color color = Color.white;
-        public float scaleX = 25f, scaleY = 25f;
-        public float alpha = 1f;
-
-
-        public Glow(Room room) : base()
-        {
-            room.AddObject(this);
-        }
-
-
-        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-        {
-            sLeaser.sprites = new FSprite[1];
-            sLeaser.sprites[0] = new FSprite("Futile_White", true);
-            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["LightSource"];
-            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
-        }
 
 
         public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
         {
-            sLeaser.sprites[0].x = this.pos.x - camPos.x;
-            sLeaser.sprites[0].y = this.pos.y - camPos.y;
-            sLeaser.sprites[0].scaleX = this.scaleX;
-            sLeaser.sprites[0].scaleY = this.scaleY;
-            sLeaser.sprites[0].color = this.color;
-            sLeaser.sprites[0].alpha = this.alpha;
-            base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
+            sLeaser.sprites[0].element = Futile.atlasManager.GetElementWithName(this.imageNames[this.currImg]);
+            for (int i = 0; i < 2; i++)
+            {
+                sLeaser.sprites[i].x = this.pos.x - camPos.x;
+                sLeaser.sprites[i].y = this.pos.y - camPos.y;
+                sLeaser.sprites[i].alpha = this.alpha;
+            }
+            sLeaser.sprites[1].x = this.pos.x - camPos.x;
+            sLeaser.sprites[1].y = this.pos.y - camPos.y;
+            sLeaser.sprites[1].color = this.glowColor;
+            sLeaser.sprites[1].scaleX = (glowWidth);
+            sLeaser.sprites[1].scaleY = (glowHeight);
+
+            //base CosmeticSprite.DrawSprites() copy
+            if (base.slatedForDeletetion || this.room != rCam.room)
+                sLeaser.CleanSpritesAndRemove();
         }
     }
 }

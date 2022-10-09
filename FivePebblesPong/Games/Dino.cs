@@ -15,7 +15,6 @@ namespace FivePebblesPong
         public static int highScore;
         public int minObstacleInterval = 25;
         public readonly Color color;
-        public Glow glow;
 
 
         public Dino(SLOracleBehavior self) : base()
@@ -34,8 +33,6 @@ namespace FivePebblesPong
 
             this.line = new PongLine(self, true, gameWidth, 1, 0, color, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY - 1 - this.dino.height / 2);
-
-            this.glow = new Glow(self.oracle.room) { color = this.color, scaleX = 60f, scaleY = 25f };
         }
 
 
@@ -50,7 +47,6 @@ namespace FivePebblesPong
             base.Destroy(); //empty
             this.dino?.Destroy();
             this.line?.Destroy();
-            this.glow?.Destroy();
             for (int i = 0; i < obstacles.Count; i++)
                 obstacles[i]?.Destroy();
             obstacles?.Clear();
@@ -131,8 +127,6 @@ namespace FivePebblesPong
             this.dino.image.setAlpha = imageAlpha;
             line.DrawImage(offset);
             line.image.setAlpha = imageAlpha;
-            glow.pos = new Vector2(midX, midY) + offset;
-            glow.alpha = imageAlpha;
 
             for (int i = 0; i < obstacles.Count; i++) {
                 if (obstacles[i] == null)
