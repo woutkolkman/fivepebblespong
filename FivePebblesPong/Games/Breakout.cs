@@ -92,7 +92,7 @@ namespace FivePebblesPong
             if (self.currentGetTo.x > paddle.maxX) //keep puppet behind line
                 self.currentGetTo.x = paddle.maxX;
             self.floatyMovement = false;
-            self.lookPoint = (ball != null) ? ball.pos : self.player.DangerPos;
+            self.lookPoint = (ball != null && base.gameCounter >= GETREADY_WAIT) ? ball.pos : self.player.DangerPos;
 
             //place bricks
             if (bricks.Count <= 0 && ball.pos.x <= midX)
@@ -137,8 +137,8 @@ namespace FivePebblesPong
         }
 
 
-        private static readonly string[] PlaceBricks_imgNames = { "FPP_BrickG", "FPP_BrickB", "FPP_BrickY", "FPP_BrickR" };
-        private static readonly Color[] PlaceBricks_colors = { Color.green, Color.blue, Color.yellow, Color.red };
+        private static readonly string[] PlaceBricks_imgNames = { "FPP_BrickG", "FPP_BrickC", "FPP_BrickY", "FPP_BrickR" };
+        private static readonly Color[] PlaceBricks_colors = { Color.green, Color.cyan, Color.yellow, Color.red };
         public void PlaceBricks(SSOracleBehavior self)
         {
             //clear any bricks that are left
