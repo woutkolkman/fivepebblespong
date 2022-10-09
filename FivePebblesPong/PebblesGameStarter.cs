@@ -10,7 +10,7 @@ namespace FivePebblesPong
         public static PebblesGameStarter starter; //object gets created when player is holding gamecontroller in pebbles room
         public static int pebblesNotFullyStartedCounter;
         public static bool pebblesCalibratedProjector;
-        public static bool controllerInStomachReacted;
+        public static bool controllerInStomachReacted, controllerThrownReacted;
 
         public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
         public FPGame game;
@@ -166,6 +166,14 @@ namespace FivePebblesPong
                         game?.Destroy();
                         game = null;
 
+                        //if controller was thrown, custom dialog will start
+                        bool prevControllerThrownReacted = controllerThrownReacted;
+                        if (!controllerThrownReacted)
+                            for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
+                                for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
+                                    if (self.oracle.room.physicalObjects[i][j] is GameController && (self.oracle.room.physicalObjects[i][j] as GameController).thrownBy is Player)
+                                        controllerThrownReacted = true;
+
                         if (!controllerInStomachReacted && self.player.objectInStomach != null && self.player.objectInStomach.type == EnumExt_FPP.GameController)
                         {
                             self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "It's yours now, please keep it." : "That's also not edible."), 10);
@@ -175,12 +183,15 @@ namespace FivePebblesPong
                         }
                         else if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
                         {
-                            switch (UnityEngine.Random.Range(0, 3))
-                            {
-                                case 0: self.dialogBox.Interrupt(self.Translate("You are not very decisive..."), 10); break;
-                                case 1: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
-                                case 2: self.dialogBox.Interrupt(self.Translate("I will take that as a no."), 10); break;
-                                case 3: self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10); break;
+                            if (controllerThrownReacted && !prevControllerThrownReacted) {
+                                self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10);
+                            } else {
+                                switch (PebblesGameStarter.pebblesNotFullyStartedCounter)
+                                {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("I will take that as a no."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("You are not very decisive."), 10); break;
+                                }
                             }
                             PebblesGameStarter.pebblesNotFullyStartedCounter++;
                         }

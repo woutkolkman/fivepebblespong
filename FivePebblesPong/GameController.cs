@@ -56,5 +56,12 @@ namespace FivePebblesPong
             this.color = new Color(0.44705883f, 0.9019608f, 0.76862746f); //5P overseer color
             sLeaser.sprites[0].color = this.color;
         }
+
+
+        public override void PickedUp(Creature upPicker)
+        {
+            base.PickedUp(upPicker);
+            this.thrownBy = null; //reset for pebbles dialogue
+        }
     }
 }

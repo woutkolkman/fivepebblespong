@@ -119,6 +119,7 @@ namespace FivePebblesPong
             PebblesGameStarter.pebblesNotFullyStartedCounter = 0;
             PebblesGameStarter.pebblesCalibratedProjector = false;
             PebblesGameStarter.controllerInStomachReacted = false;
+            PebblesGameStarter.controllerThrownReacted = false;
             PebblesGameStarter.starter = null;
         }
 
