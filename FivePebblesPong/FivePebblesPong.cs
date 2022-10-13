@@ -19,7 +19,7 @@ namespace FivePebblesPong
     }
 
 
-    [BepInPlugin("author.my_mod_id", "FivePebblesPong", "0.1.0")]	// (GUID, mod name, mod version)
+    [BepInPlugin("woutkolkman.fivepebblespong", "FivePebblesPong", "0.1.0")]	// (GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
