@@ -141,7 +141,9 @@ namespace FivePebblesPong
                 self.action == SSOracleBehavior.Action.ThrowOut_ThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_Polite_ThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_SecondThrowOut ||
-                self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight)
+                self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight ||
+                self.action == SSOracleBehavior.Action.General_GiveMark ||
+                self.conversation == null) //if there's no conversation, dialog interrupts will freeze the game
             {
                 PebblesGameStarter.starter = null; //free PebblesGameStarter object at end of sequence, when player needs to leave
                 return;
