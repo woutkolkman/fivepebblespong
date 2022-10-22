@@ -68,9 +68,15 @@ namespace FivePebblesPong
             }
             else if (moonMayPlayGame) //moon plays
             {
-                //prevent moon from auto releasing controller if not game over
-                if (self is SLOracleBehaviorHasMark && this.moonGame != null && this.moonGame.dino != null && this.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
-                    (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
+                if (this.moonGame != null && this.moonGame.dino != null)
+                {
+                    //prevent moon from auto releasing controller if not game over
+                    if (self is SLOracleBehaviorHasMark && this.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
+                        (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
+                    //release controller if SLOracleBehavior child doesn't do this automatically
+                    if (self is SLOracleBehaviorNoMark && this.moonGame.dino.curAnim == DinoPlayer.Animation.Dead)
+                        self.holdingObject = null;
+                }
 
                 if (this.moonGame == null)
                     this.moonGame = new Dino(self) { imageAlpha = 0f };
@@ -86,6 +92,9 @@ namespace FivePebblesPong
                     this.moonGame.Destroy();
                     this.moonGame = null;
                 }
+                //release controller if SLOracleBehavior child doesn't do this automatically
+                if (self is SLOracleBehaviorNoMark && self.holdingObject != null && self.holdingObject is GameController)
+                    self.holdingObject = null;
             }
 
             //moon grabs controller

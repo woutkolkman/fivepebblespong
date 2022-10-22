@@ -17,12 +17,15 @@ namespace FivePebblesPong
         public readonly Color color;
 
 
-        public Dino(SLOracleBehavior self) : base()
+        public Dino(OracleBehavior self) : base()
         {
-            base.minY = 40;
-            base.maxY = 620;
-            base.minX = 1240;
-            base.maxX = 1820;
+            if (self is SLOracleBehavior)
+            {
+                base.minY = 40;
+                base.maxY = 620;
+                base.minX = 1240;
+                base.maxX = 1820;
+            }
 
             this.obstacles = new List<DinoObstacle>();
             this.color = new Color(0f, 0.89411765f, 1f); //color of bootlabel moon
@@ -53,11 +56,11 @@ namespace FivePebblesPong
         }
 
 
-        public override void Update(SLOracleBehavior self)
+        public override void Update(OracleBehavior self)
         {
             Update(self, self.player.input[0].y);
         }
-        public void Update(SLOracleBehavior self, int input)
+        public void Update(OracleBehavior self, int input)
         {
             base.Update(self);
 
@@ -162,10 +165,6 @@ namespace FivePebblesPong
                 if (self.holdingObject != null && self.holdingObject is GameController) {
                     if (self is SLOracleBehaviorHasMark && self.State.SpeakingTerms && self.oracle.health >= 1f)
                         (self as SLOracleBehaviorHasMark).dialogBox.Interrupt(self.Translate(gameCounter + "!"), 10);
-
-                    //release controller if SLOracleBehavior child doesn't do this automatically
-                    if (self is SLOracleBehaviorNoMark)
-                        self.holdingObject = null;
                     return;
                 }
                 //player was playing

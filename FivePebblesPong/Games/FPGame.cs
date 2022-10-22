@@ -24,9 +24,9 @@ namespace FivePebblesPong
         //to immediately remove images
         public virtual void Destroy() { }
 
+        public virtual void Update(SSOracleBehavior self) { this.Update(self as OracleBehavior); }
+        public virtual void Update(SLOracleBehavior self) { this.Update(self as OracleBehavior); }
         public virtual void Update(OracleBehavior self) { this.Update(); }
-        public virtual void Update(SSOracleBehavior self) { this.Update(); }
-        public virtual void Update(SLOracleBehavior self) { this.Update(); }
         private void Update() {
             this.gameCounter++;
             if (this.gameCounter < 0)
