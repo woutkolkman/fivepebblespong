@@ -43,7 +43,7 @@ namespace FivePebblesPong
             this.CreatePaddles(self, 100, 100, 20);
 
             this.ball = new PongBall(self, this, 10, "FPP_Ball", reloadImg: true);
-            ball.SetFlashing(self, true);
+            ball.SetFlashing(true);
 
             this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
@@ -151,10 +151,10 @@ namespace FivePebblesPong
                 //======================================================
                 case State.GetReady:
                     if (statePreviousRun != state)
-                        ball.SetFlashing(self, true, reloadImg: false);
+                        ball.SetFlashing(true);
                     if (base.gameCounter > GETREADY_WAIT) {
                         state = State.Playing;
-                        ball.SetFlashing(self, false, reloadImg: false);
+                        ball.SetFlashing(false);
                     }
                     break;
 

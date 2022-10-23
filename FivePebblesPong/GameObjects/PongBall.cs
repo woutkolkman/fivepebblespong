@@ -14,11 +14,9 @@ namespace FivePebblesPong
         const float CMP = 0.01f; //compare precision
         public float velocityX { get { return (float) (movementSpeed * Math.Cos(angle)); } }
         public float velocityY { get { return (float) (movementSpeed * -Math.Sin(angle)); } }
-        public Texture2D textureCircleFilled;
-        public Texture2D textureCircleBorder;
 
 
-        public PongBall(OracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, bool reloadImg = false) : base(imageName)
+        public PongBall(OracleBehavior self, FPGame game, int radius, string imageName, Color? color = null, int cycleTime = 15, bool reloadImg = false) : base(imageName)
         {
             this.radius = radius;
             this.movementSpeed = 5.5f;
@@ -33,9 +31,12 @@ namespace FivePebblesPong
             Color c = Color.white;
             if (color != null)
                 c = (Color)color;
-            textureCircleFilled = CreateGamePNGs.DrawCircle(radius, radius, c);
-            textureCircleBorder = CreateGamePNGs.DrawCircle(radius, 2, c);
-            base.SetImage(self, textureCircleFilled, reloadImg);
+
+            List<Texture2D> textures = new List<Texture2D>() {
+                CreateGamePNGs.DrawCircle(radius, radius, c), //imageName
+                CreateGamePNGs.DrawCircle(radius, 2, c)       //imageName + 1
+            };
+            base.SetImage(self, textures, cycleTime, reloadImg);
         }
 
 
@@ -89,12 +90,13 @@ namespace FivePebblesPong
         public void ReverseDir() { angle += Math.PI; }
 
 
-        public void SetFlashing(OracleBehavior self, bool enabled, int cycleTime = 15, bool reloadImg = true)
+        public void SetFlashing(bool enabled)
         {
             if (enabled) {
-                base.SetImage(self, new List<Texture2D> { textureCircleFilled, textureCircleBorder }, cycleTime, reloadImg);
+                image.imageNames = new List<string> { imageName, imageName + "1" };
             } else {
-                base.SetImage(self, textureCircleFilled, reloadImg);
+                image.imageNames = new List<string> { imageName };
+                image.currImg = 0;
             }
         }
     }

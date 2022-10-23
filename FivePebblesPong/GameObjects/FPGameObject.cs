@@ -97,7 +97,7 @@ namespace FivePebblesPong
 
             /*
              * If switching from single to cycled image, first load all new images, 
-             * else ProjectedImage.LoadFile() will break loading prematurely (bug). 
+             * else ProjectedImage.LoadFile() will break loading prematurely (RW bug). 
              * For example:
              *   before:  base.SetImage(self, new List<string> { "FPP_Ball1" }, 0);
              *   after:   base.SetImage(self, new List<string> { "FPP_Ball2", "FPP_Ball1" }, 15);
@@ -124,7 +124,6 @@ namespace FivePebblesPong
             //depends on ProjectedImageCtorHook for correct base class construction
             this.textures = textures;
             this.LoadFile();
-            this.setAlpha = new float?(1f);
         }
 
 
@@ -139,19 +138,14 @@ namespace FivePebblesPong
 
             for (int i = 0; i < textures.Count; i++)
             {
+                //check could fail if a texture with the same name is loaded in the same program cycle (?)
                 if (Futile.atlasManager.GetAtlasWithName(imageNames[i]) != null)
-                    continue; //base game uses break (bug)
+                    continue; //base game uses break (RW bug)
 
-                //wrong texture could be displayed if texture is not first copied
-                //TODO alternative solution, also check imagenames
-                Texture2D tex = new Texture2D(textures[i].width, textures[i].height);
-                tex.SetPixels(textures[i].GetPixels());
-                tex.Apply();
-
-                tex.wrapMode = TextureWrapMode.Clamp;
-                tex.anisoLevel = 0;
-                tex.filterMode = FilterMode.Point;
-                Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], tex);
+                textures[i].wrapMode = TextureWrapMode.Clamp;
+                textures[i].anisoLevel = 0;
+                textures[i].filterMode = FilterMode.Point;
+                Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], textures[i]);
             }
         }
     }

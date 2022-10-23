@@ -122,6 +122,7 @@ namespace FivePebblesPong
             {
                 self.imageNames = imageNames;
                 self.cycleTime = cycleTime;
+                self.setAlpha = new float?(1f);
                 return;
             }
             orig(self, imageNames, cycleTime);
