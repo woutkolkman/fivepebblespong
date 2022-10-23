@@ -18,7 +18,7 @@ namespace FivePebblesPong
         public Type type;
 
 
-        public PearlSelection(SSOracleBehavior self) : base()
+        public PearlSelection(SSOracleBehavior self) : base(self)
         {
             this.pearlGrabbed = -1;
             this.pearls = new List<PhysicalObject>();

@@ -17,16 +17,8 @@ namespace FivePebblesPong
         public readonly Color color;
 
 
-        public Dino(OracleBehavior self) : base()
+        public Dino(OracleBehavior self) : base(self)
         {
-            if (self is SLOracleBehavior)
-            {
-                base.minY = 40;
-                base.maxY = 620;
-                base.minX = 1240;
-                base.maxX = 1820;
-            }
-
             this.obstacles = new List<DinoObstacle>();
             this.color = new Color(0f, 0.89411765f, 1f); //color of bootlabel moon
 

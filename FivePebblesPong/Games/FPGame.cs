@@ -12,12 +12,20 @@ namespace FivePebblesPong
         public int gameCounter;
 
 
-        public FPGame()
+        public FPGame(OracleBehavior self)
         {
-            maxY = 640;
-            minY = 60;
-            maxX = 780;
             minX = 200;
+            maxX = 780;
+            minY = 60;
+            maxY = 640;
+
+            if (self is SLOracleBehavior)
+            {
+                minX = 1240;
+                maxX = 1820;
+                minY = 40;
+                maxY = 620;
+            }
         }
 
 

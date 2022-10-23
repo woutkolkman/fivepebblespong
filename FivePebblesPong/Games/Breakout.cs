@@ -15,9 +15,9 @@ namespace FivePebblesPong
         public List<PongPaddle> bricks;
 
 
-        public Breakout(SSOracleBehavior self) : base()
+        public Breakout(SSOracleBehavior self) : base(self)
         {
-            base.minX += 18;
+            minX += 18;
             this.paddle = new PongPaddle(self, this, 25, 100, "FPP_Player", reloadImg: true);
             this.paddle.pos = new Vector2(minX, midY);
             this.paddle.maxX = minX + lenX / 3;
@@ -28,7 +28,7 @@ namespace FivePebblesPong
             this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_RedLine", reloadImg: true);
             this.lineEnd.pos = new Vector2(this.paddle.minX, midY);
 
-            base.minX -= 18;
+            minX -= 18;
             this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true);
             this.ball.pos = new Vector2(midX, midY);
             this.ball.movementSpeed = 8f;
