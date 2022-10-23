@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Reflection;
 using MonoMod.RuntimeDetour;
+using System.Collections.Generic;
 
 namespace FivePebblesPong
 {
@@ -20,6 +21,9 @@ namespace FivePebblesPong
 
             //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
+
+            //projectedimage constructor
+            On.ProjectedImage.ctor += ProjectedImageCtorHook;
 
             //five pebbles constructor
             On.SSOracleBehavior.ctor += SSOracleBehaviorCtorHook;
@@ -107,6 +111,20 @@ namespace FivePebblesPong
             if (gameControllerInShelter)
                 FivePebblesPong.ME.Logger_p.LogInfo("gameControllerInShelter");
             //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
+        }
+
+
+        //projectedimage contructor
+        static void ProjectedImageCtorHook(On.ProjectedImage.orig_ctor orig, ProjectedImage self, List<string> imageNames, int cycleTime)
+        {
+            //remove LoadFile() call from constructor, so no .PNG file is required
+            if (self is ProjectedImageFromMemory)
+            {
+                self.imageNames = imageNames;
+                self.cycleTime = cycleTime;
+                return;
+            }
+            orig(self, imageNames, cycleTime);
         }
 
 

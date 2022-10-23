@@ -8,8 +8,8 @@ namespace FivePebblesPong
         public Vector2 pos;
         public string imageName;
         public ProjectedImage image;
-
-
+        
+        
         public FPGameObject(string imageName)
         {
             this.imageName = (imageName.Equals("") ? "FPP_FPGameObject" : imageName);
@@ -25,13 +25,15 @@ namespace FivePebblesPong
         }
 
 
-        //"reload": only reload image if image is not currently used
+        //use this function if texture is generated via code
         public virtual void SetImage(OracleBehavior self, Texture2D texture, bool reload = false)
         {
             SetImage(self, new List<Texture2D> { texture }, 0, reload);
         }
         public virtual void SetImage(OracleBehavior self, List<Texture2D> textures, int cycleTime, bool reload = false)
         {
+            //"reload": only reload image if image is not currently used
+
             Vector2 prevPos = new Vector2();
             if (image != null) {
                 prevPos = image.pos;
@@ -52,35 +54,54 @@ namespace FivePebblesPong
                 bool exists = Futile.atlasManager.DoesContainAtlas(names[i]);
                 if (exists && reload)
                     Futile.atlasManager.UnloadImage(names[i]);
-
-                //create png
-                if (!exists || reload)
-                    CreateGamePNGs.SavePNG(textures[i], names[i]);
             }
 
             //create OracleProjectionScreen in case of no projectionscreen (at BSM)
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            //load png(s), if image is invalid, exception(?) occurs
-            if (self is SLOracleBehavior)
-            {
-                image = ProjectedImageV2.AddImage(self.oracle.myScreen, names, cycleTime);
+            image = (self is SLOracleBehavior ? 
+                new ProjectedImageMoon(textures, names, cycleTime) : 
+                new ProjectedImageFromMemory(textures, names, cycleTime)
+            );
+            self.oracle.myScreen.images.Add(image);
+            self.oracle.myScreen.room.AddObject(image);
 
-                //get glow color from texture, TODO not efficient
-                Color? color = null;
-                if (!textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2).Equals(Color.clear))
-                    color = textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2); //center of texture
-                for (int i = CreateGamePNGs.EDGE_DIST + textures[0].width * CreateGamePNGs.EDGE_DIST; i < textures[0].GetPixels().Length && color == null; i++)
-                    if (!textures[0].GetPixels()[i].Equals(Color.clear))
-                        color = textures[0].GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
-                (image as ProjectedImageV2).glowColor = color ?? Color.white;
-            }
-            else
-            {
-                image = self.oracle.myScreen.AddImage(names, cycleTime);
-            }
             image.pos = prevPos;
+        }
+
+
+        //use this function if texture is read from .PNG
+        public virtual void SetImage(OracleBehavior self, List<string> names, int cycleTime = 0)
+        {
+            Vector2 prevPos = new Vector2();
+            if (image != null)
+            {
+                prevPos = image.pos;
+                image.Destroy();
+            }
+            image = null;
+
+            if (names == null)
+                names = new List<string>();
+            if (names.Count <= 0)
+                names.Add(this.imageName);
+
+            //create OracleProjectionScreen in case of no projectionscreen (at BSM)
+            if (self.oracle.myScreen == null)
+                self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
+
+            image = self.oracle.myScreen.AddImage(names, cycleTime);
+
+            image.pos = prevPos;
+
+            /*
+             * If switching from single to cycled image, first load all new images, 
+             * else ProjectedImage.LoadFile() will break loading prematurely (bug). 
+             * For example:
+             *   before:  base.SetImage(self, new List<string> { "FPP_Ball1" }, 0);
+             *   after:   base.SetImage(self, new List<string> { "FPP_Ball2", "FPP_Ball1" }, 15);
+             */
         }
 
 
@@ -93,14 +114,67 @@ namespace FivePebblesPong
     }
 
 
+    public class ProjectedImageFromMemory : ProjectedImage
+    {
+        public List<Texture2D> textures;
+
+
+        public ProjectedImageFromMemory(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(imageNames, cycleTime)
+        {
+            //depends on ProjectedImageCtorHook for correct base class construction
+            this.textures = textures;
+            this.LoadFile();
+            this.setAlpha = new float?(1f);
+        }
+
+
+        //same name as ProjectedImage method, so original is hidden
+        public new void LoadFile()
+        {
+            if (textures.Count != imageNames.Count)
+            {
+                FivePebblesPong.ME.Logger_p.LogInfo("ProjectedImageFromMemory.LoadFile error");
+                return;
+            }
+
+            for (int i = 0; i < textures.Count; i++)
+            {
+                if (Futile.atlasManager.GetAtlasWithName(imageNames[i]) != null)
+                    continue; //base game uses break (bug)
+
+                //wrong texture could be displayed if texture is not first copied
+                //TODO alternative solution, also check imagenames
+                Texture2D tex = new Texture2D(textures[i].width, textures[i].height);
+                tex.SetPixels(textures[i].GetPixels());
+                tex.Apply();
+
+                tex.wrapMode = TextureWrapMode.Clamp;
+                tex.anisoLevel = 0;
+                tex.filterMode = FilterMode.Point;
+                Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], tex);
+            }
+        }
+    }
+
+
     //class was created because regular ProjectedImages don't work as well in moons room
-    public class ProjectedImageV2 : ProjectedImage
+    public class ProjectedImageMoon : ProjectedImageFromMemory
     {
         public Color glowColor = Color.white;
         public float glowWidth, glowHeight;
 
 
-        public ProjectedImageV2(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
+        public ProjectedImageMoon(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(textures, imageNames, cycleTime)
+        {
+            //get glow color from texture, TODO not efficient
+            Color? color = null;
+            if (!textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2).Equals(Color.clear))
+                color = textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2); //center of texture
+            for (int i = CreateGamePNGs.EDGE_DIST + textures[0].width * CreateGamePNGs.EDGE_DIST; i < textures[0].GetPixels().Length && color == null; i++)
+                if (!textures[0].GetPixels()[i].Equals(Color.clear))
+                    color = textures[0].GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
+            this.glowColor = color ?? Color.white;
+        }
 
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -118,14 +192,6 @@ namespace FivePebblesPong
             if (glowHeight > 50) glowHeight -= (glowHeight - 50) / 1.2f;
 
             this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
-        }
-
-
-        public static ProjectedImageV2 AddImage(ProjectionScreen self, List<string> names, int cycleTime)
-        {
-            self.images.Add(new ProjectedImageV2(names, cycleTime));
-            self.room.AddObject(self.images[self.images.Count - 1]);
-            return self.images[self.images.Count - 1] as ProjectedImageV2;
         }
 
 

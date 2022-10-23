@@ -38,6 +38,7 @@ namespace FivePebblesPong
                     texture.SetPixel(EDGE_DIST + width - t, y, color);
                 }
             }
+            texture.Apply();
             return texture;
         }
 
@@ -65,6 +66,7 @@ namespace FivePebblesPong
                 color = Color.clear;
                 radius -= thickness;
             }
+            texture.Apply();
             return texture;
         }
 
@@ -86,6 +88,7 @@ namespace FivePebblesPong
                     for (int w = 0; w < width; w++)
                         texture.SetPixel(EDGE_DIST + (horizontal ? l : w), EDGE_DIST + (horizontal ? w : l), color);
 
+            texture.Apply();
             return texture;
         }
 
@@ -210,6 +213,8 @@ namespace FivePebblesPong
                 for (int c = 0; c < width; c++)
                     if ((arr[r] & (1 << c)) > 0)
                         texture.SetPixel(EDGE_DIST + width - c - 1, EDGE_DIST + height - r - 1, color);
+
+            texture.Apply();
             return texture;
         }
     }
