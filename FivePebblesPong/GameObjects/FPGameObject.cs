@@ -116,25 +116,12 @@ namespace FivePebblesPong
 
     public class ProjectedImageFromMemory : ProjectedImage
     {
-        public List<Texture2D> textures;
-
-
         public ProjectedImageFromMemory(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(imageNames, cycleTime)
         {
             //depends on ProjectedImageCtorHook for correct base class construction
-            this.textures = textures;
-            this.LoadFile();
-        }
 
-
-        //same name as ProjectedImage method, so original is hidden (not for parent/base constructor)
-        public new void LoadFile()
-        {
-            if (textures.Count != imageNames.Count)
-            {
-                FivePebblesPong.ME.Logger_p.LogInfo("ProjectedImageFromMemory.LoadFile error");
+            if (textures == null || imageNames == null || textures.Count != imageNames.Count)
                 return;
-            }
 
             for (int i = 0; i < textures.Count; i++)
             {
@@ -152,6 +139,7 @@ namespace FivePebblesPong
 
 
     //class was created because regular ProjectedImages don't work as well in moons room
+    //if using this class with .PNG files, just pass null for textures and call LoadFile() and CalcGlowColor() after constructor
     public class ProjectedImageMoon : ProjectedImageFromMemory
     {
         public Color glowColor = Color.white;
@@ -160,13 +148,26 @@ namespace FivePebblesPong
 
         public ProjectedImageMoon(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(textures, imageNames, cycleTime)
         {
+            if (textures != null && textures.Count > 0)
+                CalcGlowColor();
+        }
+
+
+        public void CalcGlowColor()
+        {
+            FAtlas atlas = Futile.atlasManager.GetAtlasWithName(imageNames[currImg]);
+            if (atlas == null)
+                return;
+
+            Texture2D texture = atlas._texture as Texture2D;
+
             //get glow color from texture, TODO not efficient
             Color? color = null;
-            if (!textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2).Equals(Color.clear))
-                color = textures[0].GetPixel(textures[0].width / 2, textures[0].height / 2); //center of texture
-            for (int i = CreateGamePNGs.EDGE_DIST + textures[0].width * CreateGamePNGs.EDGE_DIST; i < textures[0].GetPixels().Length && color == null; i++)
-                if (!textures[0].GetPixels()[i].Equals(Color.clear))
-                    color = textures[0].GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
+            if (!texture.GetPixel(texture.width / 2, texture.height / 2).Equals(Color.clear))
+                color = texture.GetPixel(texture.width / 2, texture.height / 2); //center of texture
+            for (int i = CreateGamePNGs.EDGE_DIST + texture.width * CreateGamePNGs.EDGE_DIST; i < texture.GetPixels().Length && color == null; i++)
+                if (!texture.GetPixels()[i].Equals(Color.clear))
+                    color = texture.GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
             this.glowColor = color ?? Color.white;
         }
 
