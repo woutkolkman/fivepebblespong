@@ -91,7 +91,15 @@ namespace FivePebblesPong
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            image = self.oracle.myScreen.AddImage(names, cycleTime);
+            if (self is SLOracleBehavior) {
+                image = new ProjectedImageMoon(null, names, cycleTime);
+                image.LoadFile();
+                (image as ProjectedImageMoon).CalcGlowColor();
+                self.oracle.myScreen.images.Add(image);
+                self.oracle.myScreen.room.AddObject(image);
+            } else {
+                image = self.oracle.myScreen.AddImage(names, cycleTime);
+            }
 
             image.pos = prevPos;
 
