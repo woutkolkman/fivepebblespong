@@ -127,7 +127,7 @@ namespace FivePebblesPong
         }
 
 
-        //same name as ProjectedImage method, so original is hidden
+        //same name as ProjectedImage method, so original is hidden (not for parent/base constructor)
         public new void LoadFile()
         {
             if (textures.Count != imageNames.Count)

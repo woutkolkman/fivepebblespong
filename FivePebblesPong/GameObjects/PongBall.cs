@@ -37,6 +37,7 @@ namespace FivePebblesPong
                 CreateGamePNGs.DrawCircle(radius, 2, c)       //imageName + 1
             };
             base.SetImage(self, textures, cycleTime, reloadImg);
+            SetFlashing(false);
         }
 
 

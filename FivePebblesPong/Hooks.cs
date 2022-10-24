@@ -22,7 +22,7 @@ namespace FivePebblesPong
             //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
 
-            //projectedimage constructor
+            //ProjectedImage constructor hook for hiding LoadFile()
             On.ProjectedImage.ctor += ProjectedImageCtorHook;
 
             //five pebbles constructor
@@ -114,7 +114,7 @@ namespace FivePebblesPong
         }
 
 
-        //projectedimage contructor
+        //ProjectedImage constructor hook for hiding LoadFile() (function cannot be overridden or hidden for ProjectedImage class)
         static void ProjectedImageCtorHook(On.ProjectedImage.orig_ctor orig, ProjectedImage self, List<string> imageNames, int cycleTime)
         {
             //remove LoadFile() call from constructor, so no .PNG file is required
