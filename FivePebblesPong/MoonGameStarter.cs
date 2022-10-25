@@ -141,15 +141,15 @@ namespace FivePebblesPong
         }
 
 
-        //moon grabs random object by type
+        //moon grabs closest object by type
         public static int moveToItemDelay;
         public static PhysicalObject grabItem; //if not null, moon moves to this position
-        public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist, bool cancel = false)
+        public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist, bool cancel = false, int timeout = 300)
         {
             if (cancel)
             {
                 if (grabItem != null)
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing grabItem was canceled");
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " was canceled");
                 grabItem = null;
                 moveToItemDelay = 0;
                 return null; //try again later
@@ -157,24 +157,33 @@ namespace FivePebblesPong
 
             if (grabItem == null)
             {
-                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Searching for grabItem");
+                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Searching for " + typeof(T).Name);
 
                 //get object from room
-                for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
-                    for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
+                float closest = float.MaxValue;
+                for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++) {
+                    for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++) {
                         if (self.oracle.room.physicalObjects[i][j] is T && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
-                            grabItem = self.oracle.room.physicalObjects[i][j];
+                        {
+                            float newDist = Vector2.Distance(self.oracle.room.physicalObjects[i][j].firstChunk.pos, self.oracle.bodyChunks[0].pos);
+                            if (newDist < closest) {
+                                closest = newDist;
+                                grabItem = self.oracle.room.physicalObjects[i][j];
+                            }
+                        }
+                    }
+                }
 
                 if (grabItem == null)
                 {
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem not found");
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " not found");
                     return false; //failed
                 }
             }
 
             if (grabItem.grabbedBy.Count > 0)
             {
-                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem was grabbed by another");
+                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " was grabbed by another");
                 grabItem = null;
                 moveToItemDelay = 0;
                 return false; //failed
@@ -184,7 +193,7 @@ namespace FivePebblesPong
             if (dist <= maxDist)
             {
                 if (moveToItemDelay == 0)
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Trying to grab grabItem, distance: " + dist.ToString());
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Trying to grab " + typeof(T).Name + ", distance: " + dist.ToString());
 
                 moveToItemDelay++;
 
@@ -204,9 +213,9 @@ namespace FivePebblesPong
                     return true; //success
                 }
 
-                if (moveToItemDelay > 300)
+                if (moveToItemDelay > timeout)
                 {
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing grabItem canceled (time)");
+                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " canceled (time)");
                     grabItem = null;
                     moveToItemDelay = 0;
                     return false; //failed
@@ -216,7 +225,7 @@ namespace FivePebblesPong
 
                 return null; //still trying
             }
-            FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, grabItem distance too large: " + dist.ToString());
+            FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " distance too large: " + dist.ToString());
             grabItem = null;
             moveToItemDelay = 0;
             return false; //failed

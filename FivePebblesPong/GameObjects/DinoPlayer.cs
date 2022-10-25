@@ -93,6 +93,8 @@ namespace FivePebblesPong
                     break;
 
                 case (Animation.Dead):
+                    if (curAnim == Animation.Ducking && onGround) //fix for dino in ground
+                        pos.y = ground + height/2;
                     image.imageNames = new List<string> { imageName + "5" };
                     image.currImg = 0;
                     break;
