@@ -62,6 +62,7 @@
     <Compile Include="GameObjects\DinoObstacle.cs" />
     <Compile Include="GameObjects\DinoPlayer.cs" />
     <Compile Include="GameObjects\SquareBorderMark.cs" />
+    <Compile Include="Games\GrabDot.cs" />
     <Compile Include="MoonGameStarter.cs" />
     <Compile Include="PearlSelection.cs" />
     <Compile Include="Hooks.cs" />
