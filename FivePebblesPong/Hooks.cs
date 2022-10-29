@@ -40,6 +40,9 @@ namespace FivePebblesPong
             //prevent projected lizard from killing player in GrabDot FPGame
             On.Creature.Violence += CreatureViolenceHook;
 
+            //drawing lizard as hologram in GrabDot FPGame
+            On.LizardGraphics.AddToContainer += LizardGraphicsAddToContainerHook;
+
             //moon controller reaction
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
@@ -202,9 +205,31 @@ namespace FivePebblesPong
         static void CreatureViolenceHook(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
             if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot)
-                if ((PebblesGameStarter.starter.game as GrabDot).c?.realizedCreature?.mainBodyChunk == source)
-                    damage = 0f;
+                foreach (AbstractCreature ac in (PebblesGameStarter.starter.game as GrabDot).creatures)
+                    if (ac?.realizedCreature?.mainBodyChunk == source)
+                        damage = 0f;
             orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
+        }
+
+
+        //drawing lizard as hologram in GrabDot FPGame
+        static void LizardGraphicsAddToContainerHook(On.LizardGraphics.orig_AddToContainer orig, LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+        {
+            bool correctCreature = false;
+            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot)
+                foreach (AbstractCreature ac in (PebblesGameStarter.starter.game as GrabDot).creatures)
+                    if (ac?.realizedCreature?.graphicsModule == self)
+                        correctCreature = true;
+
+            if (FivePebblesPong.HasEnumExt && correctCreature)
+            {
+                if (newContainer == null)
+                    newContainer = rCam.ReturnFContainer("Foreground");
+                if (sLeaser != null && sLeaser.sprites != null)
+                    for (int i = 0; i < sLeaser.sprites.Length; i++)
+                        sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"];
+            }
+            orig(self, sLeaser, rCam, newContainer);
         }
 
 
