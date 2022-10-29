@@ -26,6 +26,7 @@ namespace FivePebblesPong
         public State state { get; set; }
         public State statePreviousRun = State.Stop;
         public PearlSelection menu;
+        public bool gravity = true;
 
 
         public PebblesGameStarter() { }

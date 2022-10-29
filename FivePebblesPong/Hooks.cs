@@ -31,6 +31,15 @@ namespace FivePebblesPong
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
 
+            //five pebbles gravity RuntimeDetour
+            Hook SSOracleBehaviorSubBehaviorGravityHook = new Hook(
+                typeof(SSOracleBehavior.SubBehavior).GetProperty("Gravity", propFlags).GetGetMethod(),
+                typeof(Hooks).GetMethod("SSOracleBehavior_SubBehavior_Gravity_get", myMethodFlags)
+            );
+
+            //prevent projected lizard from killing player in GrabDot FPGame
+            On.Creature.Violence += CreatureViolenceHook;
+
             //moon controller reaction
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
@@ -176,6 +185,26 @@ namespace FivePebblesPong
 
             //run state machine for starting/running/stopping games
             PebblesGameStarter.starter?.StateMachine(self);
+        }
+
+
+        //five pebbles gravity RuntimeDetour
+        public delegate bool orig_Gravity(SSOracleBehavior.SubBehavior self);
+        public static bool SSOracleBehavior_SubBehavior_Gravity_get(orig_Gravity orig, SSOracleBehavior.SubBehavior self)
+        {
+            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter != null) //avoid potential crashes
+                return PebblesGameStarter.starter.gravity;
+            return orig(self); //always true
+        }
+
+
+        //prevent projected lizard from killing creatures in GrabDot FPGame
+        static void CreatureViolenceHook(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
+        {
+            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot)
+                if ((PebblesGameStarter.starter.game as GrabDot).c?.realizedCreature?.mainBodyChunk == source)
+                    damage = 0f;
+            orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
         }
 
 

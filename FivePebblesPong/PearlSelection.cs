@@ -10,6 +10,7 @@ namespace FivePebblesPong
         public List<PhysicalObject> pearls;
         public int pearlGrabbed; //-1 if no pearl was grabbed
         public bool ignoreVector00; //if true, new Vector2() (default 0,0) is not assigned to pearl
+        public bool teleport = false; //if true, pearls get instantly teleported to target
         public enum Type
         {
             SinusY,
@@ -18,7 +19,7 @@ namespace FivePebblesPong
         public Type type;
 
 
-        public PearlSelection(SSOracleBehavior self) : base(self)
+        public PearlSelection(SSOracleBehavior self, bool addGrabbedPearls = false) : base(self)
         {
             this.pearlGrabbed = -1;
             this.pearls = new List<PhysicalObject>();
@@ -28,6 +29,13 @@ namespace FivePebblesPong
                 for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
                     if (self.oracle.room.physicalObjects[i][j] is PebblesPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
                         pearls.Add(self.oracle.room.physicalObjects[i][j]);
+
+            //gather pearls from creature grasps
+            if (addGrabbedPearls)
+                foreach (AbstractCreature c in self.oracle.room.abstractRoom.creatures)
+                    for (int i = 0; i < c.realizedCreature.grasps.Length; i++)
+                        if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is PebblesPearl)
+                            pearls.Add(c.realizedCreature.grasps[i].grabbed);
 
             type = (UnityEngine.Random.value < 0.5f ? Type.SinusY : Type.SinXCosY);
 
@@ -116,7 +124,7 @@ namespace FivePebblesPong
 
                 //if distance is small, hard set position so pearl does not "bounce"
                 float dist = Vector2.Distance(pearls[i].firstChunk.pos, positions[i]);
-                if (dist < 3f)
+                if (dist < 3f || teleport)
                 {
                     pearls[i].firstChunk.pos = positions[i];
                     pearls[i].firstChunk.vel = new Vector2();

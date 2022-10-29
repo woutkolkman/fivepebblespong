@@ -47,6 +47,7 @@ namespace FivePebblesPong
 
         public override void Destroy()
         {
+            base.Destroy(); //empty
             paddle?.Destroy();
             ball?.Destroy();
             lineMid?.Destroy();
