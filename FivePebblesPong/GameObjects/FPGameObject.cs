@@ -8,6 +8,7 @@ namespace FivePebblesPong
         public Vector2 pos;
         public string imageName;
         public ProjectedImage image;
+        public bool adjustToBackground = true;
         
         
         public FPGameObject(string imageName)
@@ -21,7 +22,7 @@ namespace FivePebblesPong
         public virtual void DrawImage(Vector2 offset)
         {
             if (image != null)
-                image.setPos = new Vector2?(pos + offset);
+                image.setPos = new Vector2?(pos + offset + (adjustToBackground ? new Vector2(-7, 15) : new Vector2()));
         }
 
 

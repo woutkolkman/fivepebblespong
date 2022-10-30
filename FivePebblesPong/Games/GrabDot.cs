@@ -8,10 +8,16 @@ namespace FivePebblesPong
         public List<AbstractCreature> creatures;
         public PearlSelection p;
         public List<Vector2> pearlTargets;
+        public Dot dot;
 
 
         public GrabDot(SSOracleBehavior self) : base(self) //dependent on CreatureViolenceHook and LizardGraphicsAddToContainerHook
         {
+            minX += 20;
+            maxX -= 20;
+            minY += 20;
+            maxY -= 20;
+
             creatures = new List<AbstractCreature>();
 
             p = new PearlSelection(self, addGrabbedPearls: true) { teleport = true };
@@ -30,6 +36,7 @@ namespace FivePebblesPong
         public override void Destroy()
         {
             base.Destroy(); //empty
+            dot?.Destroy();
 
             foreach (AbstractCreature a in creatures)
             {
@@ -68,17 +75,29 @@ namespace FivePebblesPong
             if (PebblesGameStarter.starter != null)
                 PebblesGameStarter.starter.gravity = false;
 
-            if (gameCounter > 1)
-                p.Update(self, pearlTargets);
+            p.Update(self, pearlTargets);
 
-            if (gameCounter == 100) //TODO replace
-                SpawnCreature(self);
+            if (gameCounter > 100 && dot == null)
+                dot = new Dot(self, this, 12, "FPP_Dot", color: Color.red, reloadImg: false) { alpha = 0.6f };
 
-            if (gameCounter == 3000) //TODO replace
+            if (dot != null && dot.Update(self))
+            {
+                dot.Destroy();
+                dot = null;
+            }
+
+            if (gameCounter == 300) //TODO replace
                 SpawnCreature(self);
 
             //TODO circles which player must reach
             //TODO push all creatures away from entrances during game
+        }
+
+
+        public override void Draw(Vector2 offset)
+        {
+            //update image positions
+            dot?.DrawImage(offset);
         }
     }
 }

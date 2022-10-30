@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObjects\Dot.cs" />
     <Compile Include="Games\FPGame.cs" />
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="GameObjects\FPGameObject.cs" />
