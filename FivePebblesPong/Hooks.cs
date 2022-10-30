@@ -76,7 +76,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.game != null && self.roomSettings.name.Equals("SS_AI") && firsttime && !gameControllerInShelter)
+            if (self.game != null && self.roomSettings != null && self.roomSettings.name.Equals("SS_AI") && firsttime && !gameControllerInShelter)
             {
                 EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
 
@@ -181,9 +181,9 @@ namespace FivePebblesPong
             }
 
             //construct/free PebblesGameStarter object when player enters/leaves room
-            if (self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.starter == null)
                 PebblesGameStarter.starter = new PebblesGameStarter();
-            if (!self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
                 PebblesGameStarter.starter = null;
 
             //run state machine for starting/running/stopping games
@@ -273,9 +273,9 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.player.room.roomSettings.name.Equals("SL_AI") && MoonGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SL_AI") && MoonGameStarter.starter == null)
                 MoonGameStarter.starter = new MoonGameStarter();
-            if (!self.player.room.roomSettings.name.Equals("SL_AI") && MoonGameStarter.starter != null && MoonGameStarter.starter.moonGame == null)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SL_AI")) && MoonGameStarter.starter != null && MoonGameStarter.starter.moonGame == null)
                 MoonGameStarter.starter = null;
 
             MoonGameStarter.starter?.Handle(self);

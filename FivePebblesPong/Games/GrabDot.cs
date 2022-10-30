@@ -27,12 +27,6 @@ namespace FivePebblesPong
         }
 
 
-        ~GrabDot() //destructor
-        {
-            this.Destroy(); //if not done already
-        }
-
-
         public override void Destroy()
         {
             base.Destroy(); //empty
@@ -84,6 +78,7 @@ namespace FivePebblesPong
                 SpawnCreature(self);
 
             //TODO circles which player must reach
+            //TODO push all creatures away from entrances during game
         }
     }
 }
