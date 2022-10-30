@@ -23,7 +23,7 @@ namespace FivePebblesPong
             if (PebblesGameStarter.starter != null)
                 PebblesGameStarter.starter.showMediaCounter = 100;
 
-            //TODO green pallette if available? 
+            base.palette = 23;
         }
 
 

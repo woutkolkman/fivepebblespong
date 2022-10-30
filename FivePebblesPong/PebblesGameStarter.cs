@@ -44,6 +44,12 @@ namespace FivePebblesPong
         public int showMediaCounter = 0;
 
 
+        //for palette
+        public int defaultPalette = 25; //25 is active when slugcat is present, 26 is active while working
+        public int previousPalette;
+        public float fadePalette = 0f;
+
+
         public void StateMachine(SSOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
@@ -231,8 +237,20 @@ namespace FivePebblesPong
                 self.conversation.paused = true;
                 self.restartConversationAfterCurrentDialoge = false;
             }
-
             statePreviousRun = stateBeforeRun;
+
+            //change palette
+            if (game != null && game.palette >= 0) {
+                if (fadePalette < 1f) fadePalette += 0.05f;
+                if (fadePalette > 1f) fadePalette = 1f;
+                previousPalette = game.palette;
+            } else {
+                if (fadePalette > 0f) fadePalette -= 0.05f;
+                if (fadePalette < 0f) fadePalette = 0f;
+            }
+            for (int n = 0; n < self.oracle.room.game.cameras.Length; n++)
+                if (self.oracle.room.game.cameras[n].room == self.oracle.room && !self.oracle.room.game.cameras[n].AboutToSwitchRoom)
+                    self.oracle.room.game.cameras[n].ChangeBothPalettes(defaultPalette, previousPalette, fadePalette);
         }
 
 

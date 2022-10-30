@@ -10,6 +10,7 @@ namespace FivePebblesPong
         public int lenX => maxX - minX;
         public int lenY => maxY - minY;
         public int gameCounter;
+        public int palette = -1;
 
 
         public FPGame(OracleBehavior self)

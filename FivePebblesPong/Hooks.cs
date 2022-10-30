@@ -192,16 +192,22 @@ namespace FivePebblesPong
 
 
         //five pebbles gravity RuntimeDetour
+        static bool previous_SSOracleBehavior_SubBehavior_Gravity;
         public delegate bool orig_Gravity(SSOracleBehavior.SubBehavior self);
         public static bool SSOracleBehavior_SubBehavior_Gravity_get(orig_Gravity orig, SSOracleBehavior.SubBehavior self)
         {
-            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter != null) //avoid potential crashes
-                return PebblesGameStarter.starter.gravity;
-            return orig(self); //always true
+            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter != null) { //avoid potential crashes
+                if (previous_SSOracleBehavior_SubBehavior_Gravity ^ PebblesGameStarter.starter.gravity)
+                    self.oracle.room.PlaySound(PebblesGameStarter.starter.gravity ? SoundID.SS_AI_Exit_Work_Mode : SoundID.Broken_Anti_Gravity_Switch_On, 0f, 1f, 1f);
+                previous_SSOracleBehavior_SubBehavior_Gravity = PebblesGameStarter.starter.gravity;
+            } else {
+                previous_SSOracleBehavior_SubBehavior_Gravity = orig(self); //always true
+            }
+            return previous_SSOracleBehavior_SubBehavior_Gravity;
         }
 
 
-        //prevent projected lizard from killing creatures in GrabDot FPGame
+        //prevent hologram lizard from killing creatures in GrabDot FPGame
         static void CreatureViolenceHook(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
             if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot)
@@ -224,10 +230,10 @@ namespace FivePebblesPong
             if (FivePebblesPong.HasEnumExt && correctCreature)
             {
                 if (newContainer == null)
-                    newContainer = rCam.ReturnFContainer("Foreground");
+                    newContainer = rCam.ReturnFContainer("Midground"); //default is "Midground"
                 if (sLeaser != null && sLeaser.sprites != null)
                     for (int i = 0; i < sLeaser.sprites.Length; i++)
-                        sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"];
+                        sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"]; //default is "Basic"
             }
             orig(self, sLeaser, rCam, newContainer);
         }
