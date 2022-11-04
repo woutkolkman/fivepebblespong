@@ -88,7 +88,6 @@ namespace FivePebblesPong
                     break;
 
                 default:
-
                     break;
             }
 
