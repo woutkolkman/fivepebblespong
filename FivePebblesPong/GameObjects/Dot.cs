@@ -39,19 +39,24 @@ namespace FivePebblesPong
             {
                 if (c.realizedCreature is Player)
                 {
-                    float dist = Vector2.Distance(c.realizedCreature.DangerPos, pos);
-                    if (dist < minDist)
-                        minDist = dist;
+                    foreach (BodyChunk b in c.realizedCreature.bodyChunks)
+                    {
+                        float dist = Vector2.Distance(b.pos, this.pos);
+                        if (dist < minDist)
+                            minDist = dist;
+                    }
                 }
             }
             if (minDist <= radius)
                 reached = true;
 
             if (reached) {
-                if (fadeAnim > 0f) fadeAnim -= 0.05f;
+                if (fadeAnim >= 1f)
+                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
+                if (fadeAnim > 0f) fadeAnim -= 0.08f;
                 if (fadeAnim < 0f) fadeAnim = 0f;
             } else {
-                if (fadeAnim < 1f) fadeAnim += 0.05f;
+                if (fadeAnim < 1f) fadeAnim += 0.08f;
                 if (fadeAnim > 1f) fadeAnim = 1f;
             }
             image.alpha = alpha * fadeAnim;

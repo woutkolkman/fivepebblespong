@@ -78,7 +78,7 @@ namespace FivePebblesPong
             p.Update(self, pearlTargets);
 
             if (gameCounter > 100 && dot == null)
-                dot = new Dot(self, this, 12, "FPP_Dot", color: Color.red, reloadImg: false) { alpha = 0.6f };
+                dot = new Dot(self, this, 12, "FPP_Dot", color: Color.red, reloadImg: false) { alpha = 0.5f, adjustToBackground = true };
 
             if (dot != null && dot.Update(self))
             {
@@ -89,8 +89,7 @@ namespace FivePebblesPong
             if (gameCounter == 300) //TODO replace
                 SpawnCreature(self);
 
-            //TODO circles which player must reach
-            //TODO push all creatures away from entrances during game
+            //TODO push all creatures away from entrances during game?
         }
 
 

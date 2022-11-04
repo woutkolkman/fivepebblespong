@@ -18,18 +18,18 @@ namespace FivePebblesPong
         public Breakout(SSOracleBehavior self) : base(self)
         {
             minX += 18;
-            this.paddle = new PongPaddle(self, this, 25, 100, "FPP_Player", reloadImg: true) { adjustToBackground = false };
+            this.paddle = new PongPaddle(self, this, 25, 100, "FPP_Player", reloadImg: true);
             this.paddle.pos = new Vector2(minX, midY);
             this.paddle.maxX = minX + lenX / 3;
             this.paddle.ballBounceAngle = 1.1;
 
-            this.lineMid = new PongLine(self, false, lenY, 4, 0, Color.white, "FPP_Line", reloadImg: true) { adjustToBackground = false };
+            this.lineMid = new PongLine(self, false, lenY, 4, 0, Color.white, "FPP_Line", reloadImg: true);
             this.lineMid.pos = new Vector2(this.paddle.maxX, midY);
-            this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_RedLine", reloadImg: true) { adjustToBackground = false };
+            this.lineEnd = new PongLine(self, false, lenY, 4, 0, Color.red, "FPP_RedLine", reloadImg: true);
             this.lineEnd.pos = new Vector2(this.paddle.minX, midY);
 
             minX -= 18;
-            this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true) { adjustToBackground = false };
+            this.ball = new PongBall(self, this, 15, "FPP_Ball", reloadImg: true);
             this.ball.pos = new Vector2(midX, midY);
             this.ball.movementSpeed = 8f;
             this.ball.angle = Math.PI; //move towards player first
@@ -162,7 +162,7 @@ namespace FivePebblesPong
             {
                 for (int r = 0; r < brickColumn; r++)
                 {
-                    bricks.Add(new PongPaddle(self, this, brickWidth, brickHeight, PlaceBricks_imgNames[c], PlaceBricks_colors[c], brickWidth / 2) { adjustToBackground = false });
+                    bricks.Add(new PongPaddle(self, this, brickWidth, brickHeight, PlaceBricks_imgNames[c], PlaceBricks_colors[c], brickWidth / 2));
                     bricks[r + c * brickColumn].pos = new Vector2(
                         maxX - (brickWidth * 2) - (brickWidth + brickHorSpacing) * c - backWallOffset,
                         maxY - (brickHeight / 2) - (brickHeight + brickVertSpacing) * r - horWallOffset

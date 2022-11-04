@@ -8,7 +8,7 @@ namespace FivePebblesPong
         public Vector2 pos;
         public string imageName;
         public ProjectedImage image;
-        public bool adjustToBackground = true;
+        public bool adjustToBackground = false;
         
         
         public FPGameObject(string imageName)
