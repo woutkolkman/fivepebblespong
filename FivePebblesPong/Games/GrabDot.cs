@@ -47,13 +47,10 @@ namespace FivePebblesPong
 
             foreach (AbstractCreature a in creatures)
             {
-                try
-                {
-                    a?.realizedCreature.LoseAllGrasps();
-                    a?.stuckObjects.Clear();
-                    a?.realizedCreature.RemoveFromRoom();
-                    a?.Destroy();
-                } catch { }
+                a?.realizedCreature?.LoseAllGrasps();
+                a?.stuckObjects?.Clear();
+                a?.realizedCreature?.RemoveFromRoom();
+                a?.Destroy();
             }
             creatures.Clear();
 
@@ -120,6 +117,7 @@ namespace FivePebblesPong
                         ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
             }
             //TODO lizards may occasionally still leave room
+            //TODO change lizard behavior to not prioritize shelter after rain timer expires
         }
 
 
