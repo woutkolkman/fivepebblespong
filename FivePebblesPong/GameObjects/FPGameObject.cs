@@ -22,7 +22,7 @@ namespace FivePebblesPong
         public virtual void DrawImage(Vector2 offset)
         {
             if (image != null)
-                image.setPos = new Vector2?(pos + offset + (adjustToBackground ? new Vector2(-7, 15) : new Vector2()));
+                image.setPos = new Vector2?(pos + offset + (adjustToBackground ? new Vector2(-7.5f, 15.5f) : new Vector2()));
         }
 
 
