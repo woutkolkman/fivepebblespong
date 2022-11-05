@@ -47,10 +47,13 @@ namespace FivePebblesPong
 
             foreach (AbstractCreature a in creatures)
             {
-                a?.realizedCreature.LoseAllGrasps();
-                a?.stuckObjects.Clear();
-                a?.realizedCreature.RemoveFromRoom();
-                a?.Destroy();
+                try
+                {
+                    a?.realizedCreature.LoseAllGrasps();
+                    a?.stuckObjects.Clear();
+                    a?.realizedCreature.RemoveFromRoom();
+                    a?.Destroy();
+                } catch { }
             }
             creatures.Clear();
 
@@ -116,6 +119,7 @@ namespace FivePebblesPong
                     if (Vector2.Distance(ac.realizedCreature.DangerPos, scPos) < 40f)
                         ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
             }
+            //TODO lizards may occasionally still leave room
         }
 
 
