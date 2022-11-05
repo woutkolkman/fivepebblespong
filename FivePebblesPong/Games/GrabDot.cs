@@ -144,6 +144,7 @@ namespace FivePebblesPong
             AbstractCreature newC = new AbstractCreature(self.oracle.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.CyanLizard), null, wPos, newID);
             creatures.Add(newC);
             newC.RealizeInRoom();
+            self.oracle.room.PlaySound(SoundID.Snail_Pop, self.oracle.firstChunk);
         }
 
 

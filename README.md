@@ -12,3 +12,6 @@ A Rain World mod that adds a game controller to Five Pebbles' room. If slugcat g
 Originally ratrat44's idea: https://www.youtube.com/watch?v=X-k5ytvMFQ4
 
 Tested on v1.5
+
+Dependencies:
+- EnumExtender.dll
