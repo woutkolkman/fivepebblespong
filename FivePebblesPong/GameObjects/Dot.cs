@@ -21,7 +21,6 @@ namespace FivePebblesPong
             if (color != null)
                 c = (Color)color;
 
-            FivePebblesPong.ME.Logger_p.LogInfo("new Dot pos: " + pos.ToString());
             base.SetImage(self, CreateGamePNGs.DrawCircle(radius, radius, c), reloadImg);
         }
 

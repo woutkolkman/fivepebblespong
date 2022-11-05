@@ -99,7 +99,6 @@ namespace FivePebblesPong
                 pearlTargets[i] = GetPosInCircle(new Vector2(midX, midY), scoreRadius, i, winScore);
             if (dot != null && score >= 0 && score < pearlTargets.Count)
                 pearlTargets[score] = dot.pos + Vector2.zero;
-
             p.Update(self, pearlTargets);
 
             //update lizard spawn animation
@@ -110,7 +109,13 @@ namespace FivePebblesPong
                 }
             }
 
-            //TODO push all creatures away from entrances during game?
+            //push all creatures away from entrances during game
+            for (int i = 0; i <= 1; i++) {
+                Vector2 scPos = self.oracle.room.MiddleOfTile(self.oracle.room.ShortcutLeadingToNode(i).StartTile);
+                foreach (AbstractCreature ac in self.oracle.room.abstractRoom.creatures)
+                    if (Vector2.Distance(ac.realizedCreature.DangerPos, scPos) < 40f)
+                        ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
+            }
         }
 
 
