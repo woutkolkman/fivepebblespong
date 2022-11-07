@@ -19,4 +19,4 @@ Tested on v1.5
 Dependencies:
 - EnumExtender.dll
 
-Please report any bug via the [Issues](https://github.com/woutkolkman/fivepebblespong/issues) tab, or message me on the [Rain World Discord](https://discord.gg/rainworld): Maxi Mol#3079
+Please report any bug, problem or feature request via the [Issues](https://github.com/woutkolkman/fivepebblespong/issues) tab, or message me on the [Rain World Discord](https://discord.gg/rainworld): Maxi Mol#3079
