@@ -8,7 +8,7 @@ namespace FivePebblesPong
     public class GrabDot : FPGame
     {
         public List<AbstractCreature> creatures;
-        public PearlSelection p;
+        public PearlSelection ps;
         public List<Vector2> pearlTargets;
         public Dot dot;
         private Spawnimation spawn;
@@ -27,9 +27,9 @@ namespace FivePebblesPong
 
             creatures = new List<AbstractCreature>();
 
-            p = new PearlSelection(self, addGrabbedPearls: true) { teleport = true };
+            ps = new PearlSelection(self, addGrabbedPearls: true) { teleport = true };
             pearlTargets = new List<Vector2>();
-            for (int i = 0; i < p.pearls.Count; i++)
+            for (int i = 0; i < ps.pearls.Count; i++)
                 pearlTargets.Add(new Vector2(maxX, minY));
 
             //finish calibration early
@@ -83,8 +83,8 @@ namespace FivePebblesPong
                 if (score == 1 || (score > 0 && UnityEngine.Random.value < 0.1f))
                 {
                     spawn = new Spawnimation(self, this);
-                    for (int i = p.pearls.Count - 4; i >= 0 && i < p.pearls.Count; i++)
-                        spawn.pearls.Add(p.pearls[i]);
+                    for (int i = ps.pearls.Count - 4; i >= 0 && i < ps.pearls.Count; i++)
+                        spawn.pearls.Add(ps.pearls[i]);
                 }
             }
 
@@ -99,7 +99,7 @@ namespace FivePebblesPong
                 pearlTargets[i] = GetPosInCircle(new Vector2(midX, midY), scoreRadius, i, winScore);
             if (dot != null && score >= 0 && score < pearlTargets.Count)
                 pearlTargets[score] = dot.pos + Vector2.zero;
-            p.Update(self, pearlTargets);
+            ps.Update(self, pearlTargets);
 
             //update lizard spawn animation
             if (spawn != null) {
@@ -109,13 +109,14 @@ namespace FivePebblesPong
                 }
             }
 
-            //push all creatures away from entrances during game
+            /*//push all creatures away from entrances during game
             for (int i = 0; i <= 1; i++) {
                 Vector2 scPos = self.oracle.room.MiddleOfTile(self.oracle.room.ShortcutLeadingToNode(i).StartTile);
                 foreach (AbstractCreature ac in self.oracle.room.abstractRoom.creatures)
                     if (Vector2.Distance(ac.realizedCreature.DangerPos, scPos) < 40f)
                         ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
-            }
+            }*/
+
             //TODO lizards may occasionally still leave room
             //TODO change lizard behavior to not prioritize shelter after rain timer expires
         }

@@ -11,6 +11,7 @@ namespace FivePebblesPong
         public int lenY => maxY - minY;
         public int gameCounter;
         public int palette = -1;
+        public Player p;
 
 
         public FPGame(OracleBehavior self)
@@ -35,11 +36,12 @@ namespace FivePebblesPong
 
         public virtual void Update(SSOracleBehavior self) { this.Update(self as OracleBehavior); }
         public virtual void Update(SLOracleBehavior self) { this.Update(self as OracleBehavior); }
-        public virtual void Update(OracleBehavior self) { this.Update(); }
-        private void Update() {
+        public virtual void Update(OracleBehavior self) {
             this.gameCounter++;
             if (this.gameCounter < 0)
                 this.gameCounter = 0;
+
+            p = FivePebblesPong.GetPlayer(self);
         }
 
 

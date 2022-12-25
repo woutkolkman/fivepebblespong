@@ -50,7 +50,7 @@ namespace FivePebblesPong
 
         public override void Update(OracleBehavior self)
         {
-            Update(self, self.player.input[0].y);
+            Update(self, p?.input[0].y ?? 0);
         }
         public void Update(OracleBehavior self, int input)
         {
@@ -141,8 +141,8 @@ namespace FivePebblesPong
             //moon looks at game, else looks at slugcat
             if (gameStarted && !self.protest)
             {
-                self.lookPoint = self.player.DangerPos; //moon looks at slugcat instead of controller during game
-                if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, self.player.DangerPos) > 60) ||
+                self.lookPoint = p?.DangerPos ?? new Vector2(); //moon looks at slugcat instead of controller during game
+                if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, (p?.DangerPos ?? new Vector2())) > 60) ||
                     ((self is SLOracleBehaviorHasMark) &&
                     (self as SLOracleBehaviorHasMark).currentConversation == null && //look at player when talking
                     !(self as SLOracleBehaviorHasMark).playerIsAnnoyingWhenNoConversation &&
@@ -171,7 +171,7 @@ namespace FivePebblesPong
         public int MoonAI()
         {
             //if (false) //player controlled
-            //    return self.player.input[0].y;
+            //    return p?.input[0].y ?? 0;
 
             if (dino.curAnim == DinoPlayer.Animation.Dead)
                 return 0; //game will be exited soon

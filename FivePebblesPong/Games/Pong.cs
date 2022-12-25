@@ -66,7 +66,7 @@ namespace FivePebblesPong
             playerPdl?.Destroy();
             pebblesPdl?.Destroy();
             int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(self.player.playerState.slugcatCharacter), 10, reloadImg: true);
+            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? 0), 10, reloadImg: true);
             this.playerPdl.pos = new Vector2(midX - paddleOffset, playerY);
             this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
@@ -111,7 +111,7 @@ namespace FivePebblesPong
             int pebblesInput = PebblesAI();
             if (pebblesPdl.Update(0, pebblesInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
-            if (playerPdl.Update(0, self.player.input[0].y, ball)) //if ball is hit
+            if (playerPdl.Update(0, (p?.input[0].y ?? 0), ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
@@ -119,7 +119,7 @@ namespace FivePebblesPong
             self.currentGetTo = pebblesPdl.pos;
             self.currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             self.floatyMovement = false;
-            self.lookPoint = (state == State.Playing) ? ball.pos : self.player.DangerPos;
+            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? new Vector2());
 
             //update score
             scoreBoard?.Update(self, scoreCount);

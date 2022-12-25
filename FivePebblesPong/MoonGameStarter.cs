@@ -28,16 +28,13 @@ namespace FivePebblesPong
         public void Handle(SLOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            bool playerCarriesController = false;
-            for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
-                    playerCarriesController = true;
+            Player p = FivePebblesPong.GetPlayer(self);
 
             bool playerMayPlayGame = (
-                playerCarriesController && self.hasNoticedPlayer &&
-                self.player?.room?.roomSettings != null &&
-                self.player.room.roomSettings.name.Equals("SL_AI") &&
-                self.player.DangerPos.x >= minXPosPlayer //stop game when leaving
+                self.hasNoticedPlayer &&
+                p?.room?.roomSettings != null && //player carries controller
+                p.room.roomSettings.name.Equals("SL_AI") &&
+                p.DangerPos.x >= minXPosPlayer //stop game when leaving
             );
             bool moonMayPlayGame = (
                 self.holdingObject is GameController &&
@@ -45,6 +42,7 @@ namespace FivePebblesPong
                 self.player.room.roomSettings.name.Equals("SL_AI") && //memory gets freed if player leaves
                 MoonGameStarter.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
+            //NOTE checks only singleplayer: "self.player"
 
             //special effects (flicker, revealgame)
             float revealGameAlpha = (400 - MoonGameStarter.moonDelayUpdateGame) * (0.5f / 400);

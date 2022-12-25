@@ -19,7 +19,7 @@ namespace FivePebblesPong
     }
 
 
-    [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "0.2.0")] //(GUID, mod name, mod version)
+    [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "0.3.0")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
@@ -52,6 +52,31 @@ namespace FivePebblesPong
                 //add new FPGames here
                 default: return null;
             }
+        }
+
+
+        //get player with controller
+        public static Player currentPlayer;
+        public static Player GetPlayer(OracleBehavior self)
+        {
+            bool CarriesController(Creature p) { //check if creature is holding a gamecontroller
+                for (int i = 0; i < p.grasps.Length; i++)
+                    if (p.grasps[i] != null && p.grasps[i].grabbed is GameController)
+                        return true;
+                return false;
+            }
+
+            //check if current player is holding gamecontroller
+            if (currentPlayer != null && !CarriesController(currentPlayer))
+                currentPlayer = null;
+
+            //cycle through all players
+            if (currentPlayer == null && self.oracle?.room?.game?.Players != null) {
+                foreach (AbstractCreature ac in self.oracle.room.game.Players)
+                    if (ac?.realizedCreature is Player && CarriesController(ac.realizedCreature))
+                        currentPlayer = ac.realizedCreature as Player;
+            }
+            return currentPlayer;
         }
     }
 }

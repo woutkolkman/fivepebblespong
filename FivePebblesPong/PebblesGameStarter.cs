@@ -53,17 +53,14 @@ namespace FivePebblesPong
         public void StateMachine(SSOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            bool CarriesController = false;
-            for (int i = 0; i < self.player.grasps.Length; i++)
-                if (self.player.grasps[i] != null && self.player.grasps[i].grabbed is GameController)
-                    CarriesController = true;
+            Player p = FivePebblesPong.GetPlayer(self);
 
             State stateBeforeRun = state;
             switch (state)
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (CarriesController && self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.pebblesNotFullyStartedCounter < 4)
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && PebblesGameStarter.pebblesNotFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
 
@@ -83,7 +80,7 @@ namespace FivePebblesPong
                                 break;
                         }
                     }
-                    if (!CarriesController)
+                    if (p == null)
                         state = State.StopDialog;
                     if (!self.dialogBox.ShowingAMessage) //dialog finished
                         state = State.SelectGame;
@@ -106,7 +103,7 @@ namespace FivePebblesPong
 
                     if (game != null)
                         state = State.Calibrate;
-                    if (!CarriesController || self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SS_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SS_AI"))
                         state = State.StopDialog;
                     if (state != State.SelectGame)
                     {
@@ -150,7 +147,7 @@ namespace FivePebblesPong
                     if (PebblesGameStarter.pebblesCalibratedProjector)
                         state = State.Started;
                     game?.Draw(showMediaPos - new Vector2(game.midX, game.midY));
-                    if (!CarriesController)
+                    if (p == null)
                         state = State.StopDialog;
                     break;
 
@@ -161,7 +158,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (!CarriesController || self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SS_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SS_AI"))
                         state = State.StopDialog;
                     break;
 
@@ -181,8 +178,9 @@ namespace FivePebblesPong
                                     if (self.oracle.room.physicalObjects[i][j] is GameController && (self.oracle.room.physicalObjects[i][j] as GameController).thrownBy is Player)
                                         controllerThrownReacted = true;
 
-                        if (!controllerInStomachReacted && self.player.objectInStomach != null && self.player.objectInStomach.type == EnumExt_FPP.GameController)
+                        if (!controllerInStomachReacted && self.player?.objectInStomach != null && self.player.objectInStomach.type == EnumExt_FPP.GameController)
                         {
+                            //NOTE checks only singleplayer: "self.player"
                             self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "It's yours now, please keep it." : "That's also not edible."), 10);
                             controllerInStomachReacted = true;
                             if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
@@ -278,7 +276,7 @@ namespace FivePebblesPong
             {
                 if (self.oracle.room.GetTile(tryPos).Solid)
                     return float.MaxValue;
-                float num = Mathf.Abs(Vector2.Distance(tryPos, self.player.DangerPos) - 250f);
+                float num = Mathf.Abs(Vector2.Distance(tryPos, self.player.DangerPos) - 250f); //NOTE checks only singleplayer: "self.player"
                 num -= Math.Min((float)self.oracle.room.aimap.getAItile(tryPos).terrainProximity, 9f) * 30f;
                 if (self is SSOracleBehavior)
                     num -= Vector2.Distance(tryPos, (self as SSOracleBehavior).nextPos) * 0.5f;

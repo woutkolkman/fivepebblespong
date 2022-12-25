@@ -112,7 +112,7 @@ namespace FivePebblesPong
             {
                 if (pearls[i].grabbedBy.Count > 0)
                 {
-                    if (pearls[i].grabbedBy[0].grabber == self.player)
+                    if (pearls[i].grabbedBy[0].grabber is Player)
                         pearlGrabbed = i;
                     continue;
                 }

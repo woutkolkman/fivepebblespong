@@ -63,8 +63,8 @@ namespace FivePebblesPong
             base.Update(self);
 
             //read player input
-            int pX = self.player.input[0].x;
-            int pY = self.player.input[0].y;
+            int pX = p?.input[0].x ?? 0;
+            int pY = p?.input[0].y ?? 0;
 
             //update objects
             if (base.gameCounter > GETREADY_WAIT)
@@ -94,7 +94,7 @@ namespace FivePebblesPong
             if (self.currentGetTo.x > paddle.maxX) //keep puppet behind line
                 self.currentGetTo.x = paddle.maxX;
             self.floatyMovement = false;
-            self.lookPoint = (ball != null && base.gameCounter >= GETREADY_WAIT) ? ball.pos : self.player.DangerPos;
+            self.lookPoint = (ball != null && base.gameCounter >= GETREADY_WAIT) ? ball.pos : (p?.DangerPos ?? new Vector2());
 
             //place bricks
             if (bricks.Count <= 0 && ball.pos.x <= midX)

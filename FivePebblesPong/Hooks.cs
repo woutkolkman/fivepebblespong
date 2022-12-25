@@ -185,6 +185,7 @@ namespace FivePebblesPong
                 PebblesGameStarter.starter = new PebblesGameStarter();
             if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SS_AI")) && PebblesGameStarter.starter != null && PebblesGameStarter.starter.state == PebblesGameStarter.State.Stop)
                 PebblesGameStarter.starter = null;
+            //NOTE checks only singleplayer: "self.player"
 
             //run state machine for starting/running/stopping games
             PebblesGameStarter.starter?.StateMachine(self);
@@ -283,6 +284,7 @@ namespace FivePebblesPong
                 MoonGameStarter.starter = new MoonGameStarter();
             if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SL_AI")) && MoonGameStarter.starter != null && MoonGameStarter.starter.moonGame == null)
                 MoonGameStarter.starter = null;
+            //NOTE checks only singleplayer: "self.player"
 
             MoonGameStarter.starter?.Handle(self);
         }
