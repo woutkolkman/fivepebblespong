@@ -77,7 +77,7 @@ namespace FivePebblesPong
             {
                 score++;
                 if (score < winScore)
-                    dot = new Dot(self, this, 12, "FPP_Dot", color: new Color(0, 232, 230) /*cyan lizard icon*/, reloadImg: false) { alpha = 0.5f, adjustToBackground = true };
+                    dot = new Dot(self, this, 15, "FPP_Dot", color: new Color(0, 232, 230) /*cyan lizard icon*/, reloadImg: false) { alpha = 0.5f, adjustToBackground = true };
                 if (score >= winScore && !winReacted)
                 {
                     self.dialogBox.Interrupt(self.Translate("Nice!"), 10);
@@ -119,9 +119,7 @@ namespace FivePebblesPong
                     if (Vector2.Distance(ac.realizedCreature.DangerPos, scPos) < 40f)
                         ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
             }*/
-
             //TODO lizards may occasionally still leave room
-            //TODO change lizard behavior to not prioritize shelter after rain timer expires
         }
 
 
