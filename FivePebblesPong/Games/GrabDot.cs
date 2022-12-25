@@ -37,6 +37,9 @@ namespace FivePebblesPong
                 PebblesGameStarter.starter.showMediaCounter = 100;
 
             base.palette = 23;
+
+            //reset raintimer so lizards stay in room (more often)
+            self.oracle.room.world.rainCycle.timer = 0;
         }
 
 
