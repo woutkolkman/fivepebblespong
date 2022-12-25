@@ -1,10 +1,12 @@
 ### Install
-Download and install BOI / BepInEx: https://rainworldmodding.miraheze.org/wiki/BOI#Installation
+1. Download and install BOI / BepInEx: https://rainworldmodding.miraheze.org/wiki/BOI#Installation
 
-Download the most recent .dll from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and place it in the /Rain World/Mods folder.
+2. Download the most recent .dll from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and place it in the /Rain World/Mods folder.
+
+3. Enable FivePebblesPong.dll and its dependencies via the BOI mod manager.
 
 Dependencies:
-- EnumExtender.dll
+- [EnumExtender.dll](https://www.raindb.net/#main:~:text=accesses%20to%20rooms-,EnumExtender)
 
 
 ### Description
