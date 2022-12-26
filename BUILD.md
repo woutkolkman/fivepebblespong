@@ -27,13 +27,12 @@ You can build the code using the shortcut CTRL + SHIFT + B.
 ### Contributing
 Follow the "standard fork -> clone -> edit -> pull request workflow": https://github.com/firstcontributions/first-contributions
 
-You're free to add games! You can add games by creating a class that inherits FPGame, and adding an object to GetNewFPGame() in FivePebblesPong.cs.  
-The mod needs testing for multiplayer. Objects may fall out of sync, but this is unknown. The base game 5P mostly focusses on one player anyway.
+You're free to add games! You can add games by creating a class that inherits FPGame, and adding an object to GetNewFPGame() in FivePebblesPong.cs.
 
 Stuff that may need improvements are:
 - Better dialogue, something more 5P like.
 - Improved ball/paddle collision.
-- Multiplayer support?
+- Ball update/frame rate issue.
 - Your own improvements (with your explanation and reason).
 
 If your additions need extra files or assets, please propose a system for users to easily add these files to Rain World for your additions to work. Currently graphics are generated via code.
