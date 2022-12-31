@@ -142,7 +142,7 @@ namespace FivePebblesPong
             if (gameStarted && !self.protest)
             {
                 self.lookPoint = p?.DangerPos ?? new Vector2(); //moon looks at slugcat instead of controller during game
-                if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, (p?.DangerPos ?? new Vector2())) > 60) ||
+                if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2())) > 60) ||
                     ((self is SLOracleBehaviorHasMark) &&
                     (self as SLOracleBehaviorHasMark).currentConversation == null && //look at player when talking
                     !(self as SLOracleBehaviorHasMark).playerIsAnnoyingWhenNoConversation &&

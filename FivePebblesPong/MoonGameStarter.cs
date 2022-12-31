@@ -81,7 +81,11 @@ namespace FivePebblesPong
 
                 if (this.moonGame == null)
                     this.moonGame = new Dino(self) { imageAlpha = 0f };
-                this.moonGame?.Update(self, this.moonGame.MoonAI());
+                this.moonGame?.Update(self, (
+                    (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null) 
+                    ? 0 //when moon is speaking, don't control game
+                    : this.moonGame.MoonAI()
+                ));
                 this.moonGame?.Draw();
             }
             else if (this.moonGame != null) //destroy game

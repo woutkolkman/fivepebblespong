@@ -14,13 +14,16 @@ namespace FivePebblesPong
         public bool playerLastWin = true;
         public const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
         public const int GETREADY_WAIT = 120; //frames
-        public static bool compliment = true;
         public int pebblesWin = 0;
         public int playerWin = 0;
         public PearlSelection scoreBoard;
         public List<Vector2> scoreCount;
         public const float SCORE_HEIGHT = 135;
+        public static bool compliment = true;
         public static bool grabbedScoreReacted = false;
+        public float ballAccel = 0.003f;
+        public int pebblesUpdateRate = 12; //calculate ball trajectory every X frames
+
 
         public enum State
         {
@@ -94,7 +97,7 @@ namespace FivePebblesPong
             base.Update(self);
 
             //increase ball speed gradually
-            ball.movementSpeed = 6f + (0.001f * base.gameCounter);
+            ball.movementSpeed = 6f + (ballAccel * base.gameCounter);
 
             this.StateMachine(self);
             if (state == State.GetReady)
@@ -228,7 +231,7 @@ namespace FivePebblesPong
             bool once = false;
 
             //https://stackoverflow.com/questions/61139016/how-to-predict-trajectory-of-ball-in-a-ping-pong-game-for-ai-paddle-prediction
-            if (base.gameCounter % 4 == 0) //only execute every 4 frames
+            if (base.gameCounter % pebblesUpdateRate == 0) //only execute every <pebblesUpdateRate> frames
             {
                 if (ball.velocityX > 0) //if ball moves towards Pebbles
                 {

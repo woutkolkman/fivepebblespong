@@ -250,8 +250,8 @@ namespace FivePebblesPong
 
             if (self.id == Conversation.ID.Moon_Misc_Item && self.describeItem == EnumExt_FPP.GameControllerReaction)
             {
-                self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It's an electronic device with buttons. Where did you find this?"), 0));
-                self.events.Add(new Conversation.TextEvent(self, 10, self.Translate("It looks like something that Five Pebbles would like..."), 0));
+                self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It's an electronic device with buttons.<LINE>Where did you find this?"), 0));
+                self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It looks like something that Five Pebbles would like..."), 0));
             }
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
