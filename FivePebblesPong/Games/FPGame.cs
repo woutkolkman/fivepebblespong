@@ -28,6 +28,8 @@ namespace FivePebblesPong
                 minY = 40;
                 maxY = 620;
             }
+
+            p = FivePebblesPong.GetPlayer(self);
         }
 
 
