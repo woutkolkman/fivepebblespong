@@ -122,7 +122,7 @@ namespace FivePebblesPong
             self.currentGetTo = pebblesPdl.pos;
             self.currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             self.floatyMovement = false;
-            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? new Vector2());
+            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
 
             //update score
             scoreBoard?.Update(self, scoreCount);

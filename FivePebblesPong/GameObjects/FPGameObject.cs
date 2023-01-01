@@ -188,12 +188,12 @@ namespace FivePebblesPong
             sLeaser.sprites[1] = new FSprite("Futile_White", true);
             sLeaser.sprites[1].shader = rCam.game.rainWorld.Shaders["LightSource"];
 
-            glowWidth = sLeaser.sprites[0].width - 2 * CreateGamePNGs.EDGE_DIST;
-            glowHeight = sLeaser.sprites[0].height - 2 * CreateGamePNGs.EDGE_DIST;
+            glowWidth = sLeaser.sprites[0].width - (2 * CreateGamePNGs.EDGE_DIST);
+            glowHeight = sLeaser.sprites[0].height - (2 * CreateGamePNGs.EDGE_DIST);
             if (glowWidth < 15) glowWidth = 15;
-            if (glowWidth > 50) glowWidth -= (glowWidth - 50) / 1.2f;
             if (glowHeight < 15) glowHeight = 15;
-            if (glowHeight > 50) glowHeight -= (glowHeight - 50) / 1.2f;
+            if (glowWidth > 50) glowWidth = 50; //TODO dynamic max size?
+            if (glowHeight > 50) glowHeight = 50; //TODO dynamic max size?
 
             this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
         }
@@ -208,8 +208,6 @@ namespace FivePebblesPong
                 sLeaser.sprites[i].y = this.pos.y - camPos.y;
                 sLeaser.sprites[i].alpha = this.alpha;
             }
-            sLeaser.sprites[1].x = this.pos.x - camPos.x;
-            sLeaser.sprites[1].y = this.pos.y - camPos.y;
             sLeaser.sprites[1].color = this.glowColor;
             sLeaser.sprites[1].scaleX = (glowWidth);
             sLeaser.sprites[1].scaleY = (glowHeight);

@@ -94,7 +94,7 @@ namespace FivePebblesPong
             if (self.currentGetTo.x > paddle.maxX) //keep puppet behind line
                 self.currentGetTo.x = paddle.maxX;
             self.floatyMovement = false;
-            self.lookPoint = (ball != null && base.gameCounter >= GETREADY_WAIT) ? ball.pos : (p?.DangerPos ?? new Vector2());
+            self.lookPoint = (ball != null && base.gameCounter >= GETREADY_WAIT) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
 
             //place bricks
             if (bricks.Count <= 0 && ball.pos.x <= midX)
