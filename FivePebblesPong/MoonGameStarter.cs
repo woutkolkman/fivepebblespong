@@ -11,7 +11,7 @@ namespace FivePebblesPong
 
         public Dino moonGame;
         public int minXPosPlayer = 1100;
-        public float maxControllerGrabDist = 90f;
+        public float maxControllerGrabDist = 92f;
         public int SearchDelayCounter = 0;
         public int SearchDelay = 600;
         public bool moonMayGrabController = true;

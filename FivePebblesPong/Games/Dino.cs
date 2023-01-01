@@ -13,8 +13,10 @@ namespace FivePebblesPong
         public bool gameStarted, prevGameStarted;
         public int lastCounter;
         public static int highScore;
-        public int minObstacleInterval = 25;
+        public int minObstacleInterval = 18;
+        public float obstacleSpawnChance = 0.04f;
         public readonly Color color;
+        public float startSpeed = -4f;
 
 
         public Dino(OracleBehavior self) : base(self)
@@ -96,19 +98,19 @@ namespace FivePebblesPong
             }
 
             //spawn obstacles
-            if (gameCounter > 100 && UnityEngine.Random.value < 0.04f && gameCounter - lastCounter >= minObstacleInterval) {
+            if (gameCounter > 100 && UnityEngine.Random.value < obstacleSpawnChance && gameCounter - lastCounter >= minObstacleInterval) {
                 lastCounter = gameCounter;
 
                 //spawn cactus
                 if (gameCounter < 1000 || UnityEngine.Random.value < 0.8f) {
-                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, -3f - (0.0005f * gameCounter), 0f, color, "FPP_Cactus"));
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Cactus, startSpeed + (-0.0006f * gameCounter), 0f, color, "FPP_Cactus"));
                     obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + 1 + obstacles[obstacles.Count - 1].height / 2);
 
                 } else { //spawn bird
                     int offsetFromGround = 21;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 11;
                     if (UnityEngine.Random.value < 0.20f) offsetFromGround = 31;
-                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Bird, -3f - (0.0007f * gameCounter), UnityEngine.Random.Range(-0.1f, 0.1f), color, "FPP_Bird"));
+                    obstacles.Add(new DinoObstacle(self, DinoObstacle.Type.Bird, startSpeed + (-0.0007f * gameCounter), UnityEngine.Random.Range(-0.1f, 0.1f), color, "FPP_Bird"));
                     obstacles[obstacles.Count - 1].pos = new Vector2(midX + gameWidth / 2, this.line.pos.y + offsetFromGround + obstacles[obstacles.Count - 1].height / 2);
                 }
             }
@@ -182,7 +184,7 @@ namespace FivePebblesPong
             {
                 float positiveDist = (ob.pos.x - ob.width/2) - (dino.pos.x + (dino.width/2));
                 float negativeDist = (ob.pos.x + ob.width/2) - (dino.pos.x - (dino.width/2));
-                float minDist = 15f + (ob.velocityX * -1);
+                float minDist = 20f - (ob.velocityX * 3f);
                 if (!(positiveDist <= minDist && negativeDist >= 0))
                     continue;
 

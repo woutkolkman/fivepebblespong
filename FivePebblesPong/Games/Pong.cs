@@ -22,6 +22,7 @@ namespace FivePebblesPong
         public static bool compliment = true;
         public static bool grabbedScoreReacted = false;
         public float ballAccel = 0.003f;
+        public float startSpeed = 6f;
         public int pebblesUpdateRate = 12; //calculate ball trajectory every X frames
 
 
@@ -97,7 +98,7 @@ namespace FivePebblesPong
             base.Update(self);
 
             //increase ball speed gradually
-            ball.movementSpeed = 6f + (ballAccel * base.gameCounter);
+            ball.movementSpeed = startSpeed + (ballAccel * base.gameCounter);
 
             this.StateMachine(self);
             if (state == State.GetReady)
