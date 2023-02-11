@@ -3,6 +3,7 @@ using System;
 
 namespace FivePebblesPong
 {
+    /*
     public static class EnumExt_FPP //dependency: EnumExtender.dll
     {
         //type for spawning controller
@@ -16,9 +17,28 @@ namespace FivePebblesPong
 
         //moon reaction on controller
         public static SLOracleBehaviorHasMark.MiscItemType GameControllerReaction;
+    }*/
+
+    
+    [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "1.0.0")] //(GUID, mod name, mod version)
+    public class FivePebblesPong : BaseUnityPlugin
+    {
+        //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
+        private static WeakReference __me; //WeakReference still allows garbage collection
+        public FivePebblesPong() { __me = new WeakReference(this); }
+        public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
+        public BepInEx.Logging.ManualLogSource Logger_p => Logger;
+
+
+        //called when mod is loaded, subscribe functions to methods of the game
+        public void OnEnable()
+        {
+            FivePebblesPong.ME.Logger_p.LogInfo("test logger");
+        }
     }
 
 
+    /*
     [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "0.3.0")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
@@ -78,5 +98,5 @@ namespace FivePebblesPong
             }
             return currentPlayer;
         }
-    }
+    }*/
 }
