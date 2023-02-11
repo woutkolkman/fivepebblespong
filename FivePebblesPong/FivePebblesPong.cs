@@ -1,5 +1,9 @@
 ﻿using BepInEx;
 using System;
+using System.Security.Permissions;
+#pragma warning disable CS0618
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+#pragma warning restore CS0618
 
 namespace FivePebblesPong
 {
@@ -23,7 +27,7 @@ namespace FivePebblesPong
             IsEnabled = true;
 
             Enums.RegisterValues();
-//            Hooks.Apply();
+//            Hooks.Apply(); //TODO
 
             FivePebblesPong.ME.Logger_p.LogInfo("OnEnable() called");
         }
@@ -36,6 +40,9 @@ namespace FivePebblesPong
             IsEnabled = false;
 
             Enums.UnregisterValues();
+//            Hooks.Unapply(); //TODO
+
+            FivePebblesPong.ME.Logger_p.LogInfo("OnDisable() called");
         }
 
 
