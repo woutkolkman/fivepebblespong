@@ -3,23 +3,6 @@ using System;
 
 namespace FivePebblesPong
 {
-    /*
-    public static class EnumExt_FPP //dependency: EnumExtender.dll
-    {
-        //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType GameController; //needs to be first in list
-
-        //five pebbles action
-        public static SSOracleBehavior.Action Gaming_Gaming;
-
-        //five pebbles movement (controlled by FPGame subclass)
-        public static SSOracleBehavior.MovementBehavior PlayGame;
-
-        //moon reaction on controller
-        public static SLOracleBehaviorHasMark.MiscItemType GameControllerReaction;
-    }*/
-
-    
     [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "1.0.0")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
@@ -29,36 +12,34 @@ namespace FivePebblesPong
         public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
-
-        //called when mod is loaded, subscribe functions to methods of the game
-        public void OnEnable()
-        {
-            FivePebblesPong.ME.Logger_p.LogInfo("test logger");
-        }
-    }
-
-
-    /*
-    [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "0.3.0")] //(GUID, mod name, mod version)
-    public class FivePebblesPong : BaseUnityPlugin
-    {
-        //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
-        private static WeakReference __me; //WeakReference still allows garbage collection
-        public FivePebblesPong() { __me = new WeakReference(this); }
-        public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
-        public BepInEx.Logging.ManualLogSource Logger_p => Logger;
-
-        public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
+        public static bool HasEnumExt => (int)Enums.GameController > 0; //returns true after EnumExtender initializes
+        private static bool IsEnabled = false;
 
 
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
         {
-            Hooks.Apply();
+            if (IsEnabled) return;
+            IsEnabled = true;
+
+            Enums.RegisterValues();
+//            Hooks.Apply();
+
+            FivePebblesPong.ME.Logger_p.LogInfo("OnEnable() called");
         }
 
 
-        //called when game selection is active, add new games here
+        //TODO never called
+        public void OnDisable()
+        {
+            if (!IsEnabled) return;
+            IsEnabled = false;
+
+            Enums.UnregisterValues();
+        }
+
+
+        /*//called when game selection is active, add new games here
         public static int amountOfGames = 3; //increase counter when adding more games
         public static FPGame GetNewFPGame(SSOracleBehavior self, int nr) //-1 if no game was selected yet
         {
@@ -72,10 +53,10 @@ namespace FivePebblesPong
                 //add new FPGames here
                 default: return null;
             }
-        }
+        }*/
 
-
-        //get player with controller
+        
+        /*//get player with controller
         public static Player currentPlayer;
         public static Player GetPlayer(OracleBehavior self)
         {
@@ -97,6 +78,6 @@ namespace FivePebblesPong
                         currentPlayer = ac.realizedCreature as Player;
             }
             return currentPlayer;
-        }
-    }*/
+        }*/
+    }
 }
