@@ -27,7 +27,7 @@ namespace FivePebblesPong
             IsEnabled = true;
 
             Enums.RegisterValues();
-//            Hooks.Apply(); //TODO
+            Hooks.Apply();
 
             FivePebblesPong.ME.Logger_p.LogInfo("OnEnable() called");
         }

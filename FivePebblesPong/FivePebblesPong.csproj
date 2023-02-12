@@ -36,8 +36,11 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FivePebblesPong.cs" />
+    <Compile Include="GameController.cs" />
+    <Compile Include="Hooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ namespace FivePebblesPong
 
             //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
-
+            /*
             //ProjectedImage constructor hook for hiding LoadFile()
             On.ProjectedImage.ctor += ProjectedImageCtorHook;
 
@@ -64,6 +64,7 @@ namespace FivePebblesPong
                 typeof(SLOracleBehaviorNoMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SLOracleBehaviorNoMark_OracleGetToPos_get", myMethodFlags)
             );
+            */
         }
 
 
@@ -83,7 +84,7 @@ namespace FivePebblesPong
                 //copy existing coordinate from a random object
                 WorldCoordinate coord = self.GetWorldCoordinate(self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
 
-                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, EnumExt_FPP.GameController, null, coord, newID);
+                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, Enums.GameController, null, coord, newID);
                 self.abstractRoom.AddEntity(ent);
                 FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString());
             }
@@ -93,7 +94,7 @@ namespace FivePebblesPong
         //creates GameController object
         static void AbstractPhysicalObjectRealizeHook(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
         {
-            if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == EnumExt_FPP.GameController)
+            if (FivePebblesPong.HasEnumExt && self.realizedObject == null && self.type == Enums.GameController)
             {
                 self.realizedObject = new GameController(self);
             }
@@ -112,7 +113,7 @@ namespace FivePebblesPong
             if (self.playerState.playerNumber == 0) //reset
                 gameControllerInShelter = false;
 
-            if (self.objectInStomach != null && self.objectInStomach.type == EnumExt_FPP.GameController)
+            if (self.objectInStomach != null && self.objectInStomach.type == Enums.GameController)
                 gameControllerInShelter = true;
 
             for (int i = 0; i < self.room.physicalObjects.Length; i++)
@@ -125,7 +126,7 @@ namespace FivePebblesPong
             //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
         }
 
-
+        /*
         //ProjectedImage constructor hook for hiding LoadFile() (function cannot be overridden or hidden for ProjectedImage class)
         static void ProjectedImageCtorHook(On.ProjectedImage.orig_ctor orig, ProjectedImage self, List<string> imageNames, int cycleTime)
         {
@@ -248,7 +249,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.id == Conversation.ID.Moon_Misc_Item && self.describeItem == EnumExt_FPP.GameControllerReaction)
+            if (self.id == Conversation.ID.Moon_Misc_Item && self.describeItem == Enums.GameControllerReaction)
             {
                 self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It's an electronic device with buttons.<LINE>Where did you find this?"), 0));
                 self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It looks like something that Five Pebbles would like..."), 0));
@@ -257,7 +258,7 @@ namespace FivePebblesPong
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
         {
             if (FivePebblesPong.HasEnumExt && testItem is GameController)
-                return EnumExt_FPP.GameControllerReaction;
+                return Enums.GameControllerReaction;
             return orig(self, testItem);
         }
 
@@ -323,5 +324,6 @@ namespace FivePebblesPong
                 return MoonGameStarter.grabItem.firstChunk.pos;
             return orig(self);
         }
+        */
     }
 }
