@@ -5,6 +5,7 @@
   "hide_version": false,
   "authors": "Maxi Mol",
   "description": "Adds a game controller to Five Pebbles' room. If slugcat grabs it, Pebbles invites you to play Pong.",
+  "youtube_trailer_id": "I4w8U9lszao",
   "requirements": [],
   "requirements_names": [],
   "checksum_override_version": false
