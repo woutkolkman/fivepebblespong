@@ -141,7 +141,7 @@ namespace FivePebblesPong
                 textures[i].wrapMode = TextureWrapMode.Clamp;
                 textures[i].anisoLevel = 0;
                 textures[i].filterMode = FilterMode.Point;
-                Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], textures[i]);
+                Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], textures[i], false);
             }
         }
     }

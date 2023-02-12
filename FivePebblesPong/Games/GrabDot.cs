@@ -38,7 +38,8 @@ namespace FivePebblesPong
 
             base.palette = 23;
 
-            //reset raintimer so lizards stay in room (more often)
+            //1.5: reset raintimer so lizards stay in room (more often)
+            //1.9: makes sure that lizard AI acts normal
             self.oracle.room.world.rainCycle.timer = 0;
         }
 

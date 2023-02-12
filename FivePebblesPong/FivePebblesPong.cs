@@ -46,7 +46,7 @@ namespace FivePebblesPong
         }
 
 
-        /*//called when game selection is active, add new games here
+        //called when game selection is active, add new games here
         public static int amountOfGames = 3; //increase counter when adding more games
         public static FPGame GetNewFPGame(SSOracleBehavior self, int nr) //-1 if no game was selected yet
         {
@@ -60,10 +60,10 @@ namespace FivePebblesPong
                 //add new FPGames here
                 default: return null;
             }
-        }*/
+        }
 
         
-        /*//get player with controller
+        //get player with controller
         public static Player currentPlayer;
         public static Player GetPlayer(OracleBehavior self)
         {
@@ -85,6 +85,6 @@ namespace FivePebblesPong
                         currentPlayer = ac.realizedCreature as Player;
             }
             return currentPlayer;
-        }*/
+        }
     }
 }

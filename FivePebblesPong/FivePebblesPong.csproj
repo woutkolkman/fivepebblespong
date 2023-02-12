@@ -40,13 +40,25 @@
     <Compile Include="Enums.cs" />
     <Compile Include="FivePebblesPong.cs" />
     <Compile Include="GameController.cs" />
+    <Compile Include="GameObjects\DinoObstacle.cs" />
+    <Compile Include="GameObjects\DinoPlayer.cs" />
+    <Compile Include="GameObjects\Dot.cs" />
+    <Compile Include="GameObjects\FPGameObject.cs" />
+    <Compile Include="GameObjects\PongBall.cs" />
+    <Compile Include="GameObjects\PongLine.cs" />
+    <Compile Include="GameObjects\PongPaddle.cs" />
+    <Compile Include="GameObjects\SquareBorderMark.cs" />
+    <Compile Include="Games\Breakout.cs" />
+    <Compile Include="Games\Dino.cs" />
+    <Compile Include="Games\FPGame.cs" />
+    <Compile Include="Games\GrabDot.cs" />
+    <Compile Include="Games\Pong.cs" />
     <Compile Include="Hooks.cs" />
+    <Compile Include="PearlSelection.cs" />
+    <Compile Include="PebblesGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameObjects\" />
-    <Folder Include="Games\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="BepInEx, Version=5.4.17.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

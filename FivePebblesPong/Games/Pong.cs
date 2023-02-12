@@ -70,7 +70,7 @@ namespace FivePebblesPong
             playerPdl?.Destroy();
             pebblesPdl?.Destroy();
             int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? 0), 10, reloadImg: true);
+            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? SlugcatStats.Name.White), 10, reloadImg: true);
             this.playerPdl.pos = new Vector2(midX - paddleOffset, playerY);
             this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", new Color(0.44705883f, 0.9019608f, 0.76862746f), reloadImg: true); //5P overseer color
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);

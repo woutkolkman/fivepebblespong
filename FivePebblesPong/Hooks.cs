@@ -21,28 +21,28 @@ namespace FivePebblesPong
 
             //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
-            /*
+            
             //ProjectedImage constructor hook for hiding LoadFile()
             On.ProjectedImage.ctor += ProjectedImageCtorHook;
-
+            
             //five pebbles constructor
             On.SSOracleBehavior.ctor += SSOracleBehaviorCtorHook;
 
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
-
+            
             //five pebbles gravity RuntimeDetour
             Hook SSOracleBehaviorSubBehaviorGravityHook = new Hook(
                 typeof(SSOracleBehavior.SubBehavior).GetProperty("Gravity", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SSOracleBehavior_SubBehavior_Gravity_get", myMethodFlags)
             );
-
+            
             //prevent projected lizard from killing player in GrabDot FPGame
             On.Creature.Violence += CreatureViolenceHook;
 
             //drawing lizard as hologram in GrabDot FPGame
             On.LizardGraphics.AddToContainer += LizardGraphicsAddToContainerHook;
-
+            /*
             //moon controller reaction
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
@@ -126,7 +126,7 @@ namespace FivePebblesPong
             //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
         }
 
-        /*
+        
         //ProjectedImage constructor hook for hiding LoadFile() (function cannot be overridden or hidden for ProjectedImage class)
         static void ProjectedImageCtorHook(On.ProjectedImage.orig_ctor orig, ProjectedImage self, List<string> imageNames, int cycleTime)
         {
@@ -141,7 +141,7 @@ namespace FivePebblesPong
             orig(self, imageNames, cycleTime);
         }
 
-
+        
         //five pebbles constructor
         static void SSOracleBehaviorCtorHook(On.SSOracleBehavior.orig_ctor orig, SSOracleBehavior self, Oracle oracle)
         {
@@ -192,7 +192,7 @@ namespace FivePebblesPong
             PebblesGameStarter.starter?.StateMachine(self);
         }
 
-
+        
         //five pebbles gravity RuntimeDetour
         static bool previous_SSOracleBehavior_SubBehavior_Gravity;
         public delegate bool orig_Gravity(SSOracleBehavior.SubBehavior self);
@@ -240,7 +240,7 @@ namespace FivePebblesPong
             orig(self, sLeaser, rCam, newContainer);
         }
 
-
+        /*
         //moon controller reaction
         static void SLOracleBehaviorHasMarkMoonConversationAddEventsHook(On.SLOracleBehaviorHasMark.MoonConversation.orig_AddEvents orig, SLOracleBehaviorHasMark.MoonConversation self)
         {
