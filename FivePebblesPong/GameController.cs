@@ -5,7 +5,12 @@ namespace FivePebblesPong
 {
     public class GameController : Rock
     {
-        public GameController(AbstractPhysicalObject abstractPhysicalObject) : base(abstractPhysicalObject, abstractPhysicalObject.world) { }
+        public GameController(AbstractPhysicalObject abstractPhysicalObject, Color? c = null) : base(abstractPhysicalObject, abstractPhysicalObject.world)
+        {
+            this.color = Color.white;
+            if (c != null)
+                this.color = (Color) c;
+        }
 
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -53,7 +58,6 @@ namespace FivePebblesPong
         //palette applies color to sprites
         public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
-            this.color = new Color(0.44705883f, 0.9019608f, 0.76862746f); //5P overseer color
             sLeaser.sprites[0].color = this.color;
         }
 

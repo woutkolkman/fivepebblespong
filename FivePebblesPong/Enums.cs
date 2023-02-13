@@ -7,7 +7,8 @@ namespace FivePebblesPong
         //https://rainworldmodding.miraheze.org/wiki/Downpour_Reference/ExtEnum
 
         //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType GameController;
+        public static AbstractPhysicalObject.AbstractObjectType GameControllerPebbles;
+        public static AbstractPhysicalObject.AbstractObjectType GameControllerMoon;
 
         //five pebbles action
         public static SSOracleBehavior.Action Gaming_Gaming;
@@ -21,7 +22,8 @@ namespace FivePebblesPong
 
         public static void RegisterValues()
         {
-            GameController = new AbstractPhysicalObject.AbstractObjectType("GameController", true);
+            GameControllerPebbles = new AbstractPhysicalObject.AbstractObjectType("GameControllerPebbles", true);
+            GameControllerMoon = new AbstractPhysicalObject.AbstractObjectType("GameControllerMoon", true);
             Gaming_Gaming = new SSOracleBehavior.Action("Gaming_Gaming", true);
             PlayGame = new SSOracleBehavior.MovementBehavior("PlayGame", true);
             GameControllerReaction = new SLOracleBehaviorHasMark.MiscItemType("GameControllerReaction", true);
@@ -30,7 +32,8 @@ namespace FivePebblesPong
 
         public static void UnregisterValues()
         {
-            if (GameController != null) { GameController.Unregister(); GameController = null; }
+            if (GameControllerPebbles != null) { GameControllerPebbles.Unregister(); GameControllerPebbles = null; }
+            if (GameControllerMoon != null) { GameControllerMoon.Unregister(); GameControllerMoon = null; }
             if (Gaming_Gaming != null) { Gaming_Gaming.Unregister(); Gaming_Gaming = null; }
             if (PlayGame != null) { PlayGame.Unregister(); PlayGame = null; }
             if (GameControllerReaction != null) { GameControllerReaction.Unregister(); GameControllerReaction = null; }

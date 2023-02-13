@@ -178,7 +178,7 @@ namespace FivePebblesPong
                                     if (self.oracle.room.physicalObjects[i][j] is GameController && (self.oracle.room.physicalObjects[i][j] as GameController).thrownBy is Player)
                                         controllerThrownReacted = true;
 
-                        if (!controllerInStomachReacted && self.player?.objectInStomach != null && self.player.objectInStomach.type == Enums.GameController)
+                        if (!controllerInStomachReacted && self.player?.objectInStomach != null && (self.player.objectInStomach.type == Enums.GameControllerPebbles || self.player.objectInStomach.type == Enums.GameControllerMoon))
                         {
                             //NOTE checks only singleplayer: "self.player"
                             self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "It's yours now, please keep it." : "That's also not edible."), 10);

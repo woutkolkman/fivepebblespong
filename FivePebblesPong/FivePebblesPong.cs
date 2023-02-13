@@ -16,7 +16,7 @@ namespace FivePebblesPong
         public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
-        public static bool HasEnumExt => (int)Enums.GameController > 0; //returns true after EnumExtender initializes
+        public static bool HasEnumExt => (int)Enums.GameControllerPebbles > 0; //returns true after EnumExtender initializes
         private static bool IsEnabled = false;
 
 
