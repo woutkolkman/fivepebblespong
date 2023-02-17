@@ -61,10 +61,7 @@ namespace FivePebblesPong
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            image = (self is SLOracleBehavior ? 
-                new ProjectedImageMoon(textures, names, cycleTime) : 
-                new ProjectedImageFromMemory(textures, names, cycleTime)
-            );
+            image = new ProjectedImageFromMemory(textures, names, cycleTime);
             self.oracle.myScreen.images.Add(image);
             self.oracle.myScreen.room.AddObject(image);
 
@@ -92,16 +89,7 @@ namespace FivePebblesPong
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            if (self is SLOracleBehavior) {
-                image = new ProjectedImageMoon(null, names, cycleTime);
-                image.LoadFile();
-                (image as ProjectedImageMoon).CalcGlowColor();
-                self.oracle.myScreen.images.Add(image);
-                self.oracle.myScreen.room.AddObject(image);
-            } else {
-                image = self.oracle.myScreen.AddImage(names, cycleTime);
-            }
-
+            image = self.oracle.myScreen.AddImage(names, cycleTime);
             image.pos = prevPos;
 
             /*
@@ -143,78 +131,6 @@ namespace FivePebblesPong
                 textures[i].filterMode = FilterMode.Point;
                 Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], textures[i], false);
             }
-        }
-    }
-
-
-    //class was created because regular ProjectedImages don't work as well in moons room
-    //if using this class with .PNG files, just pass null for textures and call LoadFile() and CalcGlowColor() after constructor
-    public class ProjectedImageMoon : ProjectedImageFromMemory
-    {
-        public Color glowColor = Color.white;
-        public float glowWidth, glowHeight;
-
-
-        public ProjectedImageMoon(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(textures, imageNames, cycleTime)
-        {
-            if (textures != null && textures.Count > 0)
-                CalcGlowColor();
-        }
-
-
-        public void CalcGlowColor()
-        {
-            FAtlas atlas = Futile.atlasManager.GetAtlasWithName(imageNames[currImg]);
-            if (atlas == null)
-                return;
-
-            Texture2D texture = atlas._texture as Texture2D;
-
-            //get glow color from texture, TODO not efficient
-            Color? color = null;
-            if (!texture.GetPixel(texture.width / 2, texture.height / 2).Equals(Color.clear))
-                color = texture.GetPixel(texture.width / 2, texture.height / 2); //center of texture
-            for (int i = CreateGamePNGs.EDGE_DIST + texture.width * CreateGamePNGs.EDGE_DIST; i < texture.GetPixels().Length && color == null; i++)
-                if (!texture.GetPixels()[i].Equals(Color.clear))
-                    color = texture.GetPixels()[i]; //any pixel from texture starting from EDGE_DIST
-            this.glowColor = color ?? Color.white;
-        }
-
-
-        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-        {
-            sLeaser.sprites = new FSprite[2];
-            sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
-            sLeaser.sprites[1] = new FSprite("Futile_White", true);
-            sLeaser.sprites[1].shader = rCam.game.rainWorld.Shaders["LightSource"];
-
-            glowWidth = sLeaser.sprites[0].width - (2 * CreateGamePNGs.EDGE_DIST);
-            glowHeight = sLeaser.sprites[0].height - (2 * CreateGamePNGs.EDGE_DIST);
-            if (glowWidth < 15) glowWidth = 15;
-            if (glowHeight < 15) glowHeight = 15;
-            if (glowWidth > 50) glowWidth = 50; //TODO dynamic max size?
-            if (glowHeight > 50) glowHeight = 50; //TODO dynamic max size?
-
-            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
-        }
-
-
-        public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-        {
-            sLeaser.sprites[0].element = Futile.atlasManager.GetElementWithName(this.imageNames[this.currImg]);
-            for (int i = 0; i < 2; i++)
-            {
-                sLeaser.sprites[i].x = this.pos.x - camPos.x;
-                sLeaser.sprites[i].y = this.pos.y - camPos.y;
-                sLeaser.sprites[i].alpha = this.alpha;
-            }
-            sLeaser.sprites[1].color = this.glowColor;
-            sLeaser.sprites[1].scaleX = (glowWidth);
-            sLeaser.sprites[1].scaleY = (glowHeight);
-
-            //base CosmeticSprite.DrawSprites() copy
-            if (base.slatedForDeletetion || this.room != rCam.room)
-                sLeaser.CleanSpritesAndRemove();
         }
     }
 }

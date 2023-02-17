@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace FivePebblesPong
 {
+    //also edit version in "modinfo.json"
     [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "1.0.0")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
@@ -33,14 +34,14 @@ namespace FivePebblesPong
         }
 
 
-        //TODO never called
+        //called when mod is unloaded
         public void OnDisable()
         {
             if (!IsEnabled) return;
             IsEnabled = false;
 
             Enums.UnregisterValues();
-//            Hooks.Unapply(); //TODO
+            Hooks.Unapply();
 
             FivePebblesPong.ME.Logger_p.LogInfo("OnDisable() called");
         }

@@ -67,6 +67,12 @@ namespace FivePebblesPong
         }
 
 
+        public static void Unapply()
+        {
+            //TODO
+        }
+
+
         //selects room to place GameController type
         static bool gameControllerPebblesInShelter;
         static bool gameControllerMoonInShelter;
@@ -236,10 +242,14 @@ namespace FivePebblesPong
         //prevent hologram lizard from killing creatures in GrabDot FPGame
         static void CreatureViolenceHook(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
-            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot)
-                foreach (AbstractCreature ac in (PebblesGameStarter.starter.game as GrabDot).creatures)
-                    if (ac?.realizedCreature?.mainBodyChunk == source)
+            if (FivePebblesPong.HasEnumExt && PebblesGameStarter.starter?.game is GrabDot) {
+                foreach (AbstractCreature ac in (PebblesGameStarter.starter.game as GrabDot).creatures) {
+                    if (ac?.realizedCreature?.mainBodyChunk == source) {
                         damage = 0f;
+                        FivePebblesPong.ME.Logger_p.LogInfo("CreatureViolenceHook: Prevent damage");
+                    }
+                }
+            }
             orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
         }
 
@@ -260,6 +270,7 @@ namespace FivePebblesPong
                 if (sLeaser != null && sLeaser.sprites != null)
                     for (int i = 0; i < sLeaser.sprites.Length; i++)
                         sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"]; //default is "Basic"
+                FivePebblesPong.ME.Logger_p.LogInfo("LizardGraphicsAddToContainerHook: Hologram lizard");
             }
             orig(self, sLeaser, rCam, newContainer);
         }

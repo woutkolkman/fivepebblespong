@@ -15,7 +15,6 @@ namespace FivePebblesPong
         public int SearchDelayCounter = 0;
         public int SearchDelay = 600;
         public bool moonMayGrabController = true;
-        public bool fadeGame; //if true, game will fade until it is invisible
 
 
         public MoonGameStarter() { }
@@ -44,19 +43,11 @@ namespace FivePebblesPong
             );
             //NOTE checks only singleplayer: "self.player"
 
-            //special effects (flicker, revealgame)
-            float revealGameAlpha = (400 - MoonGameStarter.moonDelayUpdateGame) * (0.5f / 400);
-            if (revealGameAlpha < 0f)
-                revealGameAlpha = 0f;
-            if (this.moonGame != null)
-                this.moonGame.imageAlpha = revealGameAlpha * ProjectorFlickerUpdate(fadeGame);
-
             //start/stop game
-            fadeGame = false;
             if (playerMayPlayGame) //player plays
             {
-                if (revealGameAlpha > 0.001f && this.moonGame == null)
-                    this.moonGame = new Dino(self) { imageAlpha = 0f };
+                if (MoonGameStarter.moonDelayUpdateGame < 400 && this.moonGame == null)
+                    this.moonGame = new Dino(self);
 
                 //wait before allowing game to start
                 if (MoonGameStarter.moonDelayUpdateGame > 0) {
@@ -90,13 +81,9 @@ namespace FivePebblesPong
             }
             else if (this.moonGame != null) //destroy game
             {
-                fadeGame = true;
-                this.moonGame.Draw();
-                if (this.moonGame.imageAlpha <= 0f)
-                {
-                    this.moonGame.Destroy();
-                    this.moonGame = null;
-                }
+                this.moonGame.Destroy();
+                this.moonGame = null;
+                
                 //release controller if SLOracleBehavior child doesn't do this automatically
                 if (self is SLOracleBehaviorNoMark && self.holdingObject != null && self.holdingObject is GameController)
                     self.holdingObject = null;
@@ -119,30 +106,6 @@ namespace FivePebblesPong
             bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist, SearchDelayCounter < SearchDelay);
             if (nullable.HasValue) //success or failed
                 SearchDelayCounter = 0; //reset count
-        }
-
-
-        //also copied via dnSpy and made static, you should only need ProjectorFlickerUpdate() returned value
-        private static int flickerCounter;
-        private static float flickerFade, flickerLastFade, flicker;
-        public static float ProjectorFlickerUpdate(bool kill)
-        {
-            flickerCounter++;
-            flickerLastFade = flickerFade;
-            flicker = Mathf.Max(0f, flicker - 0.071428575f);
-            if (kill) {
-                if (flickerFade <= 0f && flickerLastFade <= 0f)
-                    return flickerFade;
-                flickerFade = Mathf.Max(0f, flickerFade - 0.125f);
-            } else {
-                flickerFade = 0.7f * Mathf.Lerp(0.95f - 0.7f * flicker * UnityEngine.Random.value, 1f, UnityEngine.Random.value);
-                if (UnityEngine.Random.value < 0.033333335f) {
-                    flicker = Mathf.Pow(UnityEngine.Random.value, 0.5f);
-                } else {
-                    flicker = Mathf.Max(0.5f, flicker);
-                }
-            }
-            return flickerFade;
         }
 
 
