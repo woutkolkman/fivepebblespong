@@ -58,6 +58,7 @@
     <Compile Include="PearlSelection.cs" />
     <Compile Include="PebblesGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShowMediaMovementBehavior.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

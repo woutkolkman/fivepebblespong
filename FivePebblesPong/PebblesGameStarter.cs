@@ -9,7 +9,6 @@ namespace FivePebblesPong
         //start/stop FPGames via state machine
         public static PebblesGameStarter starter; //object gets created when player is holding gamecontroller in pebbles room
         public static int pebblesNotFullyStartedCounter;
-        public static bool pebblesCalibratedProjector;
         public static bool controllerInStomachReacted, controllerThrownReacted;
 
         public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
@@ -38,10 +37,9 @@ namespace FivePebblesPong
 
 
         //for ShowMediaMovementBehavior
-        public int consistentShowMediaPosCounter = 0;
-        public Vector2 showMediaPos = new Vector2();
-        public Vector2 idealShowMediaPos = new Vector2();
+        public static bool pebblesCalibratedProjector;
         public int showMediaCounter = 0;
+        public ShowMediaMovementBehavior calibrate = new ShowMediaMovementBehavior();
 
 
         //for palette
@@ -118,26 +116,14 @@ namespace FivePebblesPong
                         game?.Update(self); //update once to optionally spawn game objects
                     if (!PebblesGameStarter.pebblesCalibratedProjector && game != null)
                     {
-                        //at random intervals, recalibrate "projector"
-                        if (UnityEngine.Random.value < 0.033333335f)
-                        {
-                            idealShowMediaPos += Custom.RNV() * UnityEngine.Random.value * 30f;
-                            showMediaPos += Custom.RNV() * UnityEngine.Random.value * 30f;
-                        }
-
                         //finish calibration after X frames
                         bool finish = false;
                         showMediaCounter++;
                         if (showMediaCounter > 100)
-                        {
                             finish = true;
-                            idealShowMediaPos = new Vector2(game.midX, game.midY);
-                        }
 
-                        ShowMediaMovementBehavior(self, ref consistentShowMediaPosCounter, ref showMediaPos, ref idealShowMediaPos, finish);
-
-                        //target location reached, "projector" is calibrated
-                        if (finish && showMediaPos == new Vector2(game.midX, game.midY))
+                        //run animation, true ==> target location reached, "projector" is calibrated
+                        if (calibrate.Animate(self, new Vector2(game.midX, game.midY), finish))
                         {
                             PebblesGameStarter.pebblesCalibratedProjector = true;
                             showMediaCounter = 0;
@@ -146,7 +132,7 @@ namespace FivePebblesPong
 
                     if (PebblesGameStarter.pebblesCalibratedProjector)
                         state = State.Started;
-                    game?.Draw(showMediaPos - new Vector2(game.midX, game.midY));
+                    game?.Draw(calibrate.showMediaPos - new Vector2(game.midX, game.midY));
                     if (p == null)
                         state = State.StopDialog;
                     break;
@@ -249,44 +235,6 @@ namespace FivePebblesPong
             for (int n = 0; n < self.oracle.room.game.cameras.Length; n++)
                 if (self.oracle.room.game.cameras[n].room == self.oracle.room && !self.oracle.room.game.cameras[n].AboutToSwitchRoom)
                     self.oracle.room.game.cameras[n].ChangeBothPalettes(defaultPalette, previousPalette, fadePalette);
-        }
-
-
-        //used for animation, trying different positions for projectedimages (basically copied via dnSpy and made static, no docs, sorry)
-        public static void ShowMediaMovementBehavior(OracleBehavior self, ref int consistentShowMediaPosCounter, ref Vector2 showMediaPos, ref Vector2 idealShowMediaPos, bool finish)
-        {
-            consistentShowMediaPosCounter += (int)Custom.LerpMap(Vector2.Distance(showMediaPos, idealShowMediaPos), 0f, 200f, 1f, 10f);
-            Vector2 vector = new Vector2(UnityEngine.Random.value * self.oracle.room.PixelWidth, UnityEngine.Random.value * self.oracle.room.PixelHeight);
-
-            if (!finish && ShowMediaScore(vector) + 40f < ShowMediaScore(idealShowMediaPos)) {
-                idealShowMediaPos = vector;
-                consistentShowMediaPosCounter = 0;
-            }
-            vector = idealShowMediaPos + Custom.RNV() * UnityEngine.Random.value * 40f;
-            if (!finish && ShowMediaScore(vector) + 20f < ShowMediaScore(idealShowMediaPos)) {
-                idealShowMediaPos = vector;
-                consistentShowMediaPosCounter = 0;
-            }
-            if (consistentShowMediaPosCounter > 300 || finish) { //added "finish" to immediately move towards idealShowMediaPos
-                showMediaPos = Vector2.Lerp(showMediaPos, idealShowMediaPos, 0.1f);
-                showMediaPos = Custom.MoveTowards(showMediaPos, idealShowMediaPos, 10f);
-            }
-
-            float ShowMediaScore(Vector2 tryPos)
-            {
-                if (self.oracle.room.GetTile(tryPos).Solid)
-                    return float.MaxValue;
-                float num = Mathf.Abs(Vector2.Distance(tryPos, self.player.DangerPos) - 250f); //NOTE checks only singleplayer: "self.player"
-                num -= Math.Min((float)self.oracle.room.aimap.getAItile(tryPos).terrainProximity, 9f) * 30f;
-                if (self is SSOracleBehavior)
-                    num -= Vector2.Distance(tryPos, (self as SSOracleBehavior).nextPos) * 0.5f;
-                for (int i = 0; i < self.oracle.arm.joints.Length; i++)
-                    num -= Mathf.Min(Vector2.Distance(tryPos, self.oracle.arm.joints[i].pos), 100f) * 10f;
-                if (self.oracle.graphicsModule != null)
-                    for (int j = 0; j < (self.oracle.graphicsModule as OracleGraphics).umbCord.coord.GetLength(0); j += 3)
-                        num -= Mathf.Min(Vector2.Distance(tryPos, (self.oracle.graphicsModule as OracleGraphics).umbCord.coord[j, 0]), 100f);
-                return num;
-            }
         }
     }
 }

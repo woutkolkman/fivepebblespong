@@ -12,9 +12,14 @@ namespace FivePebblesPong
         public Dino moonGame;
         public int minXPosPlayer = 1100;
         public float maxControllerGrabDist = 92f;
-        public int SearchDelayCounter = 0;
-        public int SearchDelay = 600;
+        public int searchDelayCounter = 0;
+        public int searchDelay = 600;
         public bool moonMayGrabController = true;
+
+
+        //for ShowMediaMovementBehavior
+        public static bool moonCalibratedProjector;
+        public ShowMediaMovementBehavior calibrate = new ShowMediaMovementBehavior();
 
 
         public MoonGameStarter() { }
@@ -49,14 +54,22 @@ namespace FivePebblesPong
                 if (MoonGameStarter.moonDelayUpdateGame < 400 && this.moonGame == null)
                     this.moonGame = new Dino(self);
 
+                //calibrate projector animation
+                if (!MoonGameStarter.moonCalibratedProjector && moonGame != null)
+                {
+                    //run animation, true ==> target location reached, "projector" is calibrated
+                    if (calibrate.Animate(self, new Vector2(moonGame.midX, moonGame.midY), MoonGameStarter.moonDelayUpdateGame <= 0))
+                        MoonGameStarter.moonCalibratedProjector = true;
+                }
+
                 //wait before allowing game to start
                 if (MoonGameStarter.moonDelayUpdateGame > 0) {
                     MoonGameStarter.moonDelayUpdateGame--;
-                } else {
+                } else if (MoonGameStarter.moonCalibratedProjector) {
                     this.moonGame?.Update(self);
                 }
 
-                this.moonGame?.Draw();
+                moonGame?.Draw(calibrate.showMediaPos - new Vector2(moonGame.midX, moonGame.midY));
             }
             else if (moonMayPlayGame) //moon plays
             {
@@ -90,22 +103,22 @@ namespace FivePebblesPong
             }
 
             //moon grabs controller
-            if (SearchDelayCounter < SearchDelay) //search after specified delay
-                SearchDelayCounter++;
+            if (searchDelayCounter < searchDelay) //search after specified delay
+                searchDelayCounter++;
 
             if (!moonMayGrabController || this.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
-                SearchDelayCounter = 0; //cancel grabbing
+                searchDelayCounter = 0; //cancel grabbing
 
             if (MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
-                SearchDelayCounter = 0; //cancel grabbing
+                searchDelayCounter = 0; //cancel grabbing
 
             if (self is SLOracleBehaviorHasMark &&
                 ((self as SLOracleBehaviorHasMark).moveToAndPickUpItem != null || (self as SLOracleBehaviorHasMark).DamagedMode || (self as SLOracleBehaviorHasMark).currentConversation != null))
-                SearchDelayCounter = 0; //cancel grabbing
+                searchDelayCounter = 0; //cancel grabbing
 
-            bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist, SearchDelayCounter < SearchDelay);
+            bool? nullable = GrabObjectType<GameController>(self, maxControllerGrabDist, searchDelayCounter < searchDelay);
             if (nullable.HasValue) //success or failed
-                SearchDelayCounter = 0; //reset count
+                searchDelayCounter = 0; //reset count
         }
 
 

@@ -305,6 +305,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
             MoonGameStarter.moonDelayUpdateGame = MoonGameStarter.moonDelayUpdateGameReset;
+            MoonGameStarter.moonCalibratedProjector = false;
             MoonGameStarter.starter = null;
         }
 
