@@ -123,7 +123,7 @@ namespace FivePebblesPong
                             finish = true;
 
                         //run animation, true ==> target location reached, "projector" is calibrated
-                        if (calibrate.Animate(self, new Vector2(game.midX, game.midY), finish))
+                        if (calibrate.Update(self, new Vector2(game.midX, game.midY), finish))
                         {
                             PebblesGameStarter.pebblesCalibratedProjector = true;
                             showMediaCounter = 0;

@@ -113,14 +113,7 @@ namespace FivePebblesPong
                 }
             }
 
-            /*//push all creatures away from entrances during game
-            for (int i = 0; i <= 1; i++) {
-                Vector2 scPos = self.oracle.room.MiddleOfTile(self.oracle.room.ShortcutLeadingToNode(i).StartTile);
-                foreach (AbstractCreature ac in self.oracle.room.abstractRoom.creatures)
-                    if (Vector2.Distance(ac.realizedCreature.DangerPos, scPos) < 40f)
-                        ac.realizedCreature.firstChunk.vel += Custom.DirVec(scPos, ac.realizedCreature.DangerPos) * 1.5f;
-            }*/
-            //TODO lizards may occasionally still leave room
+            //TODO lizards may occasionally leave room (1.5, check for 1.9)
         }
 
 

@@ -58,7 +58,7 @@ namespace FivePebblesPong
                 if (!MoonGameStarter.moonCalibratedProjector && moonGame != null)
                 {
                     //run animation, true ==> target location reached, "projector" is calibrated
-                    if (calibrate.Animate(self, new Vector2(moonGame.midX, moonGame.midY), MoonGameStarter.moonDelayUpdateGame <= 0))
+                    if (calibrate.Update(self, new Vector2(moonGame.midX, moonGame.midY), MoonGameStarter.moonDelayUpdateGame <= 0))
                         MoonGameStarter.moonCalibratedProjector = true;
                 }
 

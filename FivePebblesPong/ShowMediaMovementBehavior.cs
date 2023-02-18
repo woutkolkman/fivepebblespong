@@ -12,7 +12,7 @@ namespace FivePebblesPong
 
 
         //returns true if done
-        public bool Animate(OracleBehavior self, Vector2 target, bool finish)
+        public bool Update(OracleBehavior self, Vector2 target, bool finish)
         {
             //at random intervals, recalibrate "projector"
             if (UnityEngine.Random.value < 0.033333335f)
@@ -25,7 +25,7 @@ namespace FivePebblesPong
             if (finish)
                 idealShowMediaPos = target;
 
-            this.Update(self, finish);
+            this.Animate(self, finish);
 
             //target location reached, "projector" is calibrated
             return (finish && showMediaPos == target);
@@ -33,7 +33,7 @@ namespace FivePebblesPong
 
 
         //used for animation, trying different positions for projectedimages (copied via dnSpy, no docs, sorry)
-        private void Update(OracleBehavior self, bool finish)
+        private void Animate(OracleBehavior self, bool finish)
         {
             consistentShowMediaPosCounter += (int)Custom.LerpMap(Vector2.Distance(showMediaPos, idealShowMediaPos), 0f, 200f, 1f, 10f);
             Vector2 vector = new Vector2(UnityEngine.Random.value * self.oracle.room.PixelWidth, UnityEngine.Random.value * self.oracle.room.PixelHeight);
