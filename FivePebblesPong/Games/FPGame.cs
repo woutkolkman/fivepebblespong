@@ -16,17 +16,26 @@ namespace FivePebblesPong
 
         public FPGame(OracleBehavior self)
         {
+            //default SS_AI & DM_AI
             minX = 200;
             maxX = 780;
             minY = 60;
             maxY = 640;
 
-            if (self is SLOracleBehavior)
+            if (self.oracle?.room?.game != null && self.oracle?.room?.roomSettings != null)
             {
-                minX = 1240;
-                maxX = 1820;
-                minY = 40;
-                maxY = 620;
+                if (self.oracle.room.roomSettings.name.Equals("RM_AI")) {
+                    minX = 1220;
+                    maxX = 1800;
+                    minY = 800;
+                    maxY = 1380;
+                }
+                if (self.oracle.room.roomSettings.name.Equals("SL_AI")) {
+                    minX = 1240;
+                    maxX = 1820;
+                    minY = 40;
+                    maxY = 620;
+                }
             }
 
             p = FivePebblesPong.GetPlayer(self);

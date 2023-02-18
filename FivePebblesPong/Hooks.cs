@@ -86,24 +86,23 @@ namespace FivePebblesPong
             if (self.game != null && self.roomSettings != null && firsttime)
             {
                 if (self.roomSettings.name.Equals("SS_AI") && !gameControllerPebblesInShelter)
-                {
-                    EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
-
                     //copy existing coordinate from a random object
-                    WorldCoordinate coord = self.GetWorldCoordinate(self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
+                    PlaceObject(Enums.GameControllerPebbles, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
 
-                    AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, Enums.GameControllerPebbles, null, coord, newID);
-                    self.abstractRoom.AddEntity(ent);
-                    FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString());
-                }
+                if (self.roomSettings.name.Equals("RM_AI") && !gameControllerPebblesInShelter)
+                    PlaceObject(Enums.GameControllerPebbles, new Vector2(2740, 1280));
+
                 if (self.roomSettings.name.Equals("SL_MOONTOP") && !gameControllerMoonInShelter)
-                {
-                    EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
-                    WorldCoordinate coord = self.GetWorldCoordinate(new Vector2(1000, 650));
-                    AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, Enums.GameControllerMoon, null, coord, newID);
-                    self.abstractRoom.AddEntity(ent);
-                    FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity at " + coord.SaveToString());
-                }
+                    PlaceObject(Enums.GameControllerMoon, new Vector2(1000, 650));
+            }
+
+            void PlaceObject(AbstractPhysicalObject.AbstractObjectType obj, Vector2 location)
+            {
+                EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
+                WorldCoordinate coord = self.GetWorldCoordinate(location);
+                AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, obj, null, coord, newID);
+                FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity " + obj + " at " + coord.SaveToString());
+                self.abstractRoom.AddEntity(ent);
             }
         }
 
@@ -175,6 +174,7 @@ namespace FivePebblesPong
         //five pebbles constructor
         static void SSOracleBehaviorCtorHook(On.SSOracleBehavior.orig_ctor orig, SSOracleBehavior self, Oracle oracle)
         {
+            FivePebblesPong.ME.Logger_p.LogInfo("SSOracleBehaviorCtorHook");
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
@@ -301,6 +301,7 @@ namespace FivePebblesPong
         //moon constructor
         static void SLOracleBehaviorCtorHook(On.SLOracleBehavior.orig_ctor orig, SLOracleBehavior self, Oracle oracle)
         {
+            FivePebblesPong.ME.Logger_p.LogInfo("SLOracleBehaviorCtorHook");
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;

@@ -30,7 +30,7 @@ namespace FivePebblesPong
             Enums.RegisterValues();
             Hooks.Apply();
 
-            FivePebblesPong.ME.Logger_p.LogInfo("OnEnable() called");
+            FivePebblesPong.ME.Logger_p.LogInfo("OnEnable called");
         }
 
 
@@ -43,7 +43,7 @@ namespace FivePebblesPong
             Enums.UnregisterValues();
             Hooks.Unapply();
 
-            FivePebblesPong.ME.Logger_p.LogInfo("OnDisable() called");
+            FivePebblesPong.ME.Logger_p.LogInfo("OnDisable called");
         }
 
 
