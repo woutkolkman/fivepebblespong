@@ -77,6 +77,9 @@ namespace FivePebblesPong
                                 state = State.Stop;
                                 break;
                         }
+                        //only occurs during Gourmand, hide current ProjectedImage out of sight when starting game
+                        if (self.currSubBehavior is SSOracleBehavior.SSOracleMeetGourmand && (self.currSubBehavior as SSOracleBehavior.SSOracleMeetGourmand).showImage != null)
+                            (self.currSubBehavior as SSOracleBehavior.SSOracleMeetGourmand).showImage.pos = new Vector2(-250, 0);
                     }
                     if (p == null)
                         state = State.StopDialog;
