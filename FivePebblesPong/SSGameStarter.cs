@@ -43,8 +43,7 @@ namespace FivePebblesPong
 
 
         //for palette
-        public int defaultPalette = 25; //25 is active when slugcat is present, 26 is active while working
-        public int previousPalette;
+        public int previousPalette, defaultPalette;
         public float fadePalette = 0f;
 
 
@@ -79,6 +78,8 @@ namespace FivePebblesPong
 
             //change palette
             if (game != null && game.palette >= 0) {
+                if (fadePalette < 0.1f && self.oracle?.room?.game?.cameras != null && self.oracle.room.game.cameras.Length > 0)
+                    defaultPalette = (self.oracle.room.game.cameras[0].paletteBlend < 0.5f ? self.oracle.room.game.cameras[0].paletteA : self.oracle.room.game.cameras[0].paletteB);
                 if (fadePalette < 1f) fadePalette += 0.05f;
                 if (fadePalette > 1f) fadePalette = 1f;
                 previousPalette = game.palette;
@@ -86,7 +87,7 @@ namespace FivePebblesPong
                 if (fadePalette > 0f) fadePalette -= 0.05f;
                 if (fadePalette < 0f) fadePalette = 0f;
             }
-            if (game != null && game.palette >= 0)
+            if (self.oracle?.room?.game?.cameras != null && fadePalette > 0.01f)
                 for (int n = 0; n < self.oracle.room.game.cameras.Length; n++)
                     if (self.oracle.room.game.cameras[n].room == self.oracle.room && !self.oracle.room.game.cameras[n].AboutToSwitchRoom)
                         self.oracle.room.game.cameras[n].ChangeBothPalettes(defaultPalette, previousPalette, fadePalette);
