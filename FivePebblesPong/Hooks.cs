@@ -182,8 +182,8 @@ namespace FivePebblesPong
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            SSGameStarter.pebblesNotFullyStartedCounter = 0;
-            SSGameStarter.pebblesCalibratedProjector = false;
+            SSGameStarter.notFullyStartedCounter = 0;
+            SSGameStarter.calibratedProjector = false;
             SSGameStarter.controllerInStomachReacted = false;
             SSGameStarter.controllerThrownReacted = false;
             SSGameStarter.starter = null;

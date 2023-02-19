@@ -8,7 +8,7 @@ namespace FivePebblesPong
     {
         //start/stop FPGames via state machine
         public static SSGameStarter starter; //object gets created when player is holding gamecontroller in pebbles room
-        public static int pebblesNotFullyStartedCounter;
+        public static int notFullyStartedCounter;
         public static bool controllerInStomachReacted, controllerThrownReacted;
 
         public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
@@ -37,7 +37,7 @@ namespace FivePebblesPong
 
 
         //for ShowMediaMovementBehavior
-        public static bool pebblesCalibratedProjector;
+        public static bool calibratedProjector;
         public int showMediaCounter = 0;
         public ShowMediaMovementBehavior calibrate = new ShowMediaMovementBehavior();
 
@@ -58,7 +58,7 @@ namespace FivePebblesPong
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.pebblesNotFullyStartedCounter < 4)
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.notFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
 
@@ -66,14 +66,14 @@ namespace FivePebblesPong
                 case State.StartDialog:
                     if (statePreviousRun != state)
                     {
-                        switch (SSGameStarter.pebblesNotFullyStartedCounter)
+                        switch (SSGameStarter.notFullyStartedCounter)
                         {
                             case 0: self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "Well, a little game shouldn't hurt." : "Fine, I needed a break."), 10); break;
                             case 1: self.dialogBox.Interrupt(self.Translate("Have you made up your mind?"), 10); break;
                             case 2: self.dialogBox.Interrupt(self.Translate("You're just playing with that, aren't you.."), 10); break;
                             case 3:
                                 self.dialogBox.Interrupt(self.Translate("I'll ignore that."), 10);
-                                SSGameStarter.pebblesNotFullyStartedCounter++;
+                                SSGameStarter.notFullyStartedCounter++;
                                 state = State.Stop;
                                 break;
                         }
@@ -117,7 +117,7 @@ namespace FivePebblesPong
                 case State.Calibrate: //calibratedProjector should be false if calibration should run
                     if (state != statePreviousRun)
                         game?.Update(self); //update once to optionally spawn game objects
-                    if (!SSGameStarter.pebblesCalibratedProjector && game != null)
+                    if (!SSGameStarter.calibratedProjector && game != null)
                     {
                         //finish calibration after X frames
                         bool finish = false;
@@ -128,12 +128,12 @@ namespace FivePebblesPong
                         //run animation, true ==> target location reached, "projector" is calibrated
                         if (calibrate.Update(self, new Vector2(game.midX, game.midY), finish))
                         {
-                            SSGameStarter.pebblesCalibratedProjector = true;
+                            SSGameStarter.calibratedProjector = true;
                             showMediaCounter = 0;
                         }
                     }
 
-                    if (SSGameStarter.pebblesCalibratedProjector)
+                    if (SSGameStarter.calibratedProjector)
                         state = State.Started;
                     game?.Draw(calibrate.showMediaPos - new Vector2(game.midX, game.midY));
                     if (p == null)
@@ -173,21 +173,21 @@ namespace FivePebblesPong
                             self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "It's yours now, please keep it." : "That's also not edible."), 10);
                             controllerInStomachReacted = true;
                             if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
-                                SSGameStarter.pebblesNotFullyStartedCounter++;
+                                SSGameStarter.notFullyStartedCounter++;
                         }
                         else if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
                         {
                             if (controllerThrownReacted && !prevControllerThrownReacted) {
                                 self.dialogBox.Interrupt(self.Translate("I think you've dropped something..."), 10);
                             } else {
-                                switch (SSGameStarter.pebblesNotFullyStartedCounter)
+                                switch (SSGameStarter.notFullyStartedCounter)
                                 {
                                     case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
                                     case 1: self.dialogBox.Interrupt(self.Translate("I will take that as a no."), 10); break;
                                     case 2: self.dialogBox.Interrupt(self.Translate("You are not very decisive."), 10); break;
                                 }
                             }
-                            SSGameStarter.pebblesNotFullyStartedCounter++;
+                            SSGameStarter.notFullyStartedCounter++;
                         }
                         else
                         {
