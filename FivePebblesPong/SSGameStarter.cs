@@ -11,7 +11,9 @@ namespace FivePebblesPong
         public static int notFullyStartedCounter;
         public static bool controllerInStomachReacted, controllerThrownReacted;
 
-        public SSOracleBehavior.Action PreviousAction; //five pebbles action (from main game) before carrying gamecontroller
+        public SSOracleBehavior.Action previousAction; //action (from main game) before carrying gamecontroller
+        public SSOracleBehavior.SubBehavior previousSubBehavior; //subbehavior (from main game) before starting game
+        public SSOracleBehavior.MovementBehavior previousMovementBehavior; //movementbehavior (from main game) before starting game
         public FPGame game;
         public enum State
         {
@@ -61,14 +63,28 @@ namespace FivePebblesPong
 
             //handle states
             if (state != State.Stop && stateBeforeRun == State.Stop)
-                PreviousAction = self.action;
+            {
+                previousAction = self.action;
+                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.action) + ": " + self.action.ToString());
+                previousSubBehavior = self.currSubBehavior;
+                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
+                previousMovementBehavior = self.movementBehavior;
+                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+            }
             if (state == State.Stop && state != stateBeforeRun && !prevenActionOverride)
             {
-                self.action = PreviousAction;
+                self.action = previousAction;
+                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action.ToString());
+                self.currSubBehavior = previousSubBehavior;
+                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
+                self.movementBehavior = previousMovementBehavior;
+                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                 self.restartConversationAfterCurrentDialoge = true;
             }
             if (state != State.Stop && !prevenActionOverride)
             {
+                if (state != stateBeforeRun && self.action != Enums.Gaming_Gaming)
+                    FivePebblesPong.ME.Logger_p.LogInfo("Set " + nameof(self.action) + ": " + Enums.Gaming_Gaming.ToString());
                 self.action = Enums.Gaming_Gaming;
                 if (self.conversation != null)
                     self.conversation.paused = true;
