@@ -208,17 +208,16 @@ namespace FivePebblesPong
                 self.action == SSOracleBehavior.Action.ThrowOut_Polite_ThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_SecondThrowOut ||
                 self.action == SSOracleBehavior.Action.ThrowOut_KillOnSight ||
-                self.action == SSOracleBehavior.Action.General_GiveMark ||
-                self.conversation == null) //if there's no conversation, dialog interrupts will freeze the game
+                self.action == SSOracleBehavior.Action.General_GiveMark)
             {
                 SSGameStarter.starter = null; //free SSGameStarter object at end of sequence, when player needs to leave
                 return;
             }
 
             //construct/free SSGameStarter object when player enters/leaves room
-            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.EndsWith("_AI") && SSGameStarter.starter == null)
                 SSGameStarter.starter = new SSGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SS_AI")) && SSGameStarter.starter != null && SSGameStarter.starter.state == SSGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && SSGameStarter.starter.state == SSGameStarter.State.Stop)
                 SSGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 

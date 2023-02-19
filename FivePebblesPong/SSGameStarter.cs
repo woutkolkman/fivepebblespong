@@ -52,7 +52,10 @@ namespace FivePebblesPong
         {
             State stateBeforeRun = state;
 
-            PebblesStates(self);
+            if (self.oracle.ID == Oracle.OracleID.SS)
+                PebblesStates(self);
+            if (self.oracle.ID.ToString().Equals("DM"))
+                MoonStates(self);
 
             //bugfix where state immediately transitions to ThrowOut_KillOnSight in Spearmaster campaign
             bool prevenActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player.slugcatStats.name.ToString().Equals("Spear"));
@@ -68,7 +71,8 @@ namespace FivePebblesPong
             if (state != State.Stop && !prevenActionOverride)
             {
                 self.action = Enums.Gaming_Gaming;
-                self.conversation.paused = true;
+                if (self.conversation != null)
+                    self.conversation.paused = true;
                 self.restartConversationAfterCurrentDialoge = false;
             }
             statePreviousRun = stateBeforeRun;
@@ -155,7 +159,7 @@ namespace FivePebblesPong
 
                     if (game != null)
                         state = State.Calibrate;
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SS_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.EndsWith("_AI"))
                         state = State.StopDialog;
                     if (state != State.SelectGame)
                     {
@@ -198,7 +202,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SS_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.EndsWith("_AI"))
                         state = State.StopDialog;
                     break;
 
@@ -265,7 +269,95 @@ namespace FivePebblesPong
 
         private void MoonStates(SSOracleBehavior self)
         {
-            //TODO
+            //check if slugcat is holding a gamecontroller
+            Player p = FivePebblesPong.GetPlayer(self);
+
+            switch (state)
+            {
+                //======================================================
+                case State.Stop: //main game conversation is running
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI"))
+                        state = State.StartDialog;
+                    break;
+
+                //======================================================
+                case State.StartDialog:
+                    if (statePreviousRun != state)
+                    {
+                        switch (UnityEngine.Random.Range(0, 2))
+                        {
+                            case 0: self.dialogBox.Interrupt(self.Translate("Ok, one game. But please, hurry to Five Pebbles."), 10); break; //TODO depends on current state in campaign
+                            case 1: self.dialogBox.Interrupt(self.Translate("I don't have much time left."), 10); break;
+                        }
+                    }
+                    if (p == null)
+                        state = State.StopDialog;
+                    if (!self.dialogBox.ShowingAMessage) //dialog finished
+                        state = State.SelectGame;
+                    break;
+
+                //======================================================
+                case State.SelectGame:
+                    PebblesStates(self); //pebbles' state is identical
+                    break;
+
+                //======================================================
+                case State.Calibrate:
+                    PebblesStates(self); //pebbles' state is identical
+                    break;
+
+                //======================================================
+                case State.Started:
+                    PebblesStates(self); //pebbles' state is identical
+                    break;
+
+                //======================================================
+                case State.StopDialog:
+                    if (state != statePreviousRun)
+                    {
+                        self.movementBehavior = SSOracleBehavior.MovementBehavior.Talk;
+                        game?.Destroy();
+                        game = null;
+
+                        //if controller was thrown, custom dialog will start
+                        bool prevControllerThrownReacted = controllerThrownReacted;
+                        if (!controllerThrownReacted)
+                            for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
+                                for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
+                                    if (self.oracle.room.physicalObjects[i][j] is GameController && (self.oracle.room.physicalObjects[i][j] as GameController).thrownBy is Player)
+                                        controllerThrownReacted = true;
+
+                        if (statePreviousRun == State.StartDialog || statePreviousRun == State.SelectGame)
+                        {
+                            if (controllerThrownReacted && !prevControllerThrownReacted) {
+                                self.dialogBox.Interrupt(self.Translate("The device should be durable.<LINE>You do not have to test it."), 10);
+                            } else {
+                                switch (UnityEngine.Random.Range(0, 3))
+                                {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("Ah, don't want to?"), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("No obligations."), 10); break;
+                                }
+                            }
+                            SSGameStarter.notFullyStartedCounter++;
+                        }
+                        else
+                        {
+                            switch (UnityEngine.Random.Range(0, 1)) {
+                                case 0: self.dialogBox.Interrupt(self.Translate("You should hurry to Five Pebbles."), 10); break; //TODO depends on state of campaign
+                            }
+                        }
+                    }
+
+                    if (!self.dialogBox.ShowingAMessage)
+                        state = State.Stop;
+                    break;
+
+                //======================================================
+                default:
+                    state = State.Stop;
+                    break;
+            }
         }
     }
 }
