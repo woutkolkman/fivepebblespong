@@ -33,8 +33,8 @@ namespace FivePebblesPong
                 pearlTargets.Add(new Vector2(maxX, minY));
 
             //finish calibration early
-            if (PebblesGameStarter.starter != null)
-                PebblesGameStarter.starter.showMediaCounter = 100;
+            if (SSGameStarter.starter != null)
+                SSGameStarter.starter.showMediaCounter = 100;
 
             base.palette = 23;
 
@@ -58,8 +58,8 @@ namespace FivePebblesPong
             }
             creatures.Clear();
 
-            if (PebblesGameStarter.starter != null)
-                PebblesGameStarter.starter.gravity = true;
+            if (SSGameStarter.starter != null)
+                SSGameStarter.starter.gravity = true;
 
             pearlTargets.Clear();
         }
@@ -71,8 +71,8 @@ namespace FivePebblesPong
 
             self.movementBehavior = SSOracleBehavior.MovementBehavior.KeepDistance;
 
-            if (PebblesGameStarter.starter != null)
-                PebblesGameStarter.starter.gravity = false;
+            if (SSGameStarter.starter != null)
+                SSGameStarter.starter.gravity = false;
 
             if (gameCounter > 100 && dot == null && score < winScore)
             {

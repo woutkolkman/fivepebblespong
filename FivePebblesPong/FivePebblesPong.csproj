@@ -54,9 +54,9 @@
     <Compile Include="Games\GrabDot.cs" />
     <Compile Include="Games\Pong.cs" />
     <Compile Include="Hooks.cs" />
-    <Compile Include="MoonGameStarter.cs" />
+    <Compile Include="SLGameStarter.cs" />
     <Compile Include="PearlSelection.cs" />
-    <Compile Include="PebblesGameStarter.cs" />
+    <Compile Include="SSGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShowMediaMovementBehavior.cs" />
   </ItemGroup>

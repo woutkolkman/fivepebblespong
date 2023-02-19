@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FivePebblesPong
 {
-    public class MoonGameStarter
+    public class SLGameStarter
     {
-        public static MoonGameStarter starter; //object gets created when player is in moons room
+        public static SLGameStarter starter; //object gets created when player is in moons room
         public static int moonDelayUpdateGameReset = 1200;
         public static int moonDelayUpdateGame = moonDelayUpdateGameReset;
 
@@ -22,8 +22,8 @@ namespace FivePebblesPong
         public ShowMediaMovementBehavior calibrate = new ShowMediaMovementBehavior();
 
 
-        public MoonGameStarter() { }
-        ~MoonGameStarter()
+        public SLGameStarter() { }
+        ~SLGameStarter()
         {
             this.moonGame?.Destroy();
         }
@@ -44,28 +44,28 @@ namespace FivePebblesPong
                 self.holdingObject is GameController &&
                 self.player?.room?.roomSettings != null &&
                 self.player.room.roomSettings.name.Equals("SL_AI") && //memory gets freed if player leaves
-                MoonGameStarter.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
+                SLGameStarter.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
             //NOTE checks only singleplayer: "self.player"
 
             //start/stop game
             if (playerMayPlayGame) //player plays
             {
-                if (MoonGameStarter.moonDelayUpdateGame < 400 && this.moonGame == null)
+                if (SLGameStarter.moonDelayUpdateGame < 400 && this.moonGame == null)
                     this.moonGame = new Dino(self);
 
                 //calibrate projector animation
-                if (!MoonGameStarter.moonCalibratedProjector && moonGame != null)
+                if (!SLGameStarter.moonCalibratedProjector && moonGame != null)
                 {
                     //run animation, true ==> target location reached, "projector" is calibrated
-                    if (calibrate.Update(self, new Vector2(moonGame.midX, moonGame.midY), MoonGameStarter.moonDelayUpdateGame <= 0))
-                        MoonGameStarter.moonCalibratedProjector = true;
+                    if (calibrate.Update(self, new Vector2(moonGame.midX, moonGame.midY), SLGameStarter.moonDelayUpdateGame <= 0))
+                        SLGameStarter.moonCalibratedProjector = true;
                 }
 
                 //wait before allowing game to start
-                if (MoonGameStarter.moonDelayUpdateGame > 0) {
-                    MoonGameStarter.moonDelayUpdateGame--;
-                } else if (MoonGameStarter.moonCalibratedProjector) {
+                if (SLGameStarter.moonDelayUpdateGame > 0) {
+                    SLGameStarter.moonDelayUpdateGame--;
+                } else if (SLGameStarter.moonCalibratedProjector) {
                     this.moonGame?.Update(self);
                 }
 
@@ -109,7 +109,7 @@ namespace FivePebblesPong
             if (!moonMayGrabController || this.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
                 searchDelayCounter = 0; //cancel grabbing
 
-            if (MoonGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
+            if (SLGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
                 searchDelayCounter = 0; //cancel grabbing
 
             if (self is SLOracleBehaviorHasMark &&
