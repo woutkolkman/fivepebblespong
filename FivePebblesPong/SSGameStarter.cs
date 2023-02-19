@@ -50,10 +50,50 @@ namespace FivePebblesPong
 
         public void StateMachine(SSOracleBehavior self)
         {
+            State stateBeforeRun = state;
+
+            PebblesStates(self);
+
+            //bugfix where state immediately transitions to ThrowOut_KillOnSight in Spearmaster campaign
+            bool prevenActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player.slugcatStats.name.ToString().Equals("Spear"));
+
+            //handle states
+            if (state != State.Stop && stateBeforeRun == State.Stop)
+                PreviousAction = self.action;
+            if (state == State.Stop && state != stateBeforeRun && !prevenActionOverride)
+            {
+                self.action = PreviousAction;
+                self.restartConversationAfterCurrentDialoge = true;
+            }
+            if (state != State.Stop && !prevenActionOverride)
+            {
+                self.action = Enums.Gaming_Gaming;
+                self.conversation.paused = true;
+                self.restartConversationAfterCurrentDialoge = false;
+            }
+            statePreviousRun = stateBeforeRun;
+
+            //change palette
+            if (game != null && game.palette >= 0) {
+                if (fadePalette < 1f) fadePalette += 0.05f;
+                if (fadePalette > 1f) fadePalette = 1f;
+                previousPalette = game.palette;
+            } else {
+                if (fadePalette > 0f) fadePalette -= 0.05f;
+                if (fadePalette < 0f) fadePalette = 0f;
+            }
+            if (game != null && game.palette >= 0)
+                for (int n = 0; n < self.oracle.room.game.cameras.Length; n++)
+                    if (self.oracle.room.game.cameras[n].room == self.oracle.room && !self.oracle.room.game.cameras[n].AboutToSwitchRoom)
+                        self.oracle.room.game.cameras[n].ChangeBothPalettes(defaultPalette, previousPalette, fadePalette);
+        }
+
+
+        private void PebblesStates(SSOracleBehavior self)
+        {
             //check if slugcat is holding a gamecontroller
             Player p = FivePebblesPong.GetPlayer(self);
 
-            State stateBeforeRun = state;
             switch (state)
             {
                 //======================================================
@@ -66,6 +106,16 @@ namespace FivePebblesPong
                 case State.StartDialog:
                     if (statePreviousRun != state)
                     {
+                        //no Pebbles games during Spearmaster campaign
+                        if (self.player.slugcatStats.name.ToString().Equals("Spear"))
+                        {
+                            self.dialogBox.Interrupt(self.Translate("No games. I am currently very busy."), 10);
+                            if (SSGameStarter.notFullyStartedCounter < 4)
+                                SSGameStarter.notFullyStartedCounter = 4;
+                            state = State.Stop;
+                            break;
+                        }
+
                         switch (SSGameStarter.notFullyStartedCounter)
                         {
                             case 0: self.dialogBox.Interrupt(self.Translate(UnityEngine.Random.value < 0.5f ? "Well, a little game shouldn't hurt." : "Fine, I needed a break."), 10); break;
@@ -77,6 +127,7 @@ namespace FivePebblesPong
                                 state = State.Stop;
                                 break;
                         }
+
                         //only occurs during Gourmand, hide current ProjectedImage out of sight when starting game
                         if (self.currSubBehavior is SSOracleBehavior.SSOracleMeetGourmand && (self.currSubBehavior as SSOracleBehavior.SSOracleMeetGourmand).showImage != null)
                             (self.currSubBehavior as SSOracleBehavior.SSOracleMeetGourmand).showImage.pos = new Vector2(-250, 0);
@@ -191,7 +242,7 @@ namespace FivePebblesPong
                         }
                         else
                         {
-                            switch (UnityEngine.Random.Range(0, 2))
+                            switch (UnityEngine.Random.Range(0, 3))
                             {
                                 case 0: self.dialogBox.Interrupt(self.Translate("Ok, where was I?"), 10); break;
                                 case 1: self.dialogBox.Interrupt(self.Translate("Now, what was I saying?"), 10); break;
@@ -209,35 +260,12 @@ namespace FivePebblesPong
                     state = State.Stop;
                     break;
             }
+        }
 
-            //handle states
-            if (state != State.Stop && stateBeforeRun == State.Stop)
-                PreviousAction = self.action;
-            if (state == State.Stop && state != stateBeforeRun)
-            {
-                self.action = PreviousAction;
-                self.restartConversationAfterCurrentDialoge = true;
-            }
-            if (state != State.Stop)
-            {
-                self.action = Enums.Gaming_Gaming;
-                self.conversation.paused = true;
-                self.restartConversationAfterCurrentDialoge = false;
-            }
-            statePreviousRun = stateBeforeRun;
 
-            //change palette
-            if (game != null && game.palette >= 0) {
-                if (fadePalette < 1f) fadePalette += 0.05f;
-                if (fadePalette > 1f) fadePalette = 1f;
-                previousPalette = game.palette;
-            } else {
-                if (fadePalette > 0f) fadePalette -= 0.05f;
-                if (fadePalette < 0f) fadePalette = 0f;
-            }
-            for (int n = 0; n < self.oracle.room.game.cameras.Length; n++)
-                if (self.oracle.room.game.cameras[n].room == self.oracle.room && !self.oracle.room.game.cameras[n].AboutToSwitchRoom)
-                    self.oracle.room.game.cameras[n].ChangeBothPalettes(defaultPalette, previousPalette, fadePalette);
+        private void MoonStates(SSOracleBehavior self)
+        {
+            //TODO
         }
     }
 }

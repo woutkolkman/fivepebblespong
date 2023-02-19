@@ -23,7 +23,7 @@ namespace FivePebblesPong
         public static bool grabbedScoreReacted = false;
         public float ballAccel = 0.003f;
         public float startSpeed = 6f;
-        public int pebblesUpdateRate = 12; //calculate ball trajectory every X frames
+        public int pebblesUpdateRate = 8; //calculate ball trajectory every X frames
 
 
         public enum State

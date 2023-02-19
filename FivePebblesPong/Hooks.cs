@@ -87,11 +87,11 @@ namespace FivePebblesPong
             {
                 if (self.roomSettings.name.Equals("SS_AI") && !gameControllerPebblesInShelter)
                     //copy existing coordinate from a random object
-                    PlaceObject(Enums.GameControllerPebbles, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
+                    PlaceObject(Enums.GameControllerPebbles, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count)].pos);
 
                 if (self.roomSettings.name.Equals("DM_AI") && !gameControllerMoonInShelter)
                     //copy existing coordinate from a random object
-                    PlaceObject(Enums.GameControllerMoon, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count - 1)].pos);
+                    PlaceObject(Enums.GameControllerMoon, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count)].pos);
 
                 if (self.roomSettings.name.Equals("RM_AI") && !gameControllerPebblesInShelter)
                     PlaceObject(Enums.GameControllerPebbles, new Vector2(2740, 1280));
