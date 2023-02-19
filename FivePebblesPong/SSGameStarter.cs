@@ -289,11 +289,15 @@ namespace FivePebblesPong
             //check if slugcat is holding a gamecontroller
             Player p = FivePebblesPong.GetPlayer(self);
 
+            bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;
+            bool hasShownPearl = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.smPearlTagged;
+            bool broadcasted = self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.altEnding;
+
             switch (state)
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI"))
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI") && self.action.ToString().Equals("Moon_SlumberParty"))
                         state = State.StartDialog;
                     break;
 
@@ -304,7 +308,7 @@ namespace FivePebblesPong
                         switch (UnityEngine.Random.Range(0, 2))
                         {
                             case 0: self.dialogBox.Interrupt(self.Translate("Ok, one game. But please, hurry to Five Pebbles."), 10); break; //TODO depends on current state in campaign
-                            case 1: self.dialogBox.Interrupt(self.Translate("I don't have much time left."), 10); break;
+                            case 1: self.dialogBox.Interrupt(self.Translate("I don't have much time left.<LINE>After this game, please be on your way."), 10); break;
                         }
                     }
                     if (p == null)
@@ -361,7 +365,7 @@ namespace FivePebblesPong
                         else
                         {
                             switch (UnityEngine.Random.Range(0, 1)) {
-                                case 0: self.dialogBox.Interrupt(self.Translate("You should hurry to Five Pebbles."), 10); break; //TODO depends on state of campaign
+                                case 0: self.UrgeAlong(); break; //TODO depends on state of campaign
                             }
                         }
                     }
