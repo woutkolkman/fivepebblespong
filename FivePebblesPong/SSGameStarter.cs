@@ -59,7 +59,7 @@ namespace FivePebblesPong
                 MoonStates(self);
 
             //bugfix where state immediately transitions to ThrowOut_KillOnSight in Spearmaster campaign
-            bool prevenActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player.slugcatStats.name.ToString().Equals("Spear"));
+            bool prevenActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player?.slugcatStats != null && self.player.slugcatStats.name.ToString().Equals("Spear"));
 
             //handle states
             if (state != State.Stop && stateBeforeRun == State.Stop)
@@ -289,15 +289,20 @@ namespace FivePebblesPong
             //check if slugcat is holding a gamecontroller
             Player p = FivePebblesPong.GetPlayer(self);
 
-            bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;
-            bool hasShownPearl = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.smPearlTagged;
-            bool broadcasted = self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.altEnding;
+            //get story progression
+            if (statePreviousRun != state)
+            {
+                bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;
+                bool hasShownPearl = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.smPearlTagged;
+                bool broadcasted = self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.altEnding;
+            }
 
             switch (state)
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI") && self.action.ToString().Equals("Moon_SlumberParty"))
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI") &&
+                        self.action.ToString().Equals("Moon_SlumberParty") && self.conversation == null && self.inspectPearl == null)
                         state = State.StartDialog;
                     break;
 
@@ -318,19 +323,9 @@ namespace FivePebblesPong
                     break;
 
                 //======================================================
-                case State.SelectGame:
-                    PebblesStates(self); //pebbles' state is identical
-                    break;
-
-                //======================================================
-                case State.Calibrate:
-                    PebblesStates(self); //pebbles' state is identical
-                    break;
-
-                //======================================================
-                case State.Started:
-                    PebblesStates(self); //pebbles' state is identical
-                    break;
+                case State.SelectGame: PebblesStates(self); break; //pebbles' state is identical
+                case State.Calibrate: PebblesStates(self); break; //pebbles' state is identical
+                case State.Started: PebblesStates(self); break; //pebbles' state is identical
 
                 //======================================================
                 case State.StopDialog:

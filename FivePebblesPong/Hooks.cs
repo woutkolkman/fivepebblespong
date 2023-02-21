@@ -217,7 +217,7 @@ namespace FivePebblesPong
             //construct/free SSGameStarter object when player enters/leaves room
             if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.EndsWith("_AI") && SSGameStarter.starter == null)
                 SSGameStarter.starter = new SSGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && SSGameStarter.starter.state == SSGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && SSGameStarter.starter != null && SSGameStarter.starter.state == SSGameStarter.State.Stop)
                 SSGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 
