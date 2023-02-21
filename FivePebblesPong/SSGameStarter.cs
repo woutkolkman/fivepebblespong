@@ -290,12 +290,9 @@ namespace FivePebblesPong
             Player p = FivePebblesPong.GetPlayer(self);
 
             //get story progression
-            if (statePreviousRun != state)
-            {
-                bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;
-                bool hasShownPearl = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.smPearlTagged;
-                bool broadcasted = self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.altEnding;
-            }
+            bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;
+            bool hasShownPearl = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.smPearlTagged;
+            bool broadcasted = self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.altEnding;
 
             switch (state)
             {
@@ -310,10 +307,27 @@ namespace FivePebblesPong
                 case State.StartDialog:
                     if (statePreviousRun != state)
                     {
-                        switch (UnityEngine.Random.Range(0, 2))
-                        {
-                            case 0: self.dialogBox.Interrupt(self.Translate("Ok, one game. But please, hurry to Five Pebbles."), 10); break; //TODO depends on current state in campaign
-                            case 1: self.dialogBox.Interrupt(self.Translate("I don't have much time left.<LINE>After this game, please be on your way."), 10); break;
+                        if (!wasAtPebbles) {
+                            switch (UnityEngine.Random.Range(0, 3))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("Ok, one game. But please, hurry to Five Pebbles."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("I don't have much time left.<LINE>After this game, please be on your way."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("Every minute counts. After this game,<LINE>please be on your way."), 10); break;
+                            }
+                        } else if (wasAtPebbles && !hasShownPearl) {
+                            self.dialogBox.Interrupt(self.Translate("Ok, one game. Have you been to Five Pebbles yet?"), 10); break;
+                        } else if (hasShownPearl && !broadcasted) {
+                            switch (UnityEngine.Random.Range(0, 3)) {
+                                case 0: self.dialogBox.Interrupt(self.Translate("One game is fine. Don't forget to deliver<LINE>the pearl to the Communications Array."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("A game is ok, but you need to leave soon.<LINE>I don't want you to get hit by falling debris. Or.. me."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("Want to play a game? Don't forget about the pearl!"), 10); break;
+                            }
+                        } else {
+                            switch (UnityEngine.Random.Range(0, 3)) {
+                                case 0: self.dialogBox.Interrupt(self.Translate("Sure, I'll play a game with you!"), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("Games sound great!"), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("What game do you want to play?<LINE>I don't have that many installed."), 10); break;
+                            }
                         }
                     }
                     if (p == null)
@@ -359,8 +373,30 @@ namespace FivePebblesPong
                         }
                         else
                         {
-                            switch (UnityEngine.Random.Range(0, 1)) {
-                                case 0: self.UrgeAlong(); break; //TODO depends on state of campaign
+                            if (!wasAtPebbles) {
+                                switch (UnityEngine.Random.Range(0, 5)) {
+                                    case 0: self.UrgeAlong(); break;
+                                    case 1: self.UrgeAlong(); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("Games can wait. Please hurry, little messenger!"), 10); break;
+                                    case 3: self.dialogBox.Interrupt(self.Translate("There is an elevated cable to the west.<LINE>It is the fastest way to Five Pebbles."), 10); break;
+                                    case 4: self.dialogBox.Interrupt(self.Translate("Time is running out. Please hurry!"), 10); break;
+                                }
+                            } else if (wasAtPebbles && !hasShownPearl) {
+                                self.dialogBox.Interrupt(self.Translate("Did you deliver the pearl to Five Pebbles?"), 10); break;
+                            } else if (hasShownPearl && !broadcasted) {
+                                switch (UnityEngine.Random.Range(0, 4)) {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("Games can wait. Did you get the pearl to the Communications Array?"), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("The Communications Array is past Five Pebbles' complex.<LINE>Don't worry, I won't get bored."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("You may deliver the pearl to the Communications Array on your return trip to Seven Red Suns."), 10); break;
+                                    case 3: self.dialogBox.Interrupt(self.Translate("Don't forget about the pearl!"), 10); break;
+                                }
+                            } else {
+                                switch (UnityEngine.Random.Range(0, 4)) {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("Thanks for staying, but please do not say for too long.<LINE>This place will become very hazardous."), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("Thank you for your visit before you return to Seven Red Suns."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("That was fun. Thank you for your company, little messenger..."), 10); break;
+                                    case 3: self.dialogBox.Interrupt(self.Translate("You might have to leave soon. This complex will soon collapse."), 10); break;
+                                }
                             }
                         }
                     }
