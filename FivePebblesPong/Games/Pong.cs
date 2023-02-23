@@ -116,7 +116,7 @@ namespace FivePebblesPong
                     self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
 
             //update paddles
-            int pebblesInput = PebblesAI();
+            int pebblesInput = (self.oracle.ID == Oracle.OracleID.SS) ? PebblesAI() : MoonAI();
             if (pebblesPdl.Update(0, pebblesInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
             if (playerPdl.Update(0, (p?.input[0].y ?? 0), ball)) //if ball is hit
@@ -134,7 +134,10 @@ namespace FivePebblesPong
             if (!grabbedScoreReacted && playerWin <= 0 && scoreBoard != null && scoreBoard.pearlGrabbed != -1)
             {
                 grabbedScoreReacted = true;
-                self.dialogBox.Interrupt(self.Translate("No cheating!"), 10);
+                if (self.oracle.ID == Oracle.OracleID.SS)
+                    self.dialogBox.Interrupt(self.Translate("No cheating!"), 10);
+                if (self.oracle.ID.ToString().Equals("DM"))
+                    self.dialogBox.Interrupt(self.Translate("That won't lower my score, but I appreciate your creativity!"), 10);
             }
         }
 
@@ -183,15 +186,19 @@ namespace FivePebblesPong
                 case State.PlayerWin:
                     state = State.GetReady;
                     playerLastWin = true;
-                    scoreCount.Add(new Vector2(midX - 60 - 15 * (playerWin%10), SCORE_HEIGHT + 15 * (playerWin / 10)));
+                    scoreCount.Add(new Vector2(midX - 60 - 15 * (playerWin % 10), SCORE_HEIGHT + 15 * (playerWin / 10)));
                     playerWin++;
                     if (compliment) {
-                        if (pebblesWin < 10) {
-                            self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
-                        } else {
-                            self.dialogBox.Interrupt(self.Translate("Nice."), 10);
-                        }
                         compliment = false;
+                        if (self.oracle.ID == Oracle.OracleID.SS) {
+                            if (pebblesWin < 10) {
+                                self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
+                            } else {
+                                self.dialogBox.Interrupt(self.Translate("Nice."), 10);
+                            }
+                        }
+                        if (self.oracle.ID.ToString().Equals("DM"))
+                            self.dialogBox.Interrupt(self.Translate("Well done!"), 10);
                     }
                     break;
 
@@ -199,16 +206,18 @@ namespace FivePebblesPong
                 case State.PebblesWin:
                     state = State.GetReady;
                     playerLastWin = false;
-                    scoreCount.Add(new Vector2(midX + 60 + 15 * (pebblesWin%10), SCORE_HEIGHT + 15 * (pebblesWin / 10)));
+                    scoreCount.Add(new Vector2(midX + 60 + 15 * (pebblesWin % 10), SCORE_HEIGHT + 15 * (pebblesWin / 10)));
                     pebblesWin++;
-                    if (pebblesWin == 10) {
-                        self.dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
-                        this.CreatePaddles(self, 130, 70, 20);
-                    }
-                    if (pebblesWin == 15) {
-                        self.dialogBox.Interrupt(self.Translate("Try again."), 10);
-                        this.CreatePaddles(self, 200, 30, 20);
-                        playerPdl.movementSpeed += 1f;
+                    if (self.oracle.ID == Oracle.OracleID.SS) {
+                        if (pebblesWin == 10) {
+                            self.dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
+                            this.CreatePaddles(self, 130, 70, 20);
+                        }
+                        if (pebblesWin == 15) {
+                            self.dialogBox.Interrupt(self.Translate("Try again."), 10);
+                            this.CreatePaddles(self, 200, 30, 20);
+                            playerPdl.movementSpeed += 1f;
+                        }
                     }
                     break;
 
@@ -284,6 +293,36 @@ namespace FivePebblesPong
             if (predY + randomOffsY < pebblesPdl.pos.y - deadband)
                 return -1;
             return 0;
+        }
+
+
+        public float moonDifficulty = 0.7f;
+        private bool moonInputDisabled;
+        private int moonDelay;
+        public int MoonAI()
+        {
+            int input = PebblesAI();
+
+            if (state == State.PlayerWin && moonDifficulty < 1f)
+                moonDifficulty += 0.1f;
+            if (state == State.PebblesWin && moonDifficulty > 0f)
+                moonDifficulty -= 0.1f;
+            if (state == State.PlayerWin || state == State.PebblesWin)
+                FivePebblesPong.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
+
+            if (this.gameCounter % 15 == 0)
+            {
+                moonInputDisabled = (UnityEngine.Random.value > moonDifficulty);
+                if (ball.velocityX < 0) //ball moves away from puppet
+                    moonDelay = 10 - (int)(10 * moonDifficulty);
+            }
+
+            if (ball.velocityX > 0 && moonDelay > 0) //ball moves towards puppet
+                moonDelay--;
+            if (moonDelay > 0 || moonInputDisabled)
+                input = 0;
+
+            return input;
         }
     }
 }

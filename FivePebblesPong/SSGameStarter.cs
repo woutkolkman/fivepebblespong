@@ -394,7 +394,7 @@ namespace FivePebblesPong
                                 switch (UnityEngine.Random.Range(0, 4)) {
                                     case 0: self.dialogBox.Interrupt(self.Translate("Thanks for staying, but please do not say for too long.<LINE>This place will become very hazardous."), 10); break;
                                     case 1: self.dialogBox.Interrupt(self.Translate("Thank you for your visit before you return to Seven Red Suns."), 10); break;
-                                    case 2: self.dialogBox.Interrupt(self.Translate("That was fun. Thank you for your company, little messenger..."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("That was fun. Thank you for your company, little creature."), 10); break;
                                     case 3: self.dialogBox.Interrupt(self.Translate("You might have to leave soon. This complex will soon collapse."), 10); break;
                                 }
                             }
