@@ -17,7 +17,8 @@ namespace FivePebblesPong
         public static SSOracleBehavior.MovementBehavior PlayGame;
 
         //moon reaction on controller
-        public static SLOracleBehaviorHasMark.MiscItemType GameControllerReaction;
+        public static SLOracleBehaviorHasMark.MiscItemType GameControllerPebblesReaction;
+        public static SLOracleBehaviorHasMark.MiscItemType GameControllerMoonReaction;
 
 
         public static void RegisterValues()
@@ -26,7 +27,8 @@ namespace FivePebblesPong
             GameControllerMoon = new AbstractPhysicalObject.AbstractObjectType("GameControllerMoon", true);
             Gaming_Gaming = new SSOracleBehavior.Action("Gaming_Gaming", true);
             PlayGame = new SSOracleBehavior.MovementBehavior("PlayGame", true);
-            GameControllerReaction = new SLOracleBehaviorHasMark.MiscItemType("GameControllerReaction", true);
+            GameControllerPebblesReaction = new SLOracleBehaviorHasMark.MiscItemType("GameControllerPebblesReaction", true);
+            GameControllerMoonReaction = new SLOracleBehaviorHasMark.MiscItemType("GameControllerMoonReaction", true);
         }
 
 
@@ -36,7 +38,8 @@ namespace FivePebblesPong
             if (GameControllerMoon != null) { GameControllerMoon.Unregister(); GameControllerMoon = null; }
             if (Gaming_Gaming != null) { Gaming_Gaming.Unregister(); Gaming_Gaming = null; }
             if (PlayGame != null) { PlayGame.Unregister(); PlayGame = null; }
-            if (GameControllerReaction != null) { GameControllerReaction.Unregister(); GameControllerReaction = null; }
+            if (GameControllerPebblesReaction != null) { GameControllerPebblesReaction.Unregister(); GameControllerPebblesReaction = null; }
+            if (GameControllerMoonReaction != null) { GameControllerMoonReaction.Unregister(); GameControllerMoonReaction = null; }
         }
     }
 }

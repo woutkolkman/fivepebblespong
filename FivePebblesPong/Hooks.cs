@@ -278,8 +278,10 @@ namespace FivePebblesPong
             orig(self, sLeaser, rCam, newContainer);
         }
 
-        
+
         //moon controller reaction
+        static bool gameControllerPebblesShown = false;
+        static bool gameControllerMoonShown = false;
         static void SLOracleBehaviorHasMarkMoonConversationAddEventsHook(On.SLOracleBehaviorHasMark.MoonConversation.orig_AddEvents orig, SLOracleBehaviorHasMark.MoonConversation self)
         {
             orig(self);
@@ -287,16 +289,35 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.id == Conversation.ID.Moon_Misc_Item && self.describeItem == Enums.GameControllerReaction)
-            {
-                self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It's an electronic device with buttons.<LINE>Where did you find this?"), 0));
-                self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It looks like something that Five Pebbles would like..."), 0));
+            if (self.id == Conversation.ID.Moon_Misc_Item) {
+                if (self.describeItem == Enums.GameControllerMoonReaction) {
+                    gameControllerMoonShown = true;
+                    if (gameControllerPebblesShown) {
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Hey, you found it! I was wondering where I left it.."), 0));
+                    } else {
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("I haven't seen this thing since my collapse. Where did you find this?"), 0));
+                    }
+                    self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Do you think it still works?"), 0));
+                }
+                if (self.describeItem == Enums.GameControllerPebblesReaction) {
+                    gameControllerPebblesShown = true;
+                    if (gameControllerMoonShown) {
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Another one? I don't remember having two.."), 0));
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("..."), 0));
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("The color indicates it's Five Pebbles' property.<LINE>I don't think he likes you stealing his stuff."), 0));
+                    } else {
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It's an electronic device with buttons. Where did you find this?"), 0));
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("The shape looks vaguely familiar to me..."), 0));
+                    }
+                }
             }
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
         {
-            if (FivePebblesPong.HasEnumExt && testItem is GameController)
-                return Enums.GameControllerReaction;
+            if (FivePebblesPong.HasEnumExt && testItem.abstractPhysicalObject.type == Enums.GameControllerMoon)
+                return Enums.GameControllerMoonReaction;
+            if (FivePebblesPong.HasEnumExt && (testItem.abstractPhysicalObject.type == Enums.GameControllerPebbles || testItem is GameController))
+                return Enums.GameControllerPebblesReaction;
             return orig(self, testItem);
         }
 

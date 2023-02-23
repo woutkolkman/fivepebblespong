@@ -31,6 +31,22 @@ namespace FivePebblesPong
 
         public void Handle(SLOracleBehavior self)
         {
+            if (self.oracle.room.game.IsMoonHeartActive()) {
+                HeartHandle(self);
+            } else {
+                NoHeartHandle(self);
+            }
+        }
+
+
+        public void HeartHandle(SLOracleBehavior self)
+        {
+            //TODO
+        }
+
+
+        public void NoHeartHandle(SLOracleBehavior self)
+        {
             //check if slugcat is holding a gamecontroller
             Player p = FivePebblesPong.GetPlayer(self);
 
@@ -86,7 +102,7 @@ namespace FivePebblesPong
                 if (this.moonGame == null)
                     this.moonGame = new Dino(self) { imageAlpha = 0f };
                 this.moonGame?.Update(self, (
-                    (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null) 
+                    (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
                     ? 0 //when moon is speaking, don't control game
                     : this.moonGame.MoonAI()
                 ));
@@ -96,7 +112,7 @@ namespace FivePebblesPong
             {
                 this.moonGame.Destroy();
                 this.moonGame = null;
-                
+
                 //release controller if SLOracleBehavior child doesn't do this automatically
                 if (self is SLOracleBehaviorNoMark && self.holdingObject != null && self.holdingObject is GameController)
                     self.holdingObject = null;
@@ -123,6 +139,7 @@ namespace FivePebblesPong
 
 
         //moon grabs closest object by type
+        //dependent on SLOracleBehaviorHasMark_OracleGetToPos_get & SLOracleBehaviorNoMark_OracleGetToPos_get
         public static int moveToItemDelay;
         public static PhysicalObject grabItem; //if not null, moon moves to this position
         public static bool? GrabObjectType<T>(SLOracleBehavior self, float maxDist, bool cancel = false, int timeout = 300)
