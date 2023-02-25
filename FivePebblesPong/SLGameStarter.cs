@@ -94,7 +94,7 @@ namespace FivePebblesPong
 
                     state = State.StartDialog;
                     break;
-                    
+
                 //======================================================
                 case State.StartDialog:
                     if (statePreviousRun != state)
@@ -347,6 +347,30 @@ namespace FivePebblesPong
             grabItem = null;
             moveToItemDelay = 0;
             return false; //failed
+        }
+
+
+        public static Vector2 moonLookPoint;
+        static bool prevDeadTalk;
+        public static void DefaultSLOracleBehavior(SLOracleBehavior self)
+        {
+            //overwrite moon look position
+            if (moonLookPoint != new Vector2())
+                self.lookPoint = moonLookPoint;
+            moonLookPoint = new Vector2();
+
+            //release controller if player grabs neuron
+            if (self.protest && self.holdingObject is GameController)
+                self.holdingObject = null;
+
+            //release controller once at the moment of player death
+            if (self is SLOracleBehaviorHasMark)
+            {
+                if ((self as SLOracleBehaviorHasMark).deadTalk && !prevDeadTalk)
+                    if (self.holdingObject is GameController)
+                        self.holdingObject = null;
+                prevDeadTalk = (self as SLOracleBehaviorHasMark).deadTalk;
+            }
         }
     }
 }

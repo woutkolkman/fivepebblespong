@@ -135,6 +135,7 @@ namespace FivePebblesPong
                 (self as SLOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
             }
             self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
+            SLGameStarter.moonLookPoint = self.lookPoint;
 
             //update score
             if (self is SSOracleBehavior)

@@ -359,6 +359,8 @@ namespace FivePebblesPong
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
+            if (SLGameStarter.starter?.game != null)
+                SLGameStarter.DefaultSLOracleBehavior(self);
         }
 
 
@@ -369,6 +371,8 @@ namespace FivePebblesPong
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
+            if (SLGameStarter.starter?.game != null)
+                SLGameStarter.DefaultSLOracleBehavior(self);
         }
 
 
