@@ -134,11 +134,19 @@ namespace FivePebblesPong
         }
 
 
+        static bool prevDeadTalk;
         public void MoonBehavior(SLOracleBehavior self)
         {
             //release controller if player grabs neuron
             if (self.protest)
                 self.holdingObject = null;
+
+            //release controller once at the moment of player death
+            if (self is SLOracleBehaviorHasMark) {
+                if ((self as SLOracleBehaviorHasMark).deadTalk && !prevDeadTalk)
+                    self.holdingObject = null;
+                prevDeadTalk = (self as SLOracleBehaviorHasMark).deadTalk;
+            }
 
             //moon looks at game, else looks at slugcat
             if (gameStarted && !self.protest)

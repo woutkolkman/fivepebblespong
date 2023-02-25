@@ -24,6 +24,7 @@ namespace FivePebblesPong
         public float ballAccel = 0.003f;
         public float startSpeed = 6f;
         public int pebblesUpdateRate = 8; //calculate ball trajectory every X frames
+        public bool waterMoonReacted = false;
 
 
         public enum State
@@ -36,7 +37,7 @@ namespace FivePebblesPong
         public State state { get; set; }
 
 
-        public Pong(SSOracleBehavior self) : base(self)
+        public Pong(OracleBehavior self) : base(self)
         {
             this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
             this.border.pos = new Vector2(midX, midY);
@@ -52,7 +53,8 @@ namespace FivePebblesPong
             this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
 
-            scoreBoard = new PearlSelection(self);
+            if (self is SSOracleBehavior)
+                scoreBoard = new PearlSelection(self as SSOracleBehavior);
             scoreCount = new List<Vector2>();
         }
 
@@ -63,7 +65,7 @@ namespace FivePebblesPong
         }
 
 
-        public void CreatePaddles(SSOracleBehavior self, int playerPdlHeight, int pebblesPdlHeight, int pdlWidth)
+        public void CreatePaddles(OracleBehavior self, int playerPdlHeight, int pebblesPdlHeight, int pdlWidth)
         {
             float playerY = playerPdl != null ? playerPdl.pos.y : midY;
             float pebblesY = pebblesPdl != null ? pebblesPdl.pos.y : midY;
@@ -97,7 +99,7 @@ namespace FivePebblesPong
         }
 
 
-        public override void Update(SSOracleBehavior self)
+        public override void Update(OracleBehavior self)
         {
             base.Update(self);
 
@@ -123,14 +125,20 @@ namespace FivePebblesPong
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
-            self.SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
-            self.currentGetTo = pebblesPdl.pos;
-            self.currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
-            self.floatyMovement = false;
+            if (self is SSOracleBehavior) {
+                (self as SSOracleBehavior).SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
+                (self as SSOracleBehavior).currentGetTo = pebblesPdl.pos;
+                (self as SSOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                (self as SSOracleBehavior).floatyMovement = false;
+            } else if (self is SLOracleBehavior) {
+                (self as SLOracleBehavior).currentGetTo = pebblesPdl.pos;
+                (self as SLOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+            }
             self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
 
             //update score
-            scoreBoard?.Update(self, scoreCount);
+            if (self is SSOracleBehavior)
+                scoreBoard?.Update(self as SSOracleBehavior, scoreCount);
             if (!grabbedScoreReacted && playerWin <= 0 && scoreBoard != null && scoreBoard.pearlGrabbed != -1)
             {
                 grabbedScoreReacted = true;
@@ -154,7 +162,7 @@ namespace FivePebblesPong
 
 
         public State statePreviousRun = State.GetReady;
-        private void StateMachine(SSOracleBehavior self)
+        private void StateMachine(OracleBehavior self)
         {
             State stateBeforeRun = state;
             switch (state)
@@ -197,7 +205,7 @@ namespace FivePebblesPong
                                 self.dialogBox.Interrupt(self.Translate("Nice."), 10);
                             }
                         }
-                        if (self.oracle.ID.ToString().Equals("DM"))
+                        if (self.oracle.ID.ToString().Equals("DM") || self.oracle.ID.ToString().Equals("SL"))
                             self.dialogBox.Interrupt(self.Translate("Well done!"), 10);
                     }
                     break;
@@ -218,6 +226,10 @@ namespace FivePebblesPong
                             this.CreatePaddles(self, 200, 30, 20);
                             playerPdl.movementSpeed += 1f;
                         }
+                    }
+                    if (self.oracle.ID == Oracle.OracleID.SL && !waterMoonReacted && ball.pos.y < minY + 80) {
+                        waterMoonReacted = true;
+                        self.dialogBox.Interrupt(self.Translate("Sorry, the game has become a bit difficult now that there's water in this room."), 10);
                     }
                     break;
 
@@ -305,7 +317,7 @@ namespace FivePebblesPong
 
             if (state == State.PlayerWin && moonDifficulty < 1f)
                 moonDifficulty += 0.1f;
-            if (state == State.PebblesWin && moonDifficulty > 0f)
+            if (state == State.PebblesWin && moonDifficulty > 0.3f)
                 moonDifficulty -= 0.1f;
             if (state == State.PlayerWin || state == State.PebblesWin)
                 FivePebblesPong.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
@@ -314,12 +326,12 @@ namespace FivePebblesPong
             {
                 moonInputDisabled = (UnityEngine.Random.value > moonDifficulty);
                 if (ball.velocityX < 0) //ball moves away from puppet
-                    moonDelay = 10 - (int)(10 * moonDifficulty);
+                    moonDelay = 15 - (int)(15 * moonDifficulty);
             }
 
             if (ball.velocityX > 0 && moonDelay > 0) //ball moves towards puppet
                 moonDelay--;
-            if (moonDelay > 0 || moonInputDisabled)
+            if ((ball.velocityX > 0 && moonDelay > 0) || moonInputDisabled)
                 input = 0;
 
             return input;

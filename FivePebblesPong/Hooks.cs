@@ -344,11 +344,11 @@ namespace FivePebblesPong
 
             if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SL_AI") && SLGameStarter.starter == null)
                 SLGameStarter.starter = new SLGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SL_AI")) && SLGameStarter.starter != null && SLGameStarter.starter.moonGame == null)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SL_AI")) && SLGameStarter.starter != null && SLGameStarter.starter.game == null)
                 SLGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 
-            SLGameStarter.starter?.Handle(self);
+            SLGameStarter.starter?.StateMachine(self);
         }
 
 
@@ -357,7 +357,8 @@ namespace FivePebblesPong
             orig(self, eu);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            SLGameStarter.starter?.moonGame?.MoonBehavior(self);
+            if (SLGameStarter.starter?.game is Dino)
+                (SLGameStarter.starter.game as Dino).MoonBehavior(self);
         }
 
 
@@ -366,7 +367,8 @@ namespace FivePebblesPong
             orig(self, eu);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            SLGameStarter.starter?.moonGame?.MoonBehavior(self);
+            if (SLGameStarter.starter?.game is Dino)
+                (SLGameStarter.starter.game as Dino).MoonBehavior(self);
         }
 
 

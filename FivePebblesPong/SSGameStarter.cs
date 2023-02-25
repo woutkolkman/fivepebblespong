@@ -83,8 +83,6 @@ namespace FivePebblesPong
             }
             if (state != State.Stop && !prevenActionOverride)
             {
-                if (state != stateBeforeRun && self.action != Enums.Gaming_Gaming)
-                    FivePebblesPong.ME.Logger_p.LogInfo("Set " + nameof(self.action) + ": " + Enums.Gaming_Gaming.ToString());
                 self.action = Enums.Gaming_Gaming;
                 if (self.conversation != null)
                     self.conversation.paused = true;
@@ -214,7 +212,7 @@ namespace FivePebblesPong
 
                 //======================================================
                 case State.Started:
-                    self.movementBehavior = Enums.PlayGame;
+                    self.movementBehavior = Enums.SSPlayGame;
 
                     game?.Update(self);
                     game?.Draw();

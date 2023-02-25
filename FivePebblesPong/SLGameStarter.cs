@@ -9,12 +9,25 @@ namespace FivePebblesPong
         public static int moonDelayUpdateGameReset = 1200;
         public static int moonDelayUpdateGame = moonDelayUpdateGameReset;
 
-        public Dino moonGame;
+        public FPGame game;
         public int minXPosPlayer = 1100;
         public float maxControllerGrabDist = 92f;
         public int searchDelayCounter = 0;
         public int searchDelay = 600;
         public bool moonMayGrabController = true;
+        public static bool lastPlayedReacted = false;
+
+        //for state machine when moon has heart restored
+        public enum State
+        {
+            Stop,
+            StartDialog,
+            Started,
+            StopDialog
+        }
+        public State state { get; set; }
+        public State statePreviousRun = State.Stop;
+        public SLOracleBehavior.MovementBehavior previousMovementBehavior; //movementbehavior (from main game) before starting game
 
 
         //for ShowMediaMovementBehavior
@@ -25,11 +38,11 @@ namespace FivePebblesPong
         public SLGameStarter() { }
         ~SLGameStarter()
         {
-            this.moonGame?.Destroy();
+            this.game?.Destroy();
         }
 
 
-        public void Handle(SLOracleBehavior self)
+        public void StateMachine(SLOracleBehavior self)
         {
             if (self.oracle.room.game.IsMoonHeartActive()) {
                 HeartHandle(self);
@@ -41,7 +54,114 @@ namespace FivePebblesPong
 
         public void HeartHandle(SLOracleBehavior self)
         {
-            //TODO
+            //check if slugcat is holding a gamecontroller
+            Player p = FivePebblesPong.GetPlayer(self);
+
+            State stateBeforeRun = state;
+            switch (state)
+            {
+                //======================================================
+                case State.Stop:
+                    //no player carries controller
+                    if (p?.room?.roomSettings == null)
+                        break;
+
+                    //player not in room
+                    if (!p.room.roomSettings.name.Equals("SL_AI") || p.DangerPos.x < minXPosPlayer)
+                        break;
+
+                    //conversation active
+                    if (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
+                        break;
+
+                    //moon not healthy
+                    if (self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious || (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).DamagedMode))
+                        break;
+
+                    //moon busy or doesn't want to talk
+                    if (self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms || 
+                        (self is SLOracleBehaviorHasMark && ((self as SLOracleBehaviorHasMark).moveToAndPickUpItem != null)))
+                        break;
+
+                    //hasn't seen player yet
+                    if (self.player == null || !self.hasNoticedPlayer || 
+                        self.movementBehavior == SLOracleBehavior.MovementBehavior.Meditate || self.movementBehavior == SLOracleBehavior.MovementBehavior.ShowMedia)
+                        break;
+
+                    //didn't speak to player yet
+                    if (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).sayHelloDelay != 0)
+                        break;
+
+                    state = State.StartDialog;
+                    break;
+                    
+                //======================================================
+                case State.StartDialog:
+                    if (statePreviousRun != state)
+                    {
+                        self.dialogBox.Interrupt(self.Translate("Sure, I'll play a game with you!"), 10);
+                        previousMovementBehavior = self.movementBehavior;
+                        FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                    }
+                    if (p == null)
+                        state = State.StopDialog;
+                    if (!self.dialogBox.ShowingAMessage) //dialog finished
+                        state = State.Started;
+                    break;
+
+                //======================================================
+                case State.Started:
+                    if (self.player.slugcatStats.name.ToString().Equals("Rivulet") && !lastPlayedReacted) {
+                        lastPlayedReacted = true;
+                        self.dialogBox.Interrupt(self.Translate("It's been a while since I last played this one..."), 10);
+                    }
+
+                    if (game == null)
+                        game = new Pong(self);
+
+                    self.movementBehavior = Enums.SLPlayGame;
+
+                    game?.Update(self);
+                    game?.Draw();
+
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI"))
+                        state = State.StopDialog;
+                    break;
+
+                //======================================================
+                case State.StopDialog:
+                    if (state != statePreviousRun)
+                    {
+                        self.movementBehavior = previousMovementBehavior;
+                        FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                        game?.Destroy();
+                        game = null;
+
+                        if (statePreviousRun == State.StartDialog)
+                        {
+                            switch (UnityEngine.Random.Range(0, 3))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("Ah, don't want to?"), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("No obligations."), 10); break;
+                            }
+                        }
+                        else
+                        {
+                            switch (UnityEngine.Random.Range(0, 3))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("You're welcome to play again!"), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("That was fun. Unfortunately I don't have many other games anymore."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("Thank you for playing!"), 10); break;
+                            }
+                        }
+                    }
+
+                    if (!self.dialogBox.ShowingAMessage)
+                        state = State.Stop;
+                    break;
+            }
+            statePreviousRun = stateBeforeRun;
         }
 
 
@@ -67,14 +187,14 @@ namespace FivePebblesPong
             //start/stop game
             if (playerMayPlayGame) //player plays
             {
-                if (SLGameStarter.moonDelayUpdateGame < 400 && this.moonGame == null)
-                    this.moonGame = new Dino(self);
+                if (SLGameStarter.moonDelayUpdateGame < 400 && this.game == null)
+                    this.game = new Dino(self);
 
                 //calibrate projector animation
-                if (!SLGameStarter.moonCalibratedProjector && moonGame != null)
+                if (!SLGameStarter.moonCalibratedProjector && game != null)
                 {
                     //run animation, true ==> target location reached, "projector" is calibrated
-                    if (calibrate.Update(self, new Vector2(moonGame.midX, moonGame.midY), SLGameStarter.moonDelayUpdateGame <= 0))
+                    if (calibrate.Update(self, new Vector2(game.midX, game.midY), SLGameStarter.moonDelayUpdateGame <= 0))
                         SLGameStarter.moonCalibratedProjector = true;
                 }
 
@@ -82,36 +202,36 @@ namespace FivePebblesPong
                 if (SLGameStarter.moonDelayUpdateGame > 0) {
                     SLGameStarter.moonDelayUpdateGame--;
                 } else if (SLGameStarter.moonCalibratedProjector) {
-                    this.moonGame?.Update(self);
+                    this.game?.Update(self);
                 }
 
-                moonGame?.Draw(calibrate.showMediaPos - new Vector2(moonGame.midX, moonGame.midY));
+                game?.Draw(calibrate.showMediaPos - new Vector2(game.midX, game.midY));
             }
             else if (moonMayPlayGame) //moon plays
             {
-                if (this.moonGame != null && this.moonGame.dino != null)
+                if (this.game is Dino && (this.game as Dino).dino != null)
                 {
                     //prevent moon from auto releasing controller if not game over
-                    if (self is SLOracleBehaviorHasMark && this.moonGame.dino.curAnim != DinoPlayer.Animation.Dead)
+                    if (self is SLOracleBehaviorHasMark && (this.game as Dino).dino.curAnim != DinoPlayer.Animation.Dead)
                         (self as SLOracleBehaviorHasMark).describeItemCounter = 0;
                     //release controller if SLOracleBehavior child doesn't do this automatically
-                    if (self is SLOracleBehaviorNoMark && this.moonGame.dino.curAnim == DinoPlayer.Animation.Dead)
+                    if (self is SLOracleBehaviorNoMark && (this.game as Dino).dino.curAnim == DinoPlayer.Animation.Dead)
                         self.holdingObject = null;
                 }
 
-                if (this.moonGame == null)
-                    this.moonGame = new Dino(self) { imageAlpha = 0f };
-                this.moonGame?.Update(self, (
+                if (this.game == null)
+                    this.game = new Dino(self) { imageAlpha = 0f };
+                (this.game as Dino)?.Update(self, (
                     (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
                     ? 0 //when moon is speaking, don't control game
-                    : this.moonGame.MoonAI()
+                    : (this.game as Dino).MoonAI()
                 ));
-                this.moonGame?.Draw();
+                this.game?.Draw();
             }
-            else if (this.moonGame != null) //destroy game
+            else if (this.game != null) //destroy game
             {
-                this.moonGame.Destroy();
-                this.moonGame = null;
+                this.game.Destroy();
+                this.game = null;
 
                 //release controller if SLOracleBehavior child doesn't do this automatically
                 if (self is SLOracleBehaviorNoMark && self.holdingObject != null && self.holdingObject is GameController)
@@ -122,7 +242,7 @@ namespace FivePebblesPong
             if (searchDelayCounter < searchDelay) //search after specified delay
                 searchDelayCounter++;
 
-            if (!moonMayGrabController || this.moonGame != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
+            if (!moonMayGrabController || this.game != null || self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious)
                 searchDelayCounter = 0; //cancel grabbing
 
             if (SLGameStarter.moonDelayUpdateGame > 0 || self.holdingObject != null || self.reelInSwarmer != null || !self.State.SpeakingTerms)
