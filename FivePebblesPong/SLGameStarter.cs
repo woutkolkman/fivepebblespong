@@ -65,6 +65,8 @@ namespace FivePebblesPong
             //is player leaving? or no player carries controller
             bool playerLeaves = p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI") || p.DangerPos.x < minXPosPlayer;
 
+            //TODO test without deathPersistentSaveData.theMark (doesn't normally take place in campaigns)
+
             State stateBeforeRun = state;
             switch (state)
             {

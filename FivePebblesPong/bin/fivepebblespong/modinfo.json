@@ -1,12 +1,13 @@
 {
-  "id": "woutkolkman.fivepebblespong",
+  "id": "maxi-mol.fivepebblespong",
   "name": "Five Pebbles Pong",
   "version": "1.0.0",
-  "hide_version": false,
+  "target_game_version": "v1.9.06",
   "authors": "Maxi Mol",
   "description": "Adds a game controller to Five Pebbles' room. If slugcat grabs it, Pebbles invites you to play Pong.",
   "youtube_trailer_id": "I4w8U9lszao",
   "requirements": [],
   "requirements_names": [],
+  "tags": ["Game Mechanics"],
   "checksum_override_version": false
 }

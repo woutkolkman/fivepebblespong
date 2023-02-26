@@ -117,6 +117,11 @@ namespace FivePebblesPong
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
+
+                    //first Artificer encounter no games
+                    if (self.action.ToString().Equals("MeetArty_Init") || self.action.ToString().Equals("MeetArty_Talking"))
+                        break;
+
                     if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.notFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
@@ -258,6 +263,16 @@ namespace FivePebblesPong
                                 }
                             }
                             SSGameStarter.notFullyStartedCounter++;
+                        }
+                        else if (self.player.slugcatStats.name.ToString().Equals("Artificer"))
+                        {
+                            switch (UnityEngine.Random.Range(0, 4))
+                            {
+                                case 0: self.dialogBox.Interrupt(self.Translate("Now, please leave. I would prefer to be alone."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("Game is over, please leave. I would prefer to be alone."), 10); break;
+                                case 2: self.dialogBox.Interrupt(self.Translate("Ok. Now, please leave."), 10); break;
+                                case 3: self.dialogBox.Interrupt(self.Translate("I'd prefer if you left, little creature."), 10); break;
+                            }
                         }
                         else
                         {
