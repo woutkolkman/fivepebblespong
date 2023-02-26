@@ -294,11 +294,11 @@ namespace FivePebblesPong
                 if (self.describeItem == Enums.GameControllerMoonReaction) {
                     gameControllerMoonShown = true;
                     if (gameControllerPebblesShown) {
-                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Hey, you found it! I was wondering where I left it.."), 0));
+                        self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Hey, you found my controller! I was wondering where I left it.."), 0));
                     } else {
                         self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("I haven't seen this thing since my collapse. Where did you find this?"), 0));
                     }
-                    self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("Do you think it still works?"), 0));
+                    self.events.Add(new Conversation.TextEvent(self, 8, self.Translate("It's a miracle it still works."), 0));
                 }
                 if (self.describeItem == Enums.GameControllerPebblesReaction) {
                     gameControllerPebblesShown = true;
@@ -361,7 +361,7 @@ namespace FivePebblesPong
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
-            if (SLGameStarter.starter?.game != null)
+            if (SLGameStarter.starter != null)
                 SLGameStarter.DefaultSLOracleBehavior(self);
         }
 
@@ -373,7 +373,7 @@ namespace FivePebblesPong
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
-            if (SLGameStarter.starter?.game != null)
+            if (SLGameStarter.starter != null)
                 SLGameStarter.DefaultSLOracleBehavior(self);
         }
 

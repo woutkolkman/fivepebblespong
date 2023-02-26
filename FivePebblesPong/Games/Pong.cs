@@ -125,6 +125,7 @@ namespace FivePebblesPong
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
+            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
             if (self is SSOracleBehavior) {
                 (self as SSOracleBehavior).SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
                 (self as SSOracleBehavior).currentGetTo = pebblesPdl.pos;
@@ -133,9 +134,9 @@ namespace FivePebblesPong
             } else if (self is SLOracleBehavior) {
                 (self as SLOracleBehavior).currentGetTo = pebblesPdl.pos;
                 (self as SLOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                SLGameStarter.forceFlightMode = true; //updates in function DefaultSLOracleBehavior
+                SLGameStarter.moonLookPoint = self.lookPoint; //updates in function DefaultSLOracleBehavior
             }
-            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
-            SLGameStarter.moonLookPoint = self.lookPoint;
 
             //update score
             if (self is SSOracleBehavior)

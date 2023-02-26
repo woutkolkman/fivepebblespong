@@ -59,7 +59,7 @@ namespace FivePebblesPong
                 MoonStates(self);
 
             //bugfix where state immediately transitions to ThrowOut_KillOnSight in Spearmaster campaign
-            bool prevenActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player?.slugcatStats != null && self.player.slugcatStats.name.ToString().Equals("Spear"));
+            bool preventActionOverride = (self.oracle.ID == Oracle.OracleID.SS && self.player?.slugcatStats != null && self.player.slugcatStats.name.ToString().Equals("Spear"));
 
             //handle states
             if (state != State.Stop && stateBeforeRun == State.Stop)
@@ -71,7 +71,7 @@ namespace FivePebblesPong
                 previousMovementBehavior = self.movementBehavior;
                 FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
             }
-            if (state == State.Stop && state != stateBeforeRun && !prevenActionOverride)
+            if (state == State.Stop && state != stateBeforeRun && !preventActionOverride)
             {
                 self.action = previousAction;
                 FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action.ToString());
@@ -81,7 +81,7 @@ namespace FivePebblesPong
                 FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                 self.restartConversationAfterCurrentDialoge = true;
             }
-            if (state != State.Stop && !prevenActionOverride)
+            if (state != State.Stop && !preventActionOverride)
             {
                 self.action = Enums.Gaming_Gaming;
                 if (self.conversation != null)

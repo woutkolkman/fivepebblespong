@@ -151,7 +151,7 @@ namespace FivePebblesPong
                             switch (UnityEngine.Random.Range(0, 3))
                             {
                                 case 0: self.dialogBox.Interrupt(self.Translate("You're welcome to play again!"), 10); break;
-                                case 1: self.dialogBox.Interrupt(self.Translate("That was fun. Unfortunately I don't have many other games anymore."), 10); break;
+                                case 1: self.dialogBox.Interrupt(self.Translate("That was fun. Unfortunately I don't have many other games currently."), 10); break;
                                 case 2: self.dialogBox.Interrupt(self.Translate("Thank you for playing!"), 10); break;
                             }
                         }
@@ -352,6 +352,7 @@ namespace FivePebblesPong
 
         public static Vector2 moonLookPoint;
         static bool prevDeadTalk;
+        public static bool forceFlightMode;
         public static void DefaultSLOracleBehavior(SLOracleBehavior self)
         {
             //overwrite moon look position
@@ -359,13 +360,19 @@ namespace FivePebblesPong
                 self.lookPoint = moonLookPoint;
             moonLookPoint = new Vector2();
 
+            //overwrite if moon may sit or not
+            if (forceFlightMode) {
+                self.forceFlightMode = true;
+                self.timeOutOfSitZone = 50;
+            }
+            forceFlightMode = false;
+
             //release controller if player grabs neuron
             if (self.protest && self.holdingObject is GameController)
                 self.holdingObject = null;
 
-            //release controller once at the moment of player death
-            if (self is SLOracleBehaviorHasMark)
-            {
+            //release controller once at the moment of player death (when dialog starts)
+            if (self is SLOracleBehaviorHasMark) {
                 if ((self as SLOracleBehaviorHasMark).deadTalk && !prevDeadTalk)
                     if (self.holdingObject is GameController)
                         self.holdingObject = null;
