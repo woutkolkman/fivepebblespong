@@ -57,25 +57,29 @@ namespace FivePebblesPong
             //check if slugcat is holding a gamecontroller
             Player p = FivePebblesPong.GetPlayer(self);
 
+            //is player messing with neurons?
+            bool instantStop = self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious;
+            instantStop |= self.protest || (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).DamagedMode);
+            instantStop |= self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).State.hasToldPlayerNotToEatNeurons;
+
+            //is player leaving? or no player carries controller
+            bool playerLeaves = p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI") || p.DangerPos.x < minXPosPlayer;
+
             State stateBeforeRun = state;
             switch (state)
             {
                 //======================================================
                 case State.Stop:
-                    //no player carries controller
-                    if (p?.room?.roomSettings == null)
-                        break;
-
-                    //player not in room
-                    if (!p.room.roomSettings.name.Equals("SL_AI") || p.DangerPos.x < minXPosPlayer)
+                    //player not in room, or no controller
+                    if (playerLeaves)
                         break;
 
                     //conversation active
                     if (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
                         break;
 
-                    //moon not healthy
-                    if (self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious || (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).DamagedMode))
+                    //player is messing with neurons
+                    if (instantStop)
                         break;
 
                     //moon busy or doesn't want to talk
@@ -103,7 +107,7 @@ namespace FivePebblesPong
                         previousMovementBehavior = self.movementBehavior;
                         FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                     }
-                    if (p == null)
+                    if (p == null || instantStop || playerLeaves)
                         state = State.StopDialog;
                     if (!self.dialogBox.ShowingAMessage) //dialog finished
                         state = State.Started;
@@ -124,7 +128,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI") || instantStop || playerLeaves)
                         state = State.StopDialog;
                     break;
 
@@ -137,22 +141,21 @@ namespace FivePebblesPong
                         game?.Destroy();
                         game = null;
 
-                        if (statePreviousRun == State.StartDialog)
-                        {
-                            switch (UnityEngine.Random.Range(0, 3))
-                            {
-                                case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
-                                case 1: self.dialogBox.Interrupt(self.Translate("Ah, don't want to?"), 10); break;
-                                case 2: self.dialogBox.Interrupt(self.Translate("No obligations."), 10); break;
-                            }
-                        }
-                        else
-                        {
-                            switch (UnityEngine.Random.Range(0, 3))
-                            {
-                                case 0: self.dialogBox.Interrupt(self.Translate("You're welcome to play again!"), 10); break;
-                                case 1: self.dialogBox.Interrupt(self.Translate("That was fun. Unfortunately I don't have many other games currently."), 10); break;
-                                case 2: self.dialogBox.Interrupt(self.Translate("Thank you for playing!"), 10); break;
+                        if (!instantStop) {
+                            if (statePreviousRun == State.StartDialog) {
+                                switch (UnityEngine.Random.Range(0, 3))
+                                {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("Don't want to? That's ok."), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("Ah, don't want to?"), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("No obligations."), 10); break;
+                                }
+                            } else {
+                                switch (UnityEngine.Random.Range(0, 3))
+                                {
+                                    case 0: self.dialogBox.Interrupt(self.Translate("You're welcome to play again!"), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("That was fun. Unfortunately I don't have many other games currently."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("Thank you for playing!"), 10); break;
+                                }
                             }
                         }
                     }

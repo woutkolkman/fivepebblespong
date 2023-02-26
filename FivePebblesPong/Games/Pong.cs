@@ -210,6 +210,8 @@ namespace FivePebblesPong
                         if (self.oracle.ID.ToString().Equals("DM") || self.oracle.ID.ToString().Equals("SL"))
                             self.dialogBox.Interrupt(self.Translate("Well done!"), 10);
                     }
+                    if (playerWin == 4 && (self.oracle.ID.ToString().Equals("DM") || self.oracle.ID.ToString().Equals("SL")))
+                        self.dialogBox.Interrupt(self.Translate("You're getting better every game!"), 10);
                     break;
 
                 //======================================================
