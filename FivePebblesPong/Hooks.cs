@@ -21,28 +21,28 @@ namespace FivePebblesPong
 
             //check if controller already exists
             On.Player.ctor += PlayerCtorHook;
-            
+
             //ProjectedImage constructor hook for hiding LoadFile()
             On.ProjectedImage.ctor += ProjectedImageCtorHook;
-            
+
             //five pebbles constructor
             On.SSOracleBehavior.ctor += SSOracleBehaviorCtorHook;
 
             //five pebbles update function
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
-            
+
             //five pebbles gravity RuntimeDetour
             Hook SSOracleBehaviorSubBehaviorGravityHook = new Hook(
                 typeof(SSOracleBehavior.SubBehavior).GetProperty("Gravity", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SSOracleBehavior_SubBehavior_Gravity_get", myMethodFlags)
             );
-            
+
             //prevent projected lizard from killing player in GrabDot FPGame
             On.Creature.Violence += CreatureViolenceHook;
 
             //drawing lizard as hologram in GrabDot FPGame
             On.LizardGraphics.AddToContainer += LizardGraphicsAddToContainerHook;
-            
+
             //moon controller reaction
             On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
             On.SLOracleBehaviorHasMark.TypeOfMiscItem += SLOracleBehaviorHasMarkTypeOfMiscItemHook;
@@ -64,6 +64,12 @@ namespace FivePebblesPong
                 typeof(SLOracleBehaviorNoMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SLOracleBehaviorNoMark_OracleGetToPos_get", myMethodFlags)
             );
+
+            //five pebbles (rot) constructor
+            On.MoreSlugcats.SSOracleRotBehavior.ctor += SSOracleRotBehaviorCtorHook;
+
+            //five pebbles (rot) update function
+            On.MoreSlugcats.SSOracleRotBehavior.Update += SSOracleRotBehaviorUpdateHook;
         }
 
 
@@ -392,6 +398,30 @@ namespace FivePebblesPong
             if (FivePebblesPong.HasEnumExt && SLGameStarter.grabItem != null)
                 return SLGameStarter.grabItem.firstChunk.pos;
             return orig(self);
+        }
+
+
+        //five pebbles (rot) constructor
+        static void SSOracleRotBehaviorCtorHook(On.MoreSlugcats.SSOracleRotBehavior.orig_ctor orig, MoreSlugcats.SSOracleRotBehavior self, Oracle oracle)
+        {
+            FivePebblesPong.ME.Logger_p.LogInfo("SSOracleRotBehaviorCtorHook");
+            orig(self, oracle);
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+            //TODO
+            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
+        }
+
+
+        //five pebbles (rot) update function
+        static void SSOracleRotBehaviorUpdateHook(On.MoreSlugcats.SSOracleRotBehavior.orig_Update orig, MoreSlugcats.SSOracleRotBehavior self, bool eu)
+        {
+            orig(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            //TODO
         }
     }
 }
