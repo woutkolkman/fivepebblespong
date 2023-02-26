@@ -187,6 +187,7 @@ namespace FivePebblesPong
             SSGameStarter.controllerInStomachReacted = false;
             SSGameStarter.controllerThrownReacted = false;
             SSGameStarter.starter = null;
+            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
@@ -332,6 +333,7 @@ namespace FivePebblesPong
             SLGameStarter.moonDelayUpdateGame = SLGameStarter.moonDelayUpdateGameReset;
             SLGameStarter.moonCalibratedProjector = false;
             SLGameStarter.starter = null;
+            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
