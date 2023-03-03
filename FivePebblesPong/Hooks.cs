@@ -66,10 +66,10 @@ namespace FivePebblesPong
             );
 
             //five pebbles (rot) constructor
-            On.MoreSlugcats.SSOracleRotBehavior.ctor += SSOracleRotBehaviorCtorHook;
+            On.MoreSlugcats.SSOracleRotBehavior.ctor += MoreSlugcatsSSOracleRotBehaviorCtorHook;
 
             //five pebbles (rot) update function
-            On.MoreSlugcats.SSOracleRotBehavior.Update += SSOracleRotBehaviorUpdateHook;
+            On.MoreSlugcats.SSOracleRotBehavior.Update += MoreSlugcatsSSOracleRotBehaviorUpdateHook;
         }
 
 
@@ -402,26 +402,33 @@ namespace FivePebblesPong
 
 
         //five pebbles (rot) constructor
-        static void SSOracleRotBehaviorCtorHook(On.MoreSlugcats.SSOracleRotBehavior.orig_ctor orig, MoreSlugcats.SSOracleRotBehavior self, Oracle oracle)
+        static void MoreSlugcatsSSOracleRotBehaviorCtorHook(On.MoreSlugcats.SSOracleRotBehavior.orig_ctor orig, MoreSlugcats.SSOracleRotBehavior self, Oracle oracle)
         {
             FivePebblesPong.ME.Logger_p.LogInfo("SSOracleRotBehaviorCtorHook");
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
-            //TODO
+            RMGameStarter.starter = null;
             FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
         //five pebbles (rot) update function
-        static void SSOracleRotBehaviorUpdateHook(On.MoreSlugcats.SSOracleRotBehavior.orig_Update orig, MoreSlugcats.SSOracleRotBehavior self, bool eu)
+        static void MoreSlugcatsSSOracleRotBehaviorUpdateHook(On.MoreSlugcats.SSOracleRotBehavior.orig_Update orig, MoreSlugcats.SSOracleRotBehavior self, bool eu)
         {
             orig(self, eu);
 
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
 
-            //TODO
+            //construct/free RMGameStarter object when player enters/leaves room
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.EndsWith("_AI") && RMGameStarter.starter == null)
+                RMGameStarter.starter = new RMGameStarter();
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && RMGameStarter.starter != null && RMGameStarter.starter.state == RMGameStarter.State.Stop)
+                RMGameStarter.starter = null;
+            //NOTE checks only singleplayer: "self.player"
+
+            RMGameStarter.starter?.StateMachine(self);
         }
     }
 }

@@ -144,10 +144,16 @@ namespace FivePebblesPong
             if (!grabbedScoreReacted && playerWin <= 0 && scoreBoard != null && scoreBoard.pearlGrabbed != -1)
             {
                 grabbedScoreReacted = true;
+
+                //fixes nullpointerexception, because SSOracleRotBehavior.dialogBox is declared as 'new'
+                HUD.DialogBox dialogBox = self.dialogBox;
+                if (dialogBox == null && self is MoreSlugcats.SSOracleRotBehavior)
+                    dialogBox = (self as MoreSlugcats.SSOracleRotBehavior).dialogBox;
+
                 if (self.oracle.ID == Oracle.OracleID.SS)
-                    self.dialogBox.Interrupt(self.Translate("No cheating!"), 10);
+                    dialogBox.Interrupt(self.Translate("No cheating!"), 10);
                 if (self.oracle.ID.ToString().Equals("DM"))
-                    self.dialogBox.Interrupt(self.Translate("That won't lower my score, but I appreciate your creativity!"), 10);
+                    dialogBox.Interrupt(self.Translate("That won't lower my score, but I appreciate your creativity!"), 10);
             }
         }
 
@@ -166,6 +172,11 @@ namespace FivePebblesPong
         public State statePreviousRun = State.GetReady;
         private void StateMachine(OracleBehavior self)
         {
+            //fixes nullpointerexception, because SSOracleRotBehavior.dialogBox is declared as 'new'
+            HUD.DialogBox dialogBox = self.dialogBox;
+            if (dialogBox == null && self is MoreSlugcats.SSOracleRotBehavior)
+                dialogBox = (self as MoreSlugcats.SSOracleRotBehavior).dialogBox;
+
             State stateBeforeRun = state;
             switch (state)
             {
@@ -202,16 +213,16 @@ namespace FivePebblesPong
                         compliment = false;
                         if (self.oracle.ID == Oracle.OracleID.SS) {
                             if (pebblesWin < 10) {
-                                self.dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
+                                dialogBox.Interrupt(self.Translate("You're a talented little creature."), 10);
                             } else {
-                                self.dialogBox.Interrupt(self.Translate("Nice."), 10);
+                                dialogBox.Interrupt(self.Translate("Nice."), 10);
                             }
                         }
                         if (self.oracle.ID.ToString().Equals("DM") || self.oracle.ID.ToString().Equals("SL"))
-                            self.dialogBox.Interrupt(self.Translate("Well done!"), 10);
+                            dialogBox.Interrupt(self.Translate("Well done!"), 10);
                     }
                     if (playerWin == 4 && (self.oracle.ID.ToString().Equals("DM") || self.oracle.ID.ToString().Equals("SL")))
-                        self.dialogBox.Interrupt(self.Translate("You're getting better every game!"), 10);
+                        dialogBox.Interrupt(self.Translate("You're getting better every game!"), 10);
                     break;
 
                 //======================================================
@@ -222,18 +233,18 @@ namespace FivePebblesPong
                     pebblesWin++;
                     if (self.oracle.ID == Oracle.OracleID.SS) {
                         if (pebblesWin == 10) {
-                            self.dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
+                            dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
                             this.CreatePaddles(self, 130, 70, 20);
                         }
                         if (pebblesWin == 15) {
-                            self.dialogBox.Interrupt(self.Translate("Try again."), 10);
+                            dialogBox.Interrupt(self.Translate("Try again."), 10);
                             this.CreatePaddles(self, 200, 30, 20);
                             playerPdl.movementSpeed += 1f;
                         }
                     }
                     if (self.oracle.ID == Oracle.OracleID.SL && !waterMoonReacted && ball.pos.y < minY + 80) {
                         waterMoonReacted = true;
-                        self.dialogBox.Interrupt(self.Translate("Sorry, the game has become a bit difficult now that there's water in this room."), 10);
+                        dialogBox.Interrupt(self.Translate("Sorry, the game has become a bit difficult now that there's water in this room."), 10);
                     }
                     break;
 

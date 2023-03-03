@@ -61,7 +61,11 @@ namespace FivePebblesPong
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            image = new ProjectedImageFromMemory(textures, names, cycleTime);
+            if ((self is SLOracleBehavior && !ModManager.MSC) || self is MoreSlugcats.SSOracleRotBehavior) {
+                image = new MoonProjectedImageFromMemory(textures, names, cycleTime);
+            } else {
+                image = new ProjectedImageFromMemory(textures, names, cycleTime);
+            }
             self.oracle.myScreen.images.Add(image);
             self.oracle.myScreen.room.AddObject(image);
 
@@ -89,7 +93,14 @@ namespace FivePebblesPong
             if (self.oracle.myScreen == null)
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
-            image = self.oracle.myScreen.AddImage(names, cycleTime);
+            if ((self is SLOracleBehavior && !ModManager.MSC) || self is MoreSlugcats.SSOracleRotBehavior) {
+                image = new MoonProjectedImage(names, cycleTime);
+            } else {
+                image = new ProjectedImage(names, cycleTime);
+            }
+            self.oracle.myScreen.images.Add(image);
+            self.oracle.myScreen.room.AddObject(image);
+
             image.pos = prevPos;
 
             /*
@@ -131,6 +142,29 @@ namespace FivePebblesPong
                 textures[i].filterMode = FilterMode.Point;
                 Futile.atlasManager.LoadAtlasFromTexture(imageNames[i], textures[i], false);
             }
+        }
+    }
+
+
+    //force MoonProjection shader even without MSC enabled
+    public class MoonProjectedImage : ProjectedImage
+    {
+        public MoonProjectedImage(List<string> imageNames, int cycleTime) : base(imageNames, cycleTime) { }
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam) {
+            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
+            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["MoonProjection"];
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
+        }
+    }
+    public class MoonProjectedImageFromMemory : ProjectedImageFromMemory
+    {
+        public MoonProjectedImageFromMemory(List<Texture2D> textures, List<string> imageNames, int cycleTime) : base(textures, imageNames, cycleTime) { }
+        public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam) {
+            sLeaser.sprites = new FSprite[1];
+            sLeaser.sprites[0] = new FSprite(this.imageNames[0], true);
+            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["MoonProjection"];
+            this.AddToContainer(sLeaser, rCam, rCam.ReturnFContainer("Foreground"));
         }
     }
 }

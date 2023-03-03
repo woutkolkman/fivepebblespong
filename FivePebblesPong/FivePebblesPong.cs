@@ -63,9 +63,9 @@ namespace FivePebblesPong
             }
         }
 
-        
+
         //get player with controller
-        public static Player currentPlayer;
+        public static Player currentPlayer; //NOTE, currentPlayer might not reset to null if exiting/restarting game while playing an FPGame
         public static Player GetPlayer(OracleBehavior self)
         {
             bool CarriesController(Creature p) { //check if creature is holding a gamecontroller
