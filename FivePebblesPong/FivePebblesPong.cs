@@ -1,25 +1,14 @@
 ﻿using BepInEx;
 using System;
+using System.Security.Permissions;
+#pragma warning disable CS0618
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+#pragma warning restore CS0618
 
 namespace FivePebblesPong
 {
-    public static class EnumExt_FPP //dependency: EnumExtender.dll
-    {
-        //type for spawning controller
-        public static AbstractPhysicalObject.AbstractObjectType GameController; //needs to be first in list
-
-        //five pebbles action
-        public static SSOracleBehavior.Action Gaming_Gaming;
-
-        //five pebbles movement (controlled by FPGame subclass)
-        public static SSOracleBehavior.MovementBehavior PlayGame;
-
-        //moon reaction on controller
-        public static SLOracleBehaviorHasMark.MiscItemType GameControllerReaction;
-    }
-
-
-    [BepInPlugin("woutkolkman.fivepebblespong", "Five Pebbles Pong", "0.3.1")] //(GUID, mod name, mod version)
+    //also edit version in "modinfo.json"
+    [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.0")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
@@ -28,13 +17,33 @@ namespace FivePebblesPong
         public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
-        public static bool HasEnumExt => (int)EnumExt_FPP.GameController > 0; //returns true after EnumExtender initializes
+        public static bool HasEnumExt => (int)Enums.GameControllerPebbles > 0; //returns true after EnumExtender initializes
+        private static bool IsEnabled = false;
 
 
         //called when mod is loaded, subscribe functions to methods of the game
         public void OnEnable()
         {
+            if (IsEnabled) return;
+            IsEnabled = true;
+
+            Enums.RegisterValues();
             Hooks.Apply();
+
+            FivePebblesPong.ME.Logger_p.LogInfo("OnEnable called");
+        }
+
+
+        //called when mod is unloaded
+        public void OnDisable()
+        {
+            if (!IsEnabled) return;
+            IsEnabled = false;
+
+            Enums.UnregisterValues();
+            Hooks.Unapply();
+
+            FivePebblesPong.ME.Logger_p.LogInfo("OnDisable called");
         }
 
 
@@ -56,7 +65,7 @@ namespace FivePebblesPong
 
 
         //get player with controller
-        public static Player currentPlayer;
+        public static Player currentPlayer; //NOTE, currentPlayer might not reset to null if exiting/restarting game while playing an FPGame
         public static Player GetPlayer(OracleBehavior self)
         {
             bool CarriesController(Creature p) { //check if creature is holding a gamecontroller

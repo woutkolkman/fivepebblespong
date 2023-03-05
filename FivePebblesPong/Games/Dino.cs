@@ -136,24 +136,20 @@ namespace FivePebblesPong
 
         public void MoonBehavior(SLOracleBehavior self)
         {
-            //release controller if player grabs neuron
-            if (self.protest)
-                self.holdingObject = null;
-
             //moon looks at game, else looks at slugcat
             if (gameStarted && !self.protest)
             {
-                self.lookPoint = p?.DangerPos ?? self.player?.DangerPos ?? new Vector2(); //moon looks at slugcat instead of controller during game
+                SLGameStarter.moonLookPoint = p?.DangerPos ?? self.player?.DangerPos ?? new Vector2(); //moon looks at slugcat instead of controller during game
                 if (((self is SLOracleBehaviorNoMark) && Vector2.Distance(self.oracle.firstChunk.pos, (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2())) > 60) ||
                     ((self is SLOracleBehaviorHasMark) &&
                     (self as SLOracleBehaviorHasMark).currentConversation == null && //look at player when talking
                     !(self as SLOracleBehaviorHasMark).playerIsAnnoyingWhenNoConversation &&
                     !(self as SLOracleBehaviorHasMark).playerHoldingNeuronNoConvo &&
                     (self as SLOracleBehaviorHasMark).playerAnnoyingCounter < 20))
-                    self.lookPoint = dino.pos;
+                    SLGameStarter.moonLookPoint = dino.pos;
             }
 
-            //score dialog when player dies
+            //score dialog when game over
             if (!gameStarted && prevGameStarted) {
                 //moon was playing
                 if (self.holdingObject != null && self.holdingObject is GameController) {
