@@ -393,19 +393,26 @@ namespace FivePebblesPong
         }
 
 
-        //RuntimeDetour for moon to move towards item which should be picked up
+        //RuntimeDetour for moon to move towards item which should be picked up (or pong)
+        public static Vector2 SLOracleGetToPosOverride; //if written to during a game, moon will try to move to this position
         public delegate Vector2 orig_OracleGetToPos_HasMark(SLOracleBehaviorHasMark self);
         public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
         public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
         {
-            if (FivePebblesPong.HasEnumExt && SLGameStarter.grabItem != null)
-                return SLGameStarter.grabItem.firstChunk.pos;
+            if (FivePebblesPong.HasEnumExt) {
+                if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
+                if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
+                if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
+            }
             return orig(self);
         }
         public static Vector2 SLOracleBehaviorNoMark_OracleGetToPos_get(orig_OracleGetToPos_NoMark orig, SLOracleBehaviorNoMark self)
         {
-            if (FivePebblesPong.HasEnumExt && SLGameStarter.grabItem != null)
-                return SLGameStarter.grabItem.firstChunk.pos;
+            if (FivePebblesPong.HasEnumExt) {
+                if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
+                if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
+                if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
+            }
             return orig(self);
         }
 

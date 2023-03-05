@@ -135,8 +135,10 @@ namespace FivePebblesPong
                 (self as SSOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 (self as SSOracleBehavior).floatyMovement = false;
             } else if (self is SLOracleBehavior) {
-                (self as SLOracleBehavior).currentGetTo = pebblesPdl.pos;
-                (self as SLOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                Hooks.SLOracleGetToPosOverride = pebblesPdl.pos; //updates in functions SLOracleBehaviorHasMark_OracleGetToPos_get and SLOracleBehaviorNoMark_OracleGetToPos_get
+                Hooks.SLOracleGetToPosOverride.y += 16f /*SL specific*/ + pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                if (Hooks.SLOracleGetToPosOverride.y < 150f) //Moon doesn't like cold water
+                    Hooks.SLOracleGetToPosOverride.y = 150f;
                 SLGameStarter.forceFlightMode = true; //updates in function DefaultSLOracleBehavior
                 SLGameStarter.moonLookPoint = self.lookPoint; //updates in function DefaultSLOracleBehavior
             }
