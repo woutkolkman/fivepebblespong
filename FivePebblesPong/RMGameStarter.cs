@@ -141,10 +141,11 @@ namespace FivePebblesPong
                             }
                             else if (self.CheckEnergyCellPresence())
                             {
-                                switch (UnityEngine.Random.Range(0, 2))
+                                switch (UnityEngine.Random.Range(0, 3))
                                 {
                                     case 0: self.dialogBox.Interrupt(self.Translate("Don't forget to bring the cell to Looks to the Moon."), 10); break;
-                                    case 1: self.dialogBox.Interrupt(self.Translate("The mass rarefaction cell, please take it to the structure in the east.<LINE>It might still be of value there."), 10); break;
+                                    case 1: self.dialogBox.Interrupt(self.Translate("The mass rarefaction cell, please take it to the structure in the far east.<LINE>It might still be of value there."), 10); break;
+                                    case 2: self.dialogBox.Interrupt(self.Translate("Take that rarefaction cell with you to the far east.<LINE>Then for your own sake, never return here."), 10); break;
                                 }
                             }
                             else if (rivTookCell && energySeenState == 3)
