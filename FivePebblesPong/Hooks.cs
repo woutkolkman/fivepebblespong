@@ -70,6 +70,12 @@ namespace FivePebblesPong
 
             //five pebbles (rot) update function
             On.MoreSlugcats.SSOracleRotBehavior.Update += MoreSlugcatsSSOracleRotBehaviorUpdateHook;
+
+            //five pebbles (CL) constructor
+            On.MoreSlugcats.CLOracleBehavior.ctor += MoreSlugcatsCLOracleBehaviorCtorHook;
+
+            //five pebbles (CL) update function
+            On.MoreSlugcats.CLOracleBehavior.Update += MoreSlugcatsCLOracleBehaviorUpdateHook;
         }
 
 
@@ -104,6 +110,9 @@ namespace FivePebblesPong
 
                 if (self.roomSettings.name.Equals("SL_MOONTOP") && !gameControllerMoonInShelter)
                     PlaceObject(Enums.GameControllerMoon, new Vector2(1000, 650));
+
+                if (self.roomSettings.name.Equals("CL_AI") && !gameControllerPebblesInShelter)
+                    PlaceObject(Enums.GameControllerPebbles, new Vector2(2310, 730));
             }
 
             void PlaceObject(AbstractPhysicalObject.AbstractObjectType obj, Vector2 location)
@@ -429,6 +438,39 @@ namespace FivePebblesPong
             //NOTE checks only singleplayer: "self.player"
 
             RMGameStarter.starter?.StateMachine(self);
+        }
+
+
+        //five pebbles (CL) constructor
+        static void MoreSlugcatsCLOracleBehaviorCtorHook(On.MoreSlugcats.CLOracleBehavior.orig_ctor orig, MoreSlugcats.CLOracleBehavior self, Oracle oracle)
+        {
+            FivePebblesPong.ME.Logger_p.LogInfo("MoreSlugcatsCLOracleBehaviorCtorHook");
+            orig(self, oracle);
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+            CLOracleBehaviorReacted = false;
+        }
+
+
+        //five pebbles (CL) update function
+        static bool CLOracleBehaviorReacted = false;
+        static void MoreSlugcatsCLOracleBehaviorUpdateHook(On.MoreSlugcats.CLOracleBehavior.orig_Update orig, MoreSlugcats.CLOracleBehavior self, bool eu)
+        {
+            orig(self, eu);
+
+            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+                return;
+
+            var p = FivePebblesPong.GetPlayer(self);
+            if (p == null || CLOracleBehaviorReacted || self.currentConversation != null || !self.hasNoticedPlayer)
+                return;
+
+            if (Vector2.Distance(self.oracle.bodyChunks[0].pos, p.DangerPos) > 200f)
+                return;
+
+            self.dialogBox.NewMessage(self.Translate("...No games..."), 60);
+            self.dialogBox.NewMessage(self.Translate("...Sorry..."), 60);
+            CLOracleBehaviorReacted = true;
         }
     }
 }
