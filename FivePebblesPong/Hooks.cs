@@ -462,7 +462,7 @@ namespace FivePebblesPong
                 return;
 
             var p = FivePebblesPong.GetPlayer(self);
-            if (p == null || CLOracleBehaviorReacted || self.currentConversation != null || !self.hasNoticedPlayer)
+            if (p == null || CLOracleBehaviorReacted || self.currentConversation != null || !self.hasNoticedPlayer || self.dialogBox == null || self.dialogBox.ShowingAMessage || self.oracle.health <= 0f)
                 return;
 
             if (Vector2.Distance(self.oracle.bodyChunks[0].pos, p.DangerPos) > 200f)
