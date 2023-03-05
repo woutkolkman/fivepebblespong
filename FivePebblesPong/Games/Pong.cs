@@ -39,8 +39,10 @@ namespace FivePebblesPong
 
         public Pong(OracleBehavior self) : base(self)
         {
-            this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
-            this.border.pos = new Vector2(midX, midY);
+            if (self is SSOracleBehavior) { //the only place where border acts as intended (fading)
+                this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
+                this.border.pos = new Vector2(midX, midY);
+            }
 
             base.maxX += 40; //ball can move offscreen
             base.minX -= 40; //ball can move offscreen
@@ -78,7 +80,8 @@ namespace FivePebblesPong
                 new Color(0.44705883f, 0.9019608f, 0.76862746f) : //5P overseer color
                 new Color(1f, 0.8f, 0.3f) //Moon overseer color
             );
-            this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", paddleColor, reloadImg: true);
+            int pebblesPaddleThickness = (self is MoreSlugcats.SSOracleRotBehavior ? 10 : 2);
+            this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", paddleColor, pebblesPaddleThickness, reloadImg: true);
             this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
 
             //reset random offset, else next ball could be missed
@@ -231,7 +234,8 @@ namespace FivePebblesPong
                     playerLastWin = false;
                     scoreCount.Add(new Vector2(midX + 60 + 15 * (pebblesWin % 10), SCORE_HEIGHT + 15 * (pebblesWin / 10)));
                     pebblesWin++;
-                    if (self.oracle.ID == Oracle.OracleID.SS) {
+                    if (self is SSOracleBehavior && //remove this if MoreSlugcats.SSOracleRotBehavior should also have this behavior
+                        self.oracle.ID == Oracle.OracleID.SS) {
                         if (pebblesWin == 10) {
                             dialogBox.Interrupt(self.Translate("Let's make this somewhat fair."), 10);
                             this.CreatePaddles(self, 130, 70, 20);

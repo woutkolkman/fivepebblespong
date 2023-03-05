@@ -99,7 +99,7 @@ namespace FivePebblesPong
                     //copy existing coordinate from a random object
                     PlaceObject(Enums.GameControllerMoon, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count)].pos);
 
-                if (self.roomSettings.name.Equals("RM_AI") && !gameControllerPebblesInShelter)
+                if (self.roomSettings.name.StartsWith("RM_AI") && !gameControllerPebblesInShelter)
                     PlaceObject(Enums.GameControllerPebbles, new Vector2(2740, 1280));
 
                 if (self.roomSettings.name.Equals("SL_MOONTOP") && !gameControllerMoonInShelter)
@@ -404,7 +404,7 @@ namespace FivePebblesPong
         //five pebbles (rot) constructor
         static void MoreSlugcatsSSOracleRotBehaviorCtorHook(On.MoreSlugcats.SSOracleRotBehavior.orig_ctor orig, MoreSlugcats.SSOracleRotBehavior self, Oracle oracle)
         {
-            FivePebblesPong.ME.Logger_p.LogInfo("SSOracleRotBehaviorCtorHook");
+            FivePebblesPong.ME.Logger_p.LogInfo("MoreSlugcatsSSOracleRotBehaviorCtorHook");
             orig(self, oracle);
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
@@ -422,9 +422,9 @@ namespace FivePebblesPong
                 return;
 
             //construct/free RMGameStarter object when player enters/leaves room
-            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.EndsWith("_AI") && RMGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.StartsWith("RM_AI") && RMGameStarter.starter == null)
                 RMGameStarter.starter = new RMGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && RMGameStarter.starter != null && RMGameStarter.starter.state == RMGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.StartsWith("RM_AI")) && RMGameStarter.starter != null && RMGameStarter.starter.state == RMGameStarter.State.Stop)
                 RMGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 
