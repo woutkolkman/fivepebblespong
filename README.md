@@ -1,7 +1,7 @@
 ### Install
 Install via the Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2942659714
 
-To manually install, download the most recent .zip from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and extract it to Rain World\RainWorld_Data\StreamingAssets\mods\fivepebblespong.
+To manually install, download the most recent .zip from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and extract it to "Rain World\RainWorld_Data\StreamingAssets\mods\fivepebblespong".
 
 Next, enable Five Pebbles Pong via the in-game Remix menu.
 
