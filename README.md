@@ -1,12 +1,9 @@
 ### Install
-1. Download and install BOI / BepInEx: https://rainworldmodding.miraheze.org/wiki/BOI#Installation
+Install via the Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2942659714
 
-2. Download the most recent .dll from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and place it in the /Rain World/Mods folder.
+To manually install, download the most recent .zip from the [releases page](https://github.com/woutkolkman/fivepebblespong/releases) and extract it to Rain World\RainWorld_Data\StreamingAssets\mods\fivepebblespong.
 
-3. Enable FivePebblesPong.dll and its dependencies via the BOI mod manager.
-
-Dependencies:
-- [EnumExtender.dll](https://www.raindb.net/#main:~:text=accesses%20to%20rooms-,EnumExtender)
+Next, enable Five Pebbles Pong via the in-game Remix menu.
 
 
 ### Description
@@ -19,6 +16,6 @@ More games:
 
 Originally ratrat44's idea: https://www.youtube.com/watch?v=X-k5ytvMFQ4
 
-Tested on v1.5
+Tested on v1.9.06
 
-Please report any bug, problem or feature request via the [Issues](https://github.com/woutkolkman/fivepebblespong/issues) tab, or message me on the [Rain World Discord](https://discord.gg/rainworld): Maxi Mol#3079
+Please report any bug, problem or feature request via the [Issues](https://github.com/woutkolkman/fivepebblespong/issues) tab, or on the Steam Workshop page, or message me on the [Rain World Discord](https://discord.gg/rainworld): Maxi Mol#3079
