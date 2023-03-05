@@ -23,7 +23,7 @@ You can build the code using the shortcut CTRL + SHIFT + B.
 
 
 ### Tools
-[dnSpy](https://github.com/dnSpy/dnSpy) can be used to decompile PUBLIC-Assembly-CSharp.dll and find game hooks.
+[dnSpy](https://github.com/dnSpy/dnSpy) can be used to decompile PUBLIC-Assembly-CSharp.dll and find game functions.
 
 [Here's](https://www.youtube.com/watch?v=1ckUvTtZaVY) a handy tutorial by [\[Alpha\]-0mega-](https://www.youtube.com/@0megaD).
 
