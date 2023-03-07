@@ -8,12 +8,14 @@ namespace FivePebblesPong
         public static RMGameStarter starter; //object gets created when player is in room
         public FPGame game;
         public static bool foundControllerReacted = false;
+        public static bool startedProjector;
         bool playerLeft;
 
         public enum State
         {
             Stop,
             StartDialog,
+            StartProjector,
             Started,
             StopDialog
         }
@@ -34,11 +36,10 @@ namespace FivePebblesPong
             Player p = FivePebblesPong.GetPlayer(self);
 
             //check if player is in front of projector/in the can
-            if (p?.DangerPos != null) {
-                Vector2 playAreaStart = new Vector2(1220, 800);
-                Vector2 playAreaEnd = new Vector2(1800, 1380);
+            Vector2 playAreaStart = new Vector2(1220, 800);
+            Vector2 playAreaEnd = new Vector2(1800, 1380);
+            if (p?.DangerPos != null)
                 playerLeft = p.DangerPos.x < playAreaStart.x || p.DangerPos.x > playAreaEnd.x || p.DangerPos.y < playAreaStart.y || p.DangerPos.y > playAreaEnd.y;
-            }
 
             //get story progression
             bool rivTookCell = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.pebblesEnergyTaken;
@@ -94,6 +95,23 @@ namespace FivePebblesPong
                     if (p == null || playerLeft)
                         state = State.StopDialog;
                     if (!self.dialogBox.ShowingAMessage) //dialog finished
+                        state = startedProjector ? State.Started : State.StartProjector;
+                    break;
+
+                //======================================================
+                case State.StartProjector:
+                    if (statePreviousRun != state) {
+                        switch (UnityEngine.Random.Range(0, 3))
+                        {
+                            case 0: self.dialogBox.NewMessage(self.Translate("One moment. Let me turn the projector back on."), 10); break;
+                            case 1: self.dialogBox.NewMessage(self.Translate("One moment. ...I hope you don't have epilepsy."), 10); break;
+                            case 2: self.dialogBox.NewMessage(self.Translate("One moment. The projector is having some difficulties."), 10); break;
+                        }
+                        startedProjector = true;
+                    }
+
+                    self.lookPoint = self.OracleGetToPos; //look at projector
+                    if (!self.dialogBox.ShowingAMessage) //dialog finished
                         state = State.Started;
                     break;
 
@@ -102,8 +120,11 @@ namespace FivePebblesPong
                     if (game == null)
                         game = new Pong(self);
 
+                    //flash images
+                    Vector2 pos = new Vector2(UnityEngine.Random.value < 0.5f ? 1000 : -1000, UnityEngine.Random.value < 0.5f ? 1000 : -1000);
+
                     game?.Update(self);
-                    game?.Draw();
+                    game?.Draw(UnityEngine.Random.value < 0.1f ? pos : new Vector2());
 
                     if (p?.room?.roomSettings == null || !p.room.roomSettings.name.StartsWith("RM_AI") || playerLeft)
                         state = State.StopDialog;

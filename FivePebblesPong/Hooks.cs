@@ -425,6 +425,7 @@ namespace FivePebblesPong
             if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
                 return;
             RMGameStarter.starter = null;
+            RMGameStarter.startedProjector = false;
             FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
         }
 
