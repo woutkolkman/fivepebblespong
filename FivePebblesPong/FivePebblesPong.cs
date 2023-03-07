@@ -8,7 +8,7 @@ using System.Security.Permissions;
 namespace FivePebblesPong
 {
     //also edit version in "modinfo.json"
-    [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.0")] //(GUID, mod name, mod version)
+    [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.1")] //(GUID, mod name, mod version)
     public class FivePebblesPong : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
