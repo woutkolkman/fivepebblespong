@@ -1,3 +1,14 @@
+### Doom part
+You'll probably need a keyboard and mouse for this to properly work.  
+1. Buy DOOM 1993 on Steam: https://store.steampowered.com/app/2280/DOOM_1993/  
+2. Download the latest DOOM Retro version: https://github.com/bradharding/doomretro/releases  
+3. Extract the DOOM Retro .zip to "C:\Program Files\doomretro"  
+4. Open the "doomretro.cfg" file and set "vid_fullscreen" off
+
+
+====
+
+
 ### Install
 Install via the Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2942659714
 

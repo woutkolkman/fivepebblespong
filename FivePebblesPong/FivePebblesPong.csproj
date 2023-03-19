@@ -50,6 +50,7 @@
     <Compile Include="GameObjects\SquareBorderMark.cs" />
     <Compile Include="Games\Breakout.cs" />
     <Compile Include="Games\Dino.cs" />
+    <Compile Include="Games\DoomRetro.cs" />
     <Compile Include="Games\FPGame.cs" />
     <Compile Include="Games\GrabDot.cs" />
     <Compile Include="Games\Pong.cs" />
