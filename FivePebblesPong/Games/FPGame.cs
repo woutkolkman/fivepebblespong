@@ -22,7 +22,7 @@ namespace FivePebblesPong
             minY = 60;
             maxY = 640;
 
-            if (self.oracle?.room?.game != null && self.oracle?.room?.roomSettings != null)
+            if (self?.oracle?.room?.game != null && self.oracle.room.roomSettings != null)
             {
                 if (self.oracle.room.roomSettings.name.StartsWith("RM_AI")) {
                     minX = 1220;
@@ -38,7 +38,8 @@ namespace FivePebblesPong
                 }
             }
 
-            p = FivePebblesPong.GetPlayer(self);
+            if (self != null)
+                p = FivePebblesPong.GetPlayer(self);
         }
 
 
