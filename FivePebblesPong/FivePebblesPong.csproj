@@ -61,6 +61,8 @@
     <Compile Include="SSGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShowMediaMovementBehavior.cs" />
+    <Compile Include="Tools\CaptureScreenshot.cs" />
+    <Compile Include="Tools\WindowFinder.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -84,6 +86,7 @@
       <HintPath>..\..\references\PUBLIC-Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\references\UnityEngine.dll</HintPath>
