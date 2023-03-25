@@ -61,8 +61,6 @@
     <Compile Include="SSGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShowMediaMovementBehavior.cs" />
-    <Compile Include="Tools\CaptureScreenshot.cs" />
-    <Compile Include="Tools\WindowFinder.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

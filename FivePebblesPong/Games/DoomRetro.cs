@@ -8,8 +8,7 @@ namespace FivePebblesPong
     {
         public DoomRetro(OracleBehavior self) : base(self)
         {
-            Rectangle rect = WindowFinder.GetWindowLayout("Command Prompt");
-            FivePebblesPong.ME.Logger_p.LogInfo("X:" + rect.X.ToString() + " Y:" + rect.Y.ToString() + " Width:" + rect.Width.ToString() + " Height:" + rect.Height.ToString());
+            
         }
 
 

@@ -1,10 +1,25 @@
 ### Doom part
+Thank you for your interest in this monstrosity!  
 You'll probably need a keyboard and mouse for this to properly work.  
 1. Buy DOOM 1993 on Steam: https://store.steampowered.com/app/2280/DOOM_1993/  
 2. Download the latest DOOM Retro version: https://github.com/bradharding/doomretro/releases  
 3. Extract the DOOM Retro .zip to "C:\Program Files\doomretro"  
 4. Open the "doomretro.cfg" file and set "vid_fullscreen" off  
-5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup.
+5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup  
+6. Download [OBS Studio](https://obsproject.com/) & follow [this tutorial](https://www.youtube.com/watch?v=18oGqNH9zmo)  
+7. Configure OBS to record the DOOM window  
+
+https://github.com/tinodo/obsclient <command>
+..TODO
+
+
+### Decisions
+- Bitmaps are not supported directly in the plugin (System.PlatformNotSupportedException). So taking screenshots of other windows using the Win32 API is not possible within the plugin itself.
+- Using OBS Studio to capture video, and streaming it at UDP over the local network should be possible. Manually writing an UDP client and transforming every frame would become quite complex.
+- There's a [OBS Client plugin](https://github.com/tinodo/obsclient) by tinodo which can receive video via obs-websocket protocol. This client is written in .NET 6.0, which [won't be compatible](https://stackoverflow.com/questions/74344769/how-to-reference-net-6-0-dll-in-net-framework-4-8) with this .NET 4.8 plugin.
+- Then I'd figured it would be a great idea to create a separate independent console application which will catch the OBS stream and convert it to Texture2D, which the plugin can read.
+
+<unfinished TODO>
 
 
 ====
