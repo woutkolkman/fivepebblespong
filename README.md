@@ -8,18 +8,20 @@ You'll probably need a keyboard and mouse for this to properly work.
 5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup  
 6. Download [OBS Studio](https://obsproject.com/) & follow [this tutorial](https://www.youtube.com/watch?v=18oGqNH9zmo)  
 7. Configure OBS to record the DOOM window  
+8. In OBS Studio, edit Tools > WebSocket Server Settings and enable the server, disable authentication  
 
-https://github.com/tinodo/obsclient <command>
-..TODO
+<unfinished TODO>
+...
 
 
 ### Decisions
 - Bitmaps are not supported directly in the plugin (System.PlatformNotSupportedException). So taking screenshots of other windows using the Win32 API is not possible within the plugin itself.
 - Using OBS Studio to capture video, and streaming it at UDP over the local network should be possible. Manually writing an UDP client and transforming every frame would become quite complex.
 - There's a [OBS Client plugin](https://github.com/tinodo/obsclient) by tinodo which can receive video via obs-websocket protocol. This client is written in .NET 6.0, which [won't be compatible](https://stackoverflow.com/questions/74344769/how-to-reference-net-6-0-dll-in-net-framework-4-8) with this .NET 4.8 plugin.
-- Then I'd figured it would be a great idea to create a separate independent console application which will catch the OBS stream and convert it to Texture2D, which the plugin can read.
+- Then I'd figured it would be a great idea to create a separate independent console application in .NET 6.0, which will catch the OBS stream and convert it to Texture2D, which the plugin can read.
 
 <unfinished TODO>
+...
 
 
 ---
@@ -34,7 +36,8 @@ Next, enable Five Pebbles Pong via the in-game Remix menu.
 
 
 ### Credits
-Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/), without this site these mods wouldn't exist.
+Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/), without this site these mods wouldn't exist.  
+Also thanks to tinodo for creating [ObsClient](https://github.com/tinodo/obsclient).
 
 
 ### Description
