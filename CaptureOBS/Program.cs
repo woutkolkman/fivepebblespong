@@ -1,60 +1,74 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OBSStudioClient;
 using OBSStudioClient.Exceptions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CaptureOBS
 {
     public class Program
     {
+#if DEBUG
+        public static bool debug = true;
+#else
+        public static bool debug = false;
+#endif
+
+
         public static void Main(string[] args)
         {
-            Console.WriteLine("Startup");
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Startup");
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(ProcessExit);
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(ProcessExit);
 
             var task = Task.Run(() =>
                 HandleOBS()
             );
             task.Wait();
 
-            Console.WriteLine("Done");
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Done");
         }
 
 
+        public static ObsClient client = new();
         public static async Task HandleOBS()
         {
-            Console.WriteLine("Waiting on OBS Studio connection");
-            ObsClient client = new();
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Waiting on OBS Studio connection");
             bool isConnected = await client.ConnectAsync();
-            Console.WriteLine("Connected: " + isConnected);
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Connected: " + isConnected);
+            if (!isConnected)
+                return;
+
 
             //check if supported image format is available
-            if (isConnected)
-            {
-                var getVersion = await client.GetVersion();
-                bool containsPNG = false;
-
-                if (getVersion != null) {
-                    foreach (string format in getVersion.SupportedImageFormats) {
-                        Console.WriteLine("Supported image format: " + format);
-                        containsPNG |= 0 == String.Compare(format, "png");
-                    }
+            var getVersion = await client.GetVersion();
+            bool supportsPNG = false;
+            if (getVersion != null) {
+                foreach (string format in getVersion.SupportedImageFormats) {
+                    if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Supported image format: " + format);
+                    supportsPNG |= 0 == String.Compare(format, "png");
                 }
-
-                Console.WriteLine("Contains \"png\": " + containsPNG);
-                if (!containsPNG)
-                    goto SKIPLOOP;
             }
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Contains \"png\": " + supportsPNG);
+            if (!supportsPNG)
+                goto SKIPLOOP;
+
 
             while (isConnected)
             {
                 //check if source is available
-                var sourceAvailable = await client.GetSourceActive("Window Capture");
-                if (sourceAvailable == null || !sourceAvailable.VideoActive) {
-                    Console.WriteLine("Source \"Window Capture\" not available");
+                try {
+                    var sourceAvailable = await client.GetSourceActive("Window Capture");
+                    if (!sourceAvailable.VideoActive) {
+                        if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Source \"Window Capture\" not available");
+                        break;
+                    }
+                } catch (Exception e) {
+                    if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Source not available: " + e.ToString());
                     break;
                 }
 
@@ -64,22 +78,34 @@ namespace CaptureOBS
                 {
                     string[] png = data.Split(',');
                     if (data.Length <= 0 || png.Length < 2) {
-                        Console.WriteLine("Invalid Base64-encoded screenshot: " + data);
-                        break; //TODO continue
+                        if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Invalid Base64-encoded screenshot: " + data);
+                    } else {
+                        if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Received valid screenshot");
+                        if (!debug) Console.WriteLine(png[1]);
+                        //File.WriteAllBytes(@"C:\Users\Wout Kolkman\Downloads\test.png", Convert.FromBase64String(png[1]));
                     }
-                    File.WriteAllBytes(@"C:\Users\Wout Kolkman\Downloads\test.png", Convert.FromBase64String(png[1]));
                 }
-
                 isConnected = client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnected && client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnecting;
-                break; //TODO remove
             }
+
 
             SKIPLOOP:
             if (isConnected) {
-                Console.WriteLine("Disconnecting");
                 client.Disconnect();
+                if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Disconnected");
             } else {
-                Console.WriteLine("Not connected or connection broken");
+                if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Not connected or connection broken");
+            }
+        }
+
+
+        static void ProcessExit(object? sender, EventArgs e)
+        {
+            if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Received exit event: " + e.ToString());
+
+            if (client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnected && client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnecting) {
+                client.Disconnect();
+                if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Disconnected");
             }
         }
 
@@ -87,6 +113,7 @@ namespace CaptureOBS
         //from obsclient
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)
         {
+            if (!debug) return;
             if (args.ExceptionObject is ObsResponseException obsResponseException) {
                 Console.WriteLine($"{obsResponseException.ErrorCode}: {obsResponseException.ErrorMessage}", "OBSResponseException");
             } else if (args.ExceptionObject is ObsClientException obsClientException) {
