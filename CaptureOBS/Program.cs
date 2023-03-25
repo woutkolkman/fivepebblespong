@@ -15,6 +15,9 @@ namespace CaptureOBS
 #else
         public static bool debug = false;
 #endif
+        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
+//        public static TimeSpan interval = new TimeSpan(333333); //30 fps
+//        public static TimeSpan interval = new TimeSpan(166666); //60 fps
 
 
         public static void Main(string[] args)
@@ -58,8 +61,16 @@ namespace CaptureOBS
                 goto SKIPLOOP;
 
 
+            DateTime prevTime = DateTime.Now;
             while (isConnected)
             {
+                //update rate
+                TimeSpan waitTime = (prevTime + interval) - DateTime.Now;
+                if (waitTime > new TimeSpan(0))
+                    Thread.Sleep(waitTime);
+                prevTime = DateTime.Now;
+
+
                 //check if source is available
                 try {
                     var sourceAvailable = await client.GetSourceActive("Window Capture");
@@ -72,8 +83,9 @@ namespace CaptureOBS
                     break;
                 }
 
-                var data = await client.GetSourceScreenshot("Window Capture", "png");
 
+                //capture screenshot and write to console
+                var data = await client.GetSourceScreenshot("Window Capture", "png");
                 if (data != null)
                 {
                     string[] png = data.Split(',');
