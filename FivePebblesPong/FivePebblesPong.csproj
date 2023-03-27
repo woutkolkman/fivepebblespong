@@ -50,7 +50,7 @@
     <Compile Include="GameObjects\SquareBorderMark.cs" />
     <Compile Include="Games\Breakout.cs" />
     <Compile Include="Games\Dino.cs" />
-    <Compile Include="Games\DoomRetro.cs" />
+    <Compile Include="Games\Capture.cs" />
     <Compile Include="Games\FPGame.cs" />
     <Compile Include="Games\GrabDot.cs" />
     <Compile Include="Games\Pong.cs" />
@@ -91,6 +91,9 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\references\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\references\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

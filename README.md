@@ -17,6 +17,7 @@ Always use the Release version of CaptureOBS, because the Debug version doesn't 
 - Using OBS Studio to capture video, and streaming it at UDP over the local network should be possible. Manually writing an UDP client and transforming every frame would become quite complex.
 - There's a [OBS Client plugin](https://github.com/tinodo/obsclient) by tinodo which can receive video via obs-websocket protocol. This client is written in .NET 6.0, which [won't be compatible](https://stackoverflow.com/questions/74344769/how-to-reference-net-6-0-dll-in-net-framework-4-8) with this .NET 4.8 plugin.
 - A separate independent console application in .NET 6.0 was created, which will catch the OBS stream and convert it to PNG, which the plugin can read.
+- This console application would send Base64 PNG strings to the plugin. The plugin then needs to convert this string into a Texture2D.
 
 
 ---

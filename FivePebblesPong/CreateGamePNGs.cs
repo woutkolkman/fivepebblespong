@@ -109,11 +109,9 @@ namespace FivePebblesPong
             string fileName = string.Concat(new object[]
             {
                 Custom.RootFolderDirectory(),
-                "Assets",
+                "RainWorld_Data",
                 Path.DirectorySeparatorChar,
-                "Futile",
-                Path.DirectorySeparatorChar,
-                "Resources",
+                "StreamingAssets",
                 Path.DirectorySeparatorChar,
                 "Illustrations",
                 Path.DirectorySeparatorChar,

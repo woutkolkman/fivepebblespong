@@ -123,7 +123,7 @@ namespace FivePebblesPong
                     }
 
                     if (game == null)
-                        game = new Pong(self);
+                        game = new Capture(self);
 
                     self.movementBehavior = Enums.SLPlayGame;
 

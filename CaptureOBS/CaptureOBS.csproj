@@ -7,8 +7,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="OBSClient" Version="1.2.0" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo&#xD;&#xA;xcopy /y /d &quot;$(ProjectDir)bin\Release\net6.0\CaptureOBS.exe&quot; &quot;$(ProjectDir)..\FivePebblesPong\bin\fivepebblespong\plugins\&quot;&#xD;&#xA;xcopy /y /d &quot;$(ProjectDir)bin\Release\net6.0\CaptureOBS.dll&quot; &quot;$(ProjectDir)..\FivePebblesPong\bin\fivepebblespong\plugins\&quot;&#xD;&#xA;xcopy /y /d &quot;$(ProjectDir)bin\Release\net6.0\OBSClient.dll&quot; &quot;$(ProjectDir)..\FivePebblesPong\bin\fivepebblespong\plugins\&quot;&#xD;&#xA;xcopy /y /d &quot;$(ProjectDir)bin\Release\net6.0\CaptureOBS.runtimeconfig.json&quot; &quot;$(ProjectDir)..\FivePebblesPong\bin\fivepebblespong\plugins\&quot;&#xD;&#xA;xcopy /y /d &quot;$(ProjectDir)bin\Release\net6.0\CaptureOBS.deps.json&quot; &quot;$(ProjectDir)..\FivePebblesPong\bin\fivepebblespong\plugins\&quot;" />
+  </Target>
 
 </Project>
