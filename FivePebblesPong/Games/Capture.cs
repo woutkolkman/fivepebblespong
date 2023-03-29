@@ -13,6 +13,7 @@ namespace FivePebblesPong
     {
         Process captureProcess;
         public int frame = 0;
+        public ShowMediaMovementBehavior adjusting = new ShowMediaMovementBehavior();
 
         Queue<byte[]> imgLoad = new Queue<byte[]>();
         Mutex imgLoadMtx = new Mutex(); //prevents queue from being used twice at the same time
@@ -26,6 +27,8 @@ namespace FivePebblesPong
 
         public Capture(OracleBehavior self) : base(self)
         {
+            adjusting.showMediaPos = new Vector2(midX, midY);
+
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureOBS.exe");
             info.RedirectStandardOutput = true;
@@ -87,6 +90,13 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
+            if (self is SSOracleBehavior)
+                (self as SSOracleBehavior).movementBehavior = SSOracleBehavior.MovementBehavior.KeepDistance;
+            if (self is SLOracleBehavior)
+                (self as SLOracleBehavior).movementBehavior = SLOracleBehavior.MovementBehavior.KeepDistance;
+
+            adjusting.Update(self, new Vector2(midX, midY), false);
+
             if (imgLoiter.Count >= IMG_LOITER_COUNT) {
                 ProjectedImage img = imgLoiter.Dequeue();
                 self.oracle.room.RemoveObject(img);
@@ -124,11 +134,10 @@ namespace FivePebblesPong
             //load and display new frame
             ProjectedImage temp;
             if ((self is SLOracleBehavior && !ModManager.MSC) || self is MoreSlugcats.SSOracleRotBehavior) {
-                temp = new MoonProjectedImageFromMemory(new List<Texture2D> { newFrame }, new List<string> { imgName }, 0);
+                temp = new MoonProjectedImageFromMemory(new List<Texture2D> { newFrame }, new List<string> { imgName }, 0) { pos = adjusting.showMediaPos };
             } else {
-                temp = new ProjectedImageFromMemory(new List<Texture2D> { newFrame }, new List<string> { imgName }, 0);
+                temp = new ProjectedImageFromMemory(new List<Texture2D> { newFrame }, new List<string> { imgName }, 0) { pos = adjusting.showMediaPos };
             }
-            temp.pos = new Vector2(midX, midY);
             imgLoiter.Enqueue(temp);
             self.oracle.myScreen.room.AddObject(temp);
         }
@@ -136,10 +145,9 @@ namespace FivePebblesPong
 
         public override void Draw(Vector2 offset)
         {
-            //update image positions
-            /*if (window == null)
-                return;
-            window.pos = new Vector2(midX, midY);*/
+            //update (only first) image position
+            if (imgLoiter.Count > 0)
+                imgLoiter.Peek().pos = adjusting.showMediaPos - offset;
         }
 
 
@@ -166,7 +174,9 @@ namespace FivePebblesPong
             try {
                 imageBase64 = Convert.FromBase64String(e.Data);
                 //File.WriteAllBytes("C:\\test\\test.png", bytes);
-            } catch (Exception ex) {
+            } catch (FormatException ex) {
+                FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, \"" + e.Data + "\"");
+            } catch (ArgumentNullException ex) {
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, Error parsing data: " + ex.ToString());
             }
 
