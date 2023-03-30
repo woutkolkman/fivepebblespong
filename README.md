@@ -1,14 +1,15 @@
 ### Doom part
 Thank you for your interest in this monstrosity!  
 You'll probably need a keyboard and mouse for this to properly work.  
-1. Buy DOOM 1993 on Steam & download: https://store.steampowered.com/app/2280/DOOM_1993/  
-2. Download the latest DOOM Retro version: https://github.com/bradharding/doomretro/releases  
-3. Extract the DOOM Retro .zip, for example, to "C:\Program Files\doomretro"  
-4. Open the "doomretro.cfg" file and set "vid_fullscreen" off  
-5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup  
-6. Download [OBS Studio](https://obsproject.com/)  
-7. Configure OBS to record the DOOM window, a recording doesn't need to be started for obsclient to work  
-8. In OBS Studio, edit Tools > WebSocket Server Settings and enable the server, disable authentication  
+1. Buy DOOM 1993 on Steam & download: https://store.steampowered.com/app/2280/DOOM_1993/
+2. Download the latest DOOM Retro version: https://github.com/bradharding/doomretro/releases
+3. Extract the DOOM Retro .zip, for example, to "C:\Program Files\doomretro"
+4. Open the "doomretro.cfg" file and set "vid_fullscreen" off
+5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup
+6. Download [OBS Studio](https://obsproject.com/)
+7. Configure OBS to record the DOOM window, a recording doesn't need to be started for obsclient to work
+8. In OBS Studio, edit Tools > WebSocket Server Settings and enable the server, disable authentication
+9. Download this folder and its contents "FivePebblesPong/bin/fivepebblespong" and manually install this mod
 Always use the Release version of CaptureOBS, because the Debug version doesn't output screenshots.  
 
 

@@ -155,10 +155,6 @@ namespace FivePebblesPong
         public int droppedFrames = 0;
         public void DataReceivedEvent(object sender, DataReceivedEventArgs e)
         {
-            if (firstEventMsg)
-                FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, Received first event");
-            firstEventMsg = false;
-
             if (String.IsNullOrEmpty(e?.Data)) {
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, Data null or empty");
                 return;
@@ -176,9 +172,15 @@ namespace FivePebblesPong
                 //File.WriteAllBytes("C:\\test\\test.png", bytes);
             } catch (FormatException ex) {
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, \"" + e.Data + "\"");
+                return;
             } catch (ArgumentNullException ex) {
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, Error parsing data: " + ex.ToString());
+                return;
             }
+
+            if (firstEventMsg)
+                FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, Received first valid frame");
+            firstEventMsg = false;
 
             //the byte array MUST be queued, calling the Texture2D ctor here crashes the game apparently
             if (!imgLoadMtx.WaitOne(50)) {

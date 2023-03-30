@@ -10,13 +10,14 @@ namespace CaptureOBS
 {
     public class Program
     {
-#if DEBUG
+/*#if DEBUG
         public static bool debug = true;
 #else
         public static bool debug = false;
-#endif
-        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
-//        public static TimeSpan interval = new TimeSpan(333333); //30 fps
+#endif*/
+        public static bool debug = true;
+//        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
+        public static TimeSpan interval = new TimeSpan(333333); //30 fps
 //        public static TimeSpan interval = new TimeSpan(166666); //60 fps
 
 
@@ -92,8 +93,8 @@ namespace CaptureOBS
                     if (data.Length <= 0 || png.Length < 2) {
                         if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Invalid Base64-encoded screenshot: " + data);
                     } else {
-                        if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Received valid screenshot");
-                        if (!debug) Console.WriteLine(png[1]);
+                        //if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Received valid screenshot");
+                        Console.WriteLine(png[1]);
                         //File.WriteAllBytes(@"C:\Users\Wout Kolkman\Downloads\test.png", Convert.FromBase64String(png[1]));
                     }
                 }
