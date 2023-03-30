@@ -30,6 +30,10 @@ namespace FivePebblesPong
         {
             adjusting.showMediaPos = new Vector2(midX, midY);
 
+            //create OracleProjectionScreen in case of no projectionscreen
+            if (self.oracle.myScreen == null)
+                self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
+
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureOBS.exe");
             info.RedirectStandardOutput = true;

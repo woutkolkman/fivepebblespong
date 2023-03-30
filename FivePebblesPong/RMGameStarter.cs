@@ -118,10 +118,11 @@ namespace FivePebblesPong
                 //======================================================
                 case State.Started:
                     if (game == null)
-                        game = new Pong(self);
+                        game = new Capture(self);
 
                     //flash images
-                    Vector2 pos = new Vector2(UnityEngine.Random.value < 0.5f ? 1000 : -1000, UnityEngine.Random.value < 0.5f ? 1000 : -1000);
+                    //Vector2 pos = new Vector2(UnityEngine.Random.value < 0.5f ? 1000 : -1000, UnityEngine.Random.value < 0.5f ? 1000 : -1000);
+                    Vector2 pos = new Vector2();
 
                     game?.Update(self);
                     game?.Draw(UnityEngine.Random.value < 0.1f ? pos : new Vector2());
