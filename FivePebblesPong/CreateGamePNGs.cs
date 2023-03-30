@@ -12,6 +12,24 @@ namespace FivePebblesPong
         public const int EDGE_DIST = 25;
 
 
+        public static Texture2D AddTransparentBorder(ref Texture2D texIn)
+        {
+            if (texIn == null)
+                return texIn;
+
+            Texture2D texOut = new Texture2D(texIn.width + (2 * EDGE_DIST), texIn.height + (2 * EDGE_DIST), TextureFormat.ARGB32, false);
+
+            //transparent background
+            FillTransparent(ref texOut);
+            texOut.Apply();
+
+            //copies via GPU
+            Graphics.CopyTexture(texIn, 0, 0, 0, 0, texIn.width, texIn.height, texOut, 0, 0, EDGE_DIST, EDGE_DIST);
+
+            return texOut;
+        }
+
+
         public static Texture2D DrawRectangle(int width, int height, int thickness)
         {
             return DrawRectangle(width, height, thickness, new Color(1f, 1f, 1f));
@@ -109,9 +127,6 @@ namespace FivePebblesPong
             string fileName = string.Concat(new object[]
             {
                 Custom.RootFolderDirectory(),
-                "RainWorld_Data",
-                Path.DirectorySeparatorChar,
-                "StreamingAssets",
                 Path.DirectorySeparatorChar,
                 "Illustrations",
                 Path.DirectorySeparatorChar,

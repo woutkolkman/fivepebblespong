@@ -128,6 +128,7 @@ namespace FivePebblesPong
             if (newFrame?.width <= 0 || newFrame.height <= 0)
                 return;
 
+            newFrame = CreateGamePNGs.AddTransparentBorder(ref newFrame);
             string imgName = "FPP_Window_" + frame++;
             //FivePebblesPong.ME.Logger_p.LogInfo("Capture.Update, Creating: \"" + imgName + "\"");
 
@@ -170,7 +171,7 @@ namespace FivePebblesPong
             try {
                 imageBase64 = Convert.FromBase64String(e.Data);
                 //File.WriteAllBytes("C:\\test\\test.png", bytes);
-            } catch (FormatException ex) {
+            } catch (FormatException) {
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.DataReceivedEvent, \"" + e.Data + "\"");
                 return;
             } catch (ArgumentNullException ex) {
