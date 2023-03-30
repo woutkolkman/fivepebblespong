@@ -11,6 +11,7 @@ namespace FivePebblesPong
 {
     public class Capture : FPGame
     {
+        public bool adjustingWindow = true; //set to false if you find movable windows annoying
         Process captureProcess;
         public int frame = 0;
         public ShowMediaMovementBehavior adjusting = new ShowMediaMovementBehavior();
@@ -40,7 +41,7 @@ namespace FivePebblesPong
                 captureProcess.OutputDataReceived += new DataReceivedEventHandler(DataReceivedEvent);
                 captureProcess.BeginOutputReadLine();
             } catch (Exception ex) {
-                FivePebblesPong.ME.Logger_p.LogInfo("Capture, Start exception: " + ex.ToString());
+                FivePebblesPong.ME.Logger_p.LogError("Capture, Start exception: " + ex.ToString());
             }
         }
 
@@ -55,15 +56,15 @@ namespace FivePebblesPong
         {
             base.Destroy(); //empty
             imgLoad.Clear();
-            bool hasExited = captureProcess == null || captureProcess.HasExited;
-            captureProcess?.CloseMainWindow();
-            captureProcess?.Close();
+
+            if (captureProcess != null && !captureProcess.HasExited) {
+                captureProcess?.CloseMainWindow();
+                captureProcess?.Close();
+                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Closed CaptureOBS");
+            }
             captureProcess = null;
 
             //TODO program keeps running if exiting RainWorld while Capture was active
-
-            if (!hasExited)
-                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Closed CaptureOBS");
 
             while (imgLoiter.Count > 0) {
                 ProjectedImage img = imgLoiter.Dequeue();
@@ -77,6 +78,10 @@ namespace FivePebblesPong
             Task deload = Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(1000);
+                if (imgUnload == null) {
+                    FivePebblesPong.ME.Logger_p.LogWarning("Capture.Destroy task, imgUnload queue is null, result: possible memory leak");
+                    return;
+                }
                 while (imgUnload.Count > 0) {
                     string name = imgUnload.Dequeue();
                     FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy task, Unload: \"" + name + "\"");
@@ -95,7 +100,7 @@ namespace FivePebblesPong
             if (self is SLOracleBehavior)
                 (self as SLOracleBehavior).movementBehavior = SLOracleBehavior.MovementBehavior.KeepDistance;
 
-            adjusting.Update(self, new Vector2(midX, midY), false);
+            adjusting.Update(self, new Vector2(midX, midY), !adjustingWindow);
 
             if (imgLoiter.Count >= IMG_LOITER_COUNT) {
                 ProjectedImage img = imgLoiter.Dequeue();

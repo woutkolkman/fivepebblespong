@@ -8,7 +8,7 @@ Thank you for your interest in this monstrosity! You'll probably need a keyboard
 6. Download [OBS Studio](https://obsproject.com/)
 7. Configure OBS to record the DOOM window, a recording doesn't need to be started for obsclient to work
 8. In OBS Studio, edit Tools > WebSocket Server Settings and enable the server, disable authentication
-9. Download this folder and its contents "FivePebblesPong/bin/fivepebblespong" and manually install this mod
+9. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
 10. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
 
 
