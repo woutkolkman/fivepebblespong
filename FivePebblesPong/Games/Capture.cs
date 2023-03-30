@@ -77,6 +77,7 @@ namespace FivePebblesPong
                     FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, RemoveFromRoom: \"" + name + "\"");
                     imgUnload.Enqueue(name);
                 }
+                img.Destroy();
             }
 
             Task deload = Task.Factory.StartNew(() =>
@@ -111,6 +112,7 @@ namespace FivePebblesPong
                 self.oracle.room.RemoveObject(img);
                 foreach (string name in img.imageNames)
                     imgUnload.Enqueue(name);
+                img.Destroy();
             }
 
             if (imgUnload.Count >= IMG_UNLOAD_AT_COUNT)

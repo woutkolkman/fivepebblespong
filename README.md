@@ -33,6 +33,7 @@ Next, enable Five Pebbles Pong via the in-game Remix menu.
 
 
 ### Credits
+Thanks to [forthbridge and his original Five Pebbles video player](https://github.com/forthbridge/five-pebbles-bad-apple)! The obs_capture branch is just another possible implementation of the same idea.  
 Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/), without this site these mods wouldn't exist.  
 Also thanks to tinodo for creating [ObsClient](https://github.com/tinodo/obsclient).
 
