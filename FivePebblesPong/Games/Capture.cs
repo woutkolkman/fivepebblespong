@@ -19,7 +19,8 @@ namespace FivePebblesPong
         Queue<byte[]> imgLoad = new Queue<byte[]>();
         Mutex imgLoadMtx = new Mutex(); //prevents queue from being used twice at the same time
 
-        Queue<ProjectedImage> imgLoiter = new Queue<ProjectedImage>();
+        Queue<ProjectedImage> imgLoiter = new Queue<ProjectedImage>(); //prevents flashing images
+        Queue<Texture2D> texLoiter = new Queue<Texture2D>(); //prevents memory leak
         public const int IMG_LOITER_COUNT = 3; //prevents flashing images
 
         Queue<string> imgUnload = new Queue<string>();
@@ -80,6 +81,12 @@ namespace FivePebblesPong
                 img.Destroy();
             }
 
+            while (texLoiter.Count > 0) { //prevents memory leak
+                Texture2D tex = texLoiter.Dequeue();
+                if (tex != null)
+                    Texture2D.Destroy(tex);
+            }
+
             Task deload = Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(1000);
@@ -115,6 +122,12 @@ namespace FivePebblesPong
                 img.Destroy();
             }
 
+            if (texLoiter.Count >= IMG_LOITER_COUNT) { //prevents memory leak
+                Texture2D tex = texLoiter.Dequeue();
+                if (tex != null)
+                    Texture2D.Destroy(tex);
+            }
+
             if (imgUnload.Count >= IMG_UNLOAD_AT_COUNT)
                 Futile.atlasManager.ActuallyUnloadAtlasOrImage(imgUnload.Dequeue());
 
@@ -126,7 +139,6 @@ namespace FivePebblesPong
                 FivePebblesPong.ME.Logger_p.LogInfo("Capture.Update, Mutex timeout");
                 return;
             }
-
             Texture2D newFrame = new Texture2D(0, 0);
             try {
                 byte[] imageBase64 = imgLoad.Dequeue();
@@ -136,8 +148,11 @@ namespace FivePebblesPong
             }
             imgLoadMtx.ReleaseMutex();
 
-            if (newFrame?.width <= 0 || newFrame.height <= 0)
+            if (newFrame?.width <= 0 || newFrame.height <= 0) {
+                Texture2D.Destroy(newFrame);
                 return;
+            }
+            texLoiter.Enqueue(newFrame); //prevents memory leak
 
             newFrame = CreateGamePNGs.AddTransparentBorder(ref newFrame);
             string imgName = "FPP_Window_" + frame++;
