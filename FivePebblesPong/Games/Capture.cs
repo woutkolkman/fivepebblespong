@@ -107,10 +107,16 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
+            //behavior of puppets
             if (self is SSOracleBehavior)
                 (self as SSOracleBehavior).movementBehavior = SSOracleBehavior.MovementBehavior.KeepDistance;
-            if (self is SLOracleBehavior)
+            if (self is SLOracleBehavior) {
                 (self as SLOracleBehavior).movementBehavior = SLOracleBehavior.MovementBehavior.KeepDistance;
+                if ((self as SLOracleBehavior).holdingObject is GameController)
+                    self.lookPoint = adjusting.showMediaPos;
+            }
+            if (self is MoreSlugcats.SSOracleRotBehavior && (self as MoreSlugcats.SSOracleRotBehavior).holdingObject is GameController)
+                self.lookPoint = adjusting.showMediaPos;
 
             adjusting.Update(self, new Vector2(midX, midY), !adjustingWindow);
 

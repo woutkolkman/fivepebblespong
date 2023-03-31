@@ -10,6 +10,7 @@ namespace FivePebblesPong
         public static bool foundControllerReacted = false;
         public static bool startedProjector;
         bool playerLeft;
+        int checkForGrabItem = 0;
 
         public enum State
         {
@@ -66,8 +67,8 @@ namespace FivePebblesPong
                         break;
 
                     //pebbles busy
-                    if (self.holdingObject != null)
-                        break;
+                    //if (self.holdingObject != null)
+                    //    break;
 
                     //hasn't seen player yet
                     if (self.player == null || !self.hasNoticedPlayer)
@@ -126,6 +127,12 @@ namespace FivePebblesPong
 
                     game?.Update(self);
                     game?.Draw(UnityEngine.Random.value < 0.1f ? pos : new Vector2());
+
+                    //game continues if pebbles is "playing"
+                    if (self.holdingObject is GameController && 
+                        self.player?.room?.roomSettings != null && 
+                        self.player.room.roomSettings.name.StartsWith("RM_AI"))
+                        break;
 
                     if (p?.room?.roomSettings == null || !p.room.roomSettings.name.StartsWith("RM_AI") || playerLeft)
                         state = State.StopDialog;
@@ -195,6 +202,25 @@ namespace FivePebblesPong
                     break;
             }
             statePreviousRun = stateBeforeRun;
+
+            //grab gamecontroller if close enough
+            checkForGrabItem--;
+            if (checkForGrabItem > 0)
+                return;
+            checkForGrabItem = 60;
+            if (self.holdingObject != null)
+                return;
+            FivePebblesPong.ME.Logger_p.LogInfo("RMGameStarter.StateMachine, Checking for GrabObject");
+
+            for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++) {
+                for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++) {
+                    if (self.oracle.room.physicalObjects[i][j] is GameController && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0) {
+                        float dist = Vector2.Distance(self.oracle.room.physicalObjects[i][j].firstChunk.pos, self.oracle.bodyChunks[0].pos);
+                        if (dist <= 30f)
+                            self.GrabObject(self.oracle.room.physicalObjects[i][j]);
+                    }
+                }
+            }
         }
     }
 }
