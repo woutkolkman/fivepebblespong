@@ -1,11 +1,7 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using System.Text;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Drawing;
 
-namespace CaptureOBS
+namespace CaptureAPI
 {
     //from https://stackoverflow.com/questions/1163761/capture-screenshot-of-active-window/24879511#24879511
     //and http://web.archive.org/web/20161116203653/http://www.snippetsource.net/Snippet/158/capture-screenshot-in-c

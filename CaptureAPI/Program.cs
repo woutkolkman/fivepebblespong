@@ -1,13 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Drawing;
-using static System.Net.Mime.MediaTypeNames;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace CaptureOBS
+namespace CaptureAPI
 {
     public class Program
     {
@@ -72,12 +66,12 @@ namespace CaptureOBS
                 try {
                     img = Screenshot.CaptureWindow((IntPtr)windowHandle);
                 } catch (System.ArgumentException ex) {
-                    Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Error creating screenshot");
+                    Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Error creating screenshot: " + ex.ToString());
                     windowHandle = WindowFinder.INVALID_HANDLE_VALUE;
                     continue;
                 }
                 System.IO.MemoryStream ms = new MemoryStream();
-                img.Save(ms, ImageFormat.Jpeg);
+                img.Save(ms, ImageFormat.Png);
                 byte[] bytes = ms.ToArray();
                 if (bytes == null || bytes.Length <= 0) {
                     Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Error saving screenshot");

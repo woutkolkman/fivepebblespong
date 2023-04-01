@@ -1,14 +1,13 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Drawing;
 
-namespace CaptureOBS
+namespace CaptureAPI
 {
     //not my code, but from http://improve.dk/finding-specific-windows/ & https://improve.dk/getting-window-location-and-size/
+#pragma warning disable CS8625
     public class WindowFinder
     {
         const int TIMEOUT = 5; //seconds
@@ -54,6 +53,7 @@ namespace CaptureOBS
                 Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] GetWindowHandle, Window \"" + windowName + "\" not found");
             return result;
         }
+#pragma warning restore CS8625
 
         // Win32 constants.
         const int WM_GETTEXT = 0x000D;
@@ -89,14 +89,16 @@ namespace CaptureOBS
 
         // This is an event that is run each time a window was found that matches the search criterias. The boolean
         // return value of the delegate matches the functionality of the PChildCallBack delegate function.
+#pragma warning disable CS8618
         private event FoundWindowCallback foundWindow;
+#pragma warning restore CS8618
         public delegate bool FoundWindowCallback(int hWnd);
 
         // Members that'll hold the search criterias while searching.
         private int parentHandle;
-        private Regex className;
-        private Regex windowText;
-        private Regex process;
+        private Regex? className;
+        private Regex? windowText;
+        private Regex? process;
 
         // The main search function of the WindowFinder class. The parentHandle parameter is optional, taking in a zero if omitted.
         // The className can be null as well, in this case the class name will not be searched. For the window text we can input
