@@ -10,12 +10,10 @@ namespace CaptureOBS
 {
     public class Program
     {
-/*#if DEBUG
         public static bool debug = true;
-#else
-        public static bool debug = false;
-#endif*/
-        public static bool debug = true;
+        public static int frame = 0;
+        public static DateTime measureFps = DateTime.Now;
+
 //        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
         public static TimeSpan interval = new TimeSpan(333333); //30 fps
 //        public static TimeSpan interval = new TimeSpan(166666); //60 fps
@@ -96,6 +94,15 @@ namespace CaptureOBS
                         //if (debug) Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Received valid screenshot");
                         Console.WriteLine(png[1]);
                         //File.WriteAllBytes(@"C:\Users\Wout Kolkman\Downloads\test.png", Convert.FromBase64String(png[1]));
+
+                        //measure FPS every 100th frame
+                        frame++;
+                        if (frame % 100 == 0) {
+                            TimeSpan diff = DateTime.Now - measureFps;
+                            Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Average FPS: " + (frame / diff.TotalSeconds).ToString());
+                            frame = 0;
+                            measureFps = DateTime.Now;
+                        }
                     }
                 }
                 isConnected = client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnected && client.ConnectionState != OBSStudioClient.Enums.ConnectionState.Disconnecting;

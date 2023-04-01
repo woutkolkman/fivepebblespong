@@ -19,6 +19,7 @@ Thank you for your interest in this monstrosity! You'll probably need a keyboard
 - A separate independent console application in .NET 6.0 was created, which will catch the OBS stream and convert it to PNG, which the plugin can read.
 - This console application would send Base64 PNG strings to the plugin. The plugin then needs to convert this string into a Texture2D. This works fairly well, but it is definitely not the most optimised solution.
 - No in-game sound, this is probably played by the recorded program anyway.
+- Note that with this method, you won't get above 10-15 fps on the projection.
 
 
 ---

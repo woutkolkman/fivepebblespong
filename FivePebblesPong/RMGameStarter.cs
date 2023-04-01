@@ -207,7 +207,7 @@ namespace FivePebblesPong
             checkForGrabItem--;
             if (checkForGrabItem > 0)
                 return;
-            checkForGrabItem = 60;
+            checkForGrabItem = 240;
             if (self.holdingObject != null)
                 return;
             FivePebblesPong.ME.Logger_p.LogInfo("RMGameStarter.StateMachine, Checking for GrabObject");

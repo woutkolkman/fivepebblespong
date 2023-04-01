@@ -14,6 +14,7 @@ namespace FivePebblesPong
         public bool adjustingWindow = true; //set to false if you find movable windows annoying
         Process captureProcess;
         public int frame = 0;
+        public DateTime measureFps = DateTime.Now;
         public ShowMediaMovementBehavior adjusting = new ShowMediaMovementBehavior();
 
         Queue<byte[]> imgLoad = new Queue<byte[]>();
@@ -173,6 +174,14 @@ namespace FivePebblesPong
             }
             imgLoiter.Enqueue(temp);
             self.oracle.myScreen.room.AddObject(temp);
+
+            //measure FPS every 100th frame
+            if (frame % 100 == 0) {
+                TimeSpan diff = DateTime.Now - measureFps;
+                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Update, Average FPS projection: " + (frame / diff.TotalSeconds).ToString());
+                frame = 0;
+                measureFps = DateTime.Now;
+            }
         }
 
 
