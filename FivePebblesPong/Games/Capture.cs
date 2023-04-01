@@ -28,7 +28,7 @@ namespace FivePebblesPong
         public const int IMG_UNLOAD_AT_COUNT = 4; //delay atlas unload so game doesn't throw exceptions
 
 
-        public Capture(OracleBehavior self) : base(self)
+        public Capture(OracleBehavior self, string args = "Command Prompt") : base(self)
         {
             adjusting.showMediaPos = new Vector2(midX, midY);
 
@@ -38,6 +38,7 @@ namespace FivePebblesPong
 
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureAPI.exe");
+            info.Arguments = args;
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
 

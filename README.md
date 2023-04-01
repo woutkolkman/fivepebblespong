@@ -5,9 +5,8 @@ Thank you for your interest in this monstrosity! You'll probably need a keyboard
 3. Extract the DOOM Retro .zip, for example, to "C:\Program Files\doomretro"
 4. Open the "doomretro.cfg" file and set "vid_fullscreen" off
 5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup
-...TODO
-9. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
-10. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
+6. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
+7. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
 
 
 ### Decisions

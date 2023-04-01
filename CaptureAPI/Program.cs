@@ -8,11 +8,15 @@ namespace CaptureAPI
 //        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
         public static TimeSpan interval = new TimeSpan(333333); //30 fps
 //        public static TimeSpan interval = new TimeSpan(166666); //60 fps
-
+        public static string captureWindow = "Command Prompt";
+        
 
         public static void Main(string[] args)
         {
             Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Startup");
+
+            if (args.Length > 0)
+                captureWindow = args[0];
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(ProcessExit);
@@ -45,7 +49,7 @@ namespace CaptureAPI
 
                 //search for window if handle is invalid
                 if (windowHandle == WindowFinder.INVALID_HANDLE_VALUE) {
-                    windowHandle = WindowFinder.GetWindowHandle("Command Prompt");
+                    windowHandle = WindowFinder.GetWindowHandle(captureWindow);
                     Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] WindowHandle: " + windowHandle);
                 }
 
