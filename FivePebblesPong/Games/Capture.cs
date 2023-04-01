@@ -37,11 +37,11 @@ namespace FivePebblesPong
                 self.oracle.myScreen = new OracleProjectionScreen(self.oracle.room, self);
 
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureOBS.exe");
+            ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureAPI.exe");
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
 
-            FivePebblesPong.ME.Logger_p.LogInfo("Capture, Starting CaptureOBS");
+            FivePebblesPong.ME.Logger_p.LogInfo("Capture, Starting CaptureAPI");
             try {
                 captureProcess = Process.Start(info);
                 captureProcess.OutputDataReceived += new DataReceivedEventHandler(DataReceivedEvent);
@@ -66,7 +66,7 @@ namespace FivePebblesPong
             if (captureProcess != null && !captureProcess.HasExited) {
                 captureProcess?.CloseMainWindow();
                 captureProcess?.Close();
-                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Closed CaptureOBS");
+                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Closed CaptureAPI");
             }
             captureProcess = null;
 

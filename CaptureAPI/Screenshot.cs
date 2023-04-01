@@ -44,6 +44,9 @@ namespace CaptureOBS
 
         public static Bitmap CaptureWindow(IntPtr handle)
         {
+            if (!OperatingSystem.IsWindows())
+                throw new System.NotSupportedException();
+
             var rect = new Rect();
             GetWindowRect(handle, ref rect);
             Rectangle bounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
