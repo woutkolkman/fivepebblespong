@@ -9,7 +9,7 @@ namespace CaptureAPI
         public static TimeSpan interval = new TimeSpan(333333); //30 fps
 //        public static TimeSpan interval = new TimeSpan(166666); //60 fps
         public static string captureWindow = "Command Prompt";
-        
+
 
         public static void Main(string[] args)
         {
