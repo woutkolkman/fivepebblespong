@@ -11,7 +11,7 @@ namespace FivePebblesPong
 {
     public class Capture : FPGame
     {
-        public bool adjustingWindow = true; //set to false if you find movable windows annoying
+        public bool adjustingWindow = true; //controls if windows will be moved randomly
         Process captureProcess;
         public int frame = 0;
         public DateTime measureFps = DateTime.Now;
