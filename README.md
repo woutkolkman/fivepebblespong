@@ -5,9 +5,7 @@ Thank you for your interest in this monstrosity! You'll probably need a keyboard
 3. Extract the DOOM Retro .zip, for example, to "C:\Program Files\doomretro"
 4. Open the "doomretro.cfg" file and set "vid_fullscreen" off
 5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup
-6. Download [OBS Studio](https://obsproject.com/)
-7. Configure OBS to record the DOOM window, a recording doesn't need to be started for obsclient to work
-8. In OBS Studio, edit Tools > WebSocket Server Settings and enable the server, disable authentication
+...TODO
 9. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
 10. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
 
@@ -20,6 +18,7 @@ Thank you for your interest in this monstrosity! You'll probably need a keyboard
 - This console application would send Base64 PNG strings to the plugin. The plugin then needs to convert this string into a Texture2D. This works fairly well, but it is definitely not the most optimised solution.
 - No in-game sound, this is probably played by the recorded program anyway.
 - Note that with this method, you won't get above 10-15 fps on the projection.
+- To increase performance, the Win32 API can be used which would probably be faster at taking screenshots.
 
 
 ---
@@ -35,8 +34,7 @@ Next, enable Five Pebbles Pong via the in-game Remix menu.
 
 ### Credits
 Thanks to [forthbridge and his original Five Pebbles video player](https://github.com/forthbridge/five-pebbles-bad-apple)! The obs_capture branch is just another possible implementation of the same idea.  
-Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/), without this site these mods wouldn't exist.  
-Also thanks to tinodo for creating [ObsClient](https://github.com/tinodo/obsclient).
+Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/), without this site these mods wouldn't exist.
 
 
 ### Description
