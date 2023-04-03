@@ -28,7 +28,8 @@ namespace FivePebblesPong
         public const int IMG_UNLOAD_AT_COUNT = 4; //delay atlas unload so game doesn't throw exceptions
 
 
-        public Capture(OracleBehavior self, string args = "Command Prompt") : base(self)
+        //constructor starts background process, every newline received will be handled by DataReceivedEvent()
+        public Capture(OracleBehavior self, string args = "\"Command Prompt\" \"CMD.exe\"") : base(self)
         {
             adjusting.showMediaPos = new Vector2(midX, midY);
 
@@ -40,6 +41,7 @@ namespace FivePebblesPong
             ProcessStartInfo info = new ProcessStartInfo(assemblyFolder + "\\CaptureAPI.exe");
             info.Arguments = args;
             info.RedirectStandardOutput = true;
+            info.RedirectStandardInput = true;
             info.UseShellExecute = false;
 
             FivePebblesPong.ME.Logger_p.LogInfo("Capture, Starting CaptureAPI");
@@ -59,20 +61,42 @@ namespace FivePebblesPong
         }
 
 
+        //background process is stopped and all memory and queues are freed
         public override void Destroy()
         {
             base.Destroy(); //empty
             imgLoad.Clear();
 
-            if (captureProcess != null && !captureProcess.HasExited) {
-                captureProcess?.CloseMainWindow();
-                captureProcess?.Close();
-                FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Closed CaptureAPI");
-            }
-            captureProcess = null;
+            //exit captureProcess
+            //Process.CloseMainWindow does not close a console app cleanly, sending "ctrl + c" does
+            //the background process listens for "c" newline and then exits, ProcessStartInfo.RedirectStandardInput must be true
+            Task closeProcess = Task.Factory.StartNew(() => //prevents short lagspike
+            {
+                if (captureProcess != null && !captureProcess.HasExited) {
+                    try {
+                        captureProcess.StandardInput.WriteLine("c"); //close background process
+                        if (!captureProcess.WaitForExit(500))
+                            FivePebblesPong.ME.Logger_p.LogInfo("Capture.StopProgram, Failed communicating close operation");
+                    } catch (Exception ex) {
+                        FivePebblesPong.ME.Logger_p.LogInfo("Capture.StopProgram, Exception: " + ex.ToString());
+                    }
+
+                    if (captureProcess != null && !captureProcess.HasExited) {
+                        FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, Calling CloseMainWindow");
+                        if (!captureProcess.CloseMainWindow())
+                            FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, CloseMainWindow failed");
+                        captureProcess.WaitForExit(500);
+                    }
+                    string msg = captureProcess.HasExited ? "exited" : "did not exit";
+                    FivePebblesPong.ME.Logger_p.LogInfo("Capture.Destroy, CaptureAPI " + msg);
+                    captureProcess?.Close();
+                }
+                captureProcess = null;
+            });
 
             //TODO program keeps running if exiting RainWorld while Capture was active
 
+            //clear queues
             while (imgLoiter.Count > 0) {
                 ProjectedImage img = imgLoiter.Dequeue();
                 img.RemoveFromRoom();
@@ -89,7 +113,7 @@ namespace FivePebblesPong
                     Texture2D.Destroy(tex);
             }
 
-            Task deload = Task.Factory.StartNew(() =>
+            Task deload = Task.Factory.StartNew(() => //prevents atlasmanager exceptions
             {
                 Thread.Sleep(1000);
                 if (imgUnload == null) {
@@ -105,6 +129,7 @@ namespace FivePebblesPong
         }
 
 
+        //read queues filled by DataReceivedEvent() and create/delete images
         public override void Update(OracleBehavior self)
         {
             base.Update(self);
@@ -194,6 +219,7 @@ namespace FivePebblesPong
         }
 
 
+        //called at every newline received from background process, if it's Base64 --> enqueue
         public bool firstEventMsg = true;
         public int droppedFrames = 0;
         public void DataReceivedEvent(object sender, DataReceivedEventArgs e)

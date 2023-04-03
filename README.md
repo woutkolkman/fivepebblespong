@@ -1,12 +1,13 @@
 ### Doom part
-Thank you for your interest in this monstrosity! You'll probably need a keyboard and mouse for this to work properly.
+Thank you for your interest in this monstrosity! You'll probably need a keyboard and mouse to play in-game. It's not guaranteed to work on every PC.
 1. Buy DOOM 1993 on Steam & download: https://store.steampowered.com/app/2280/DOOM_1993/
 2. Download the latest DOOM Retro version: https://github.com/bradharding/doomretro/releases
 3. Extract the DOOM Retro .zip, for example, to "C:\Program Files\doomretro"
 4. Open the "doomretro.cfg" file and set "vid_fullscreen" off
 5. Run it once to check if everything works as expected, select the DOOM.WAD file from DOOM 1993 at startup
-6. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
-7. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
+6. Scale down the window for higher FPS, and for visibility in-game
+7. Download this folder and its contents at "FivePebblesPong/bin/fivepebblespong" and manually install this mod
+8. Any issues? Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg"
 
 
 ### Decisions
