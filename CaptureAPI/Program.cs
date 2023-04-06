@@ -6,13 +6,11 @@ namespace CaptureAPI
 {
     public class Program
     {
-//        public static TimeSpan interval = new TimeSpan(0, 0, 0, 0, 50); //20 fps
-//        public static TimeSpan interval = new TimeSpan(333333); //30 fps
-        public static TimeSpan interval = new TimeSpan(222222); //45 fps
-//        public static TimeSpan interval = new TimeSpan(166666); //60 fps
+        public static TimeSpan interval = new TimeSpan(250000); //40 fps default target
         public static string captureWindow = "Command Prompt";
 
         public static string openProgram = ""; //if window is not found, program will be opened
+        public static string openProgramArguments = "";
         public static Process? openedProgram;
         public static bool triedOpeningProgram = false; //tried starting other program
         public static volatile bool closeOperation = false; //close this program if true
@@ -22,10 +20,31 @@ namespace CaptureAPI
         {
             Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] Startup");
 
-            if (args.Length > 0)
-                captureWindow = args[0];
-            if (args.Length > 1)
-                openProgram = args[1];
+            for (int i = 0; i < args.Length; i++) {
+                switch (args[i]) {
+                    case "--cw": case "-c": //example: ./CaptureAPI.exe --cw "VLC"
+                        if (++i < args.Length)
+                            captureWindow = args[i];
+                        break;
+
+                    case "--op": case "-o": //example: ./CaptureAPI.exe --op "C:\vlc.exe"
+                        if (++i < args.Length)
+                            openProgram = args[i];
+                        break;
+
+                    case "--arg": case "-a": //example: ./CaptureAPI.exe -a "\"C:\vids folder\pebbsi.mp4\""
+                        if (++i < args.Length)
+                            openProgramArguments = args[i];
+                        break;
+
+                    case "--fps": case "-f": //example: ./CaptureAPI.exe --fps 30
+                        if (!(++i < args.Length))
+                            break;
+                        int fps = Int32.Parse(args[i]);
+                        interval = new TimeSpan(10000000 / fps);
+                        break;
+                }
+            }
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(ProcessExit);
@@ -77,7 +96,7 @@ namespace CaptureAPI
                 //try again next loop
                 if (windowHandle == WindowFinder.INVALID_HANDLE_VALUE) {
                     if (!triedOpeningProgram)
-                        windowHandle = (int) StartProgram(openProgram);
+                        windowHandle = (int) StartProgram(openProgram, openProgramArguments);
                     triedOpeningProgram = true;
 
                     notFoundCounter++;
@@ -122,29 +141,35 @@ namespace CaptureAPI
 
 
         //try starting program indicated by path
-        public static IntPtr StartProgram(string path)
+        public static IntPtr StartProgram(string path, string args = "")
         {
             IntPtr handle = (IntPtr) WindowFinder.INVALID_HANDLE_VALUE;
             if (string.IsNullOrEmpty(path)) {
                 Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] StartProgram, No program path parameter provided");
                 return handle;
             }
+
             Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] StartProgram, Starting program \"" + path + "\"");
             ProcessStartInfo info = new ProcessStartInfo(path);
             info.UseShellExecute = true;
+            if (args != null)
+                info.Arguments = args;
+
             try {
                 openedProgram = Process.Start(info);
                 if (openedProgram != null && !openedProgram.WaitForInputIdle(5000))
                     Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] StartProgram, Idle state not reached");
             } catch (Exception ex) {
                 Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] StartProgram, Exception starting program \"" + openProgram + "\": " + ex.ToString());
-                Thread.Sleep(200); //last resort wait for program startup
+                Thread.Sleep(1000); //last resort wait for program startup
             }
+
             if (openedProgram != null) {
                 handle = openedProgram.MainWindowHandle;
                 if (!String.IsNullOrEmpty(openedProgram.MainWindowTitle))
                     captureWindow = openedProgram.MainWindowTitle;
             }
+
             Console.WriteLine("[" + DateTime.Now.TimeOfDay + "] StartProgram, Handle: " + handle + ", title: \"" + openedProgram?.MainWindowTitle + "\"");
             return handle;
         }

@@ -17,6 +17,7 @@ namespace FivePebblesPong
         public DateTime measureFps = DateTime.Now;
         public ShowMediaMovementBehavior adjusting = new ShowMediaMovementBehavior();
         //public int[] cropFrames = new int[] { 1, 1, -18, -31 }; //left-bottom-right-top
+        //public int[] cropFrames = new int[] { 1, 53, -1, -52 };
         public int[] cropFrames = new int[] { 0, 0, 0, 0 };
 
         Queue<byte[]> imgLoad = new Queue<byte[]>();
@@ -31,8 +32,11 @@ namespace FivePebblesPong
 
 
         //constructor starts background process, every newline received will be handled by DataReceivedEvent()
-        public Capture(OracleBehavior self, string args = "\"Command Prompt\" \"CMD.exe\"") : base(self)
+        public Capture(OracleBehavior self, string args = "-c \"Command Prompt\" -o \"CMD.exe\"") : base(self)
         {
+            //"--cw \"VLC media player\" --op \"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe\" --arg \"\\\"C:\\Users\\Wout Kolkman\\Downloads\\2023-04-01 09-51-51.mp4\\\"\""
+            //"-c \"Command Prompt\" -o \"CMD.exe\""
+
             adjusting.showMediaPos = new Vector2(midX, midY);
 
             //create OracleProjectionScreen in case of no projectionscreen
