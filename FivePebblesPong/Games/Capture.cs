@@ -16,6 +16,8 @@ namespace FivePebblesPong
         public int frame = 0;
         public DateTime measureFps = DateTime.Now;
         public ShowMediaMovementBehavior adjusting = new ShowMediaMovementBehavior();
+        //public int[] cropFrames = new int[] { 1, 1, -18, -31 }; //left-bottom-right-top
+        public int[] cropFrames = new int[] { 0, 0, 0, 0 };
 
         Queue<byte[]> imgLoad = new Queue<byte[]>();
         Mutex imgLoadMtx = new Mutex(); //prevents queue from being used twice at the same time
@@ -187,7 +189,7 @@ namespace FivePebblesPong
             }
             texLoiter.Enqueue(newFrame); //prevents memory leak
 
-            newFrame = CreateGamePNGs.AddTransparentBorder(ref newFrame);
+            newFrame = CreateGamePNGs.AddTransparentBorder(ref newFrame, cropFrames);
             string imgName = "FPP_Window_" + frame++;
             //FivePebblesPong.ME.Logger_p.LogInfo("Capture.Update, Creating: \"" + imgName + "\"");
 
