@@ -33,7 +33,7 @@ namespace FivePebblesPong
         public void StateMachine(MoreSlugcats.SSOracleRotBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            Player p = FivePebblesPong.GetPlayer(self);
+            Player p = Plugin.GetPlayer(self);
 
             //check if player is in front of projector/in the can
             Vector2 playAreaStart = new Vector2(1220, 800);

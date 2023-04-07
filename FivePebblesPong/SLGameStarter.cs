@@ -55,7 +55,7 @@ namespace FivePebblesPong
         public void HeartHandle(SLOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            Player p = FivePebblesPong.GetPlayer(self);
+            Player p = Plugin.GetPlayer(self);
 
             //is player messing with neurons?
             bool instantStop = self.oracle.health < 1f || self.oracle.stun > 0 || !self.oracle.Consious;
@@ -107,7 +107,7 @@ namespace FivePebblesPong
                     {
                         self.dialogBox.Interrupt(self.Translate("Sure, I'll play a game with you!"), 10);
                         previousMovementBehavior = self.movementBehavior;
-                        FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                        Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                     }
                     if (p == null || instantStop || playerLeaves)
                         state = State.StopDialog;
@@ -139,7 +139,7 @@ namespace FivePebblesPong
                     if (state != statePreviousRun)
                     {
                         self.movementBehavior = previousMovementBehavior;
-                        FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                        Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                         game?.Destroy();
                         game = null;
 
@@ -173,7 +173,7 @@ namespace FivePebblesPong
         public void NoHeartHandle(SLOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            Player p = FivePebblesPong.GetPlayer(self);
+            Player p = Plugin.GetPlayer(self);
 
             bool playerMayPlayGame = (
                 self.hasNoticedPlayer &&
@@ -272,7 +272,7 @@ namespace FivePebblesPong
             if (cancel)
             {
                 if (grabItem != null)
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " was canceled");
+                    Plugin.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " was canceled");
                 grabItem = null;
                 moveToItemDelay = 0;
                 return null; //try again later
@@ -280,7 +280,7 @@ namespace FivePebblesPong
 
             if (grabItem == null)
             {
-                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Searching for " + typeof(T).Name);
+                Plugin.ME.Logger_p.LogInfo("GrabObjectType, Searching for " + typeof(T).Name);
 
                 //get object from room
                 float closest = float.MaxValue;
@@ -299,14 +299,14 @@ namespace FivePebblesPong
 
                 if (grabItem == null)
                 {
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " not found");
+                    Plugin.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " not found");
                     return false; //failed
                 }
             }
 
             if (grabItem.grabbedBy.Count > 0)
             {
-                FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " was grabbed by another");
+                Plugin.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " was grabbed by another");
                 grabItem = null;
                 moveToItemDelay = 0;
                 return false; //failed
@@ -316,7 +316,7 @@ namespace FivePebblesPong
             if (dist <= maxDist)
             {
                 if (moveToItemDelay == 0)
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Trying to grab " + typeof(T).Name + ", distance: " + dist.ToString());
+                    Plugin.ME.Logger_p.LogInfo("GrabObjectType, Trying to grab " + typeof(T).Name + ", distance: " + dist.ToString());
 
                 moveToItemDelay++;
 
@@ -338,7 +338,7 @@ namespace FivePebblesPong
 
                 if (moveToItemDelay > timeout)
                 {
-                    FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " canceled (time)");
+                    Plugin.ME.Logger_p.LogInfo("GrabObjectType, Grabbing " + typeof(T).Name + " canceled (time)");
                     grabItem = null;
                     moveToItemDelay = 0;
                     return false; //failed
@@ -348,7 +348,7 @@ namespace FivePebblesPong
 
                 return null; //still trying
             }
-            FivePebblesPong.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " distance too large: " + dist.ToString());
+            Plugin.ME.Logger_p.LogInfo("GrabObjectType, " + typeof(T).Name + " distance too large: " + dist.ToString());
             grabItem = null;
             moveToItemDelay = 0;
             return false; //failed

@@ -341,7 +341,7 @@ namespace FivePebblesPong
             if (state == State.PebblesWin && moonDifficulty > 0.3f)
                 moonDifficulty -= 0.1f;
             if (state == State.PlayerWin || state == State.PebblesWin)
-                FivePebblesPong.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
+                Plugin.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
 
             if (this.gameCounter % 15 == 0)
             {

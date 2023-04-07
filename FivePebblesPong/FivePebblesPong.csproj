@@ -38,7 +38,7 @@
   <ItemGroup>
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="FivePebblesPong.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="GameObjects\DinoObstacle.cs" />
     <Compile Include="GameObjects\DinoPlayer.cs" />

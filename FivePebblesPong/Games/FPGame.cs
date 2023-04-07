@@ -38,7 +38,7 @@ namespace FivePebblesPong
                 }
             }
 
-            p = FivePebblesPong.GetPlayer(self);
+            p = Plugin.GetPlayer(self);
         }
 
 
@@ -52,7 +52,7 @@ namespace FivePebblesPong
             if (this.gameCounter < 0)
                 this.gameCounter = 0;
 
-            p = FivePebblesPong.GetPlayer(self);
+            p = Plugin.GetPlayer(self);
         }
 
 

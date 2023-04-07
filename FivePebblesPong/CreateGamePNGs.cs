@@ -121,7 +121,7 @@ namespace FivePebblesPong
                 ".png"
             });
             PNGSaver.SaveTextureToFile(texture, fileName);
-            FivePebblesPong.ME.Logger_p.LogInfo("Texture saved as " + name + ".png");
+            Plugin.ME.Logger_p.LogInfo("Texture saved as " + name + ".png");
         }
 
 

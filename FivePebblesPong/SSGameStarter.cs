@@ -65,20 +65,20 @@ namespace FivePebblesPong
             if (state != State.Stop && stateBeforeRun == State.Stop)
             {
                 previousAction = self.action;
-                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.action) + ": " + self.action.ToString());
+                Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.action) + ": " + self.action.ToString());
                 previousSubBehavior = self.currSubBehavior;
-                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
+                Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
                 previousMovementBehavior = self.movementBehavior;
-                FivePebblesPong.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
             }
             if (state == State.Stop && state != stateBeforeRun && !preventActionOverride)
             {
                 self.action = previousAction;
-                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action.ToString());
+                Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action.ToString());
                 self.currSubBehavior = previousSubBehavior;
-                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
+                Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
                 self.movementBehavior = previousMovementBehavior;
-                FivePebblesPong.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
+                Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.movementBehavior) + ": " + self.movementBehavior.ToString());
                 self.restartConversationAfterCurrentDialoge = true;
             }
             if (state != State.Stop && !preventActionOverride)
@@ -111,7 +111,7 @@ namespace FivePebblesPong
         private void PebblesStates(SSOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            Player p = FivePebblesPong.GetPlayer(self);
+            Player p = Plugin.GetPlayer(self);
 
             switch (state)
             {
@@ -172,7 +172,7 @@ namespace FivePebblesPong
 
                     if (menu != null) {
                         menu.Update(self);
-                        game = FivePebblesPong.GetNewFPGame(self, menu.pearlGrabbed);
+                        game = Plugin.GetNewFPGame(self, menu.pearlGrabbed);
                         if (menu.gameCounter == 2000)
                             self.dialogBox.Interrupt(self.Translate("You may pick one."), 10);
                     }
@@ -300,7 +300,7 @@ namespace FivePebblesPong
         private void MoonStates(SSOracleBehavior self)
         {
             //check if slugcat is holding a gamecontroller
-            Player p = FivePebblesPong.GetPlayer(self);
+            Player p = Plugin.GetPlayer(self);
 
             //get story progression
             bool wasAtPebbles = self.oracle.room.game.GetStorySession.saveState.miscWorldSaveData.SSaiConversationsHad > 0;

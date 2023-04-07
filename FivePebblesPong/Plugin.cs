@@ -9,12 +9,12 @@ namespace FivePebblesPong
 {
     //also edit version in "modinfo.json"
     [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.1")] //(GUID, mod name, mod version)
-    public class FivePebblesPong : BaseUnityPlugin
+    public class Plugin : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
         private static WeakReference __me; //WeakReference still allows garbage collection
-        public FivePebblesPong() { __me = new WeakReference(this); }
-        public static FivePebblesPong ME => __me?.Target as FivePebblesPong;
+        public Plugin() { __me = new WeakReference(this); }
+        public static Plugin ME => __me?.Target as Plugin;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
 
         public static bool HasEnumExt => (int)Enums.GameControllerPebbles > 0; //returns true after EnumExtender initializes
@@ -30,7 +30,7 @@ namespace FivePebblesPong
             Enums.RegisterValues();
             Hooks.Apply();
 
-            FivePebblesPong.ME.Logger_p.LogInfo("OnEnable called");
+            Plugin.ME.Logger_p.LogInfo("OnEnable called");
         }
 
 
@@ -43,7 +43,7 @@ namespace FivePebblesPong
             Enums.UnregisterValues();
             Hooks.Unapply();
 
-            FivePebblesPong.ME.Logger_p.LogInfo("OnDisable called");
+            Plugin.ME.Logger_p.LogInfo("OnDisable called");
         }
 
 

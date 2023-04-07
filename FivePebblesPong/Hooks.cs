@@ -92,7 +92,7 @@ namespace FivePebblesPong
         {
             bool firsttime = self.abstractRoom.firstTimeRealized;
             orig(self);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             if (self.game != null && self.roomSettings != null && firsttime)
@@ -120,7 +120,7 @@ namespace FivePebblesPong
                 EntityID newID = self.game.GetNewID(-self.abstractRoom.index);
                 WorldCoordinate coord = self.GetWorldCoordinate(location);
                 AbstractPhysicalObject ent = new AbstractPhysicalObject(self.world, obj, null, coord, newID);
-                FivePebblesPong.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity " + obj + " at " + coord.SaveToString());
+                Plugin.ME.Logger_p.LogInfo("RoomLoadedHook, AddEntity " + obj + " at " + coord.SaveToString());
                 self.abstractRoom.AddEntity(ent);
             }
         }
@@ -129,7 +129,7 @@ namespace FivePebblesPong
         //creates GameController object
         static void AbstractPhysicalObjectRealizeHook(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
         {
-            if (FivePebblesPong.HasEnumExt && self.realizedObject == null)
+            if (Plugin.HasEnumExt && self.realizedObject == null)
             {
                 if (self.type == Enums.GameControllerPebbles)
                     self.realizedObject = new GameController(self, new Color(0.44705883f, 0.9019608f, 0.76862746f)); //5P overseer color
@@ -145,7 +145,7 @@ namespace FivePebblesPong
         {
             orig(self, abstractCreature, world);
 
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             if (self.playerState.playerNumber == 0) { //reset
@@ -170,7 +170,7 @@ namespace FivePebblesPong
             }
 
             if (gameControllerPebblesInShelter || gameControllerMoonInShelter)
-                FivePebblesPong.ME.Logger_p.LogInfo("PlayerCtorHook: Prevent controller duplicate");
+                Plugin.ME.Logger_p.LogInfo("PlayerCtorHook: Prevent controller duplicate");
             //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
         }
 
@@ -193,16 +193,16 @@ namespace FivePebblesPong
         //five pebbles constructor
         static void SSOracleBehaviorCtorHook(On.SSOracleBehavior.orig_ctor orig, SSOracleBehavior self, Oracle oracle)
         {
-            FivePebblesPong.ME.Logger_p.LogInfo("SSOracleBehaviorCtorHook");
+            Plugin.ME.Logger_p.LogInfo("SSOracleBehaviorCtorHook");
             orig(self, oracle);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             SSGameStarter.notFullyStartedCounter = 0;
             SSGameStarter.calibratedProjector = false;
             SSGameStarter.controllerInStomachReacted = false;
             SSGameStarter.controllerThrownReacted = false;
             SSGameStarter.starter = null;
-            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
+            Plugin.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
@@ -211,7 +211,7 @@ namespace FivePebblesPong
         {
             orig(self, eu);
 
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             //wait until slugcat can communicate
@@ -247,7 +247,7 @@ namespace FivePebblesPong
         public delegate bool orig_Gravity(SSOracleBehavior.SubBehavior self);
         public static bool SSOracleBehavior_SubBehavior_Gravity_get(orig_Gravity orig, SSOracleBehavior.SubBehavior self)
         {
-            if (FivePebblesPong.HasEnumExt && SSGameStarter.starter != null) { //avoid potential crashes
+            if (Plugin.HasEnumExt && SSGameStarter.starter != null) { //avoid potential crashes
                 if (previous_SSOracleBehavior_SubBehavior_Gravity ^ SSGameStarter.starter.gravity)
                     self.oracle.room.PlaySound(SSGameStarter.starter.gravity ? SoundID.SS_AI_Exit_Work_Mode : SoundID.Broken_Anti_Gravity_Switch_On, 0f, 1f, 1f);
                 previous_SSOracleBehavior_SubBehavior_Gravity = SSGameStarter.starter.gravity;
@@ -261,11 +261,11 @@ namespace FivePebblesPong
         //prevent hologram lizard from killing creatures in GrabDot FPGame
         static void CreatureViolenceHook(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
-            if (FivePebblesPong.HasEnumExt && SSGameStarter.starter?.game is GrabDot) {
+            if (Plugin.HasEnumExt && SSGameStarter.starter?.game is GrabDot) {
                 foreach (AbstractCreature ac in (SSGameStarter.starter.game as GrabDot).creatures) {
                     if (ac?.realizedCreature?.mainBodyChunk == source) {
                         damage = 0f;
-                        FivePebblesPong.ME.Logger_p.LogInfo("CreatureViolenceHook: Prevent damage");
+                        Plugin.ME.Logger_p.LogInfo("CreatureViolenceHook: Prevent damage");
                     }
                 }
             }
@@ -277,19 +277,19 @@ namespace FivePebblesPong
         static void LizardGraphicsAddToContainerHook(On.LizardGraphics.orig_AddToContainer orig, LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
         {
             bool correctCreature = false;
-            if (FivePebblesPong.HasEnumExt && SSGameStarter.starter?.game is GrabDot)
+            if (Plugin.HasEnumExt && SSGameStarter.starter?.game is GrabDot)
                 foreach (AbstractCreature ac in (SSGameStarter.starter.game as GrabDot).creatures)
                     if (ac?.realizedCreature?.graphicsModule == self)
                         correctCreature = true;
 
-            if (FivePebblesPong.HasEnumExt && correctCreature)
+            if (Plugin.HasEnumExt && correctCreature)
             {
                 if (newContainer == null)
                     newContainer = rCam.ReturnFContainer("Midground"); //default is "Midground"
                 if (sLeaser != null && sLeaser.sprites != null)
                     for (int i = 0; i < sLeaser.sprites.Length; i++)
                         sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"]; //default is "Basic"
-                FivePebblesPong.ME.Logger_p.LogInfo("LizardGraphicsAddToContainerHook: Hologram lizard");
+                Plugin.ME.Logger_p.LogInfo("LizardGraphicsAddToContainerHook: Hologram lizard");
             }
             orig(self, sLeaser, rCam, newContainer);
         }
@@ -302,7 +302,7 @@ namespace FivePebblesPong
         {
             orig(self);
 
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             if (self.id == Conversation.ID.Moon_Misc_Item) {
@@ -330,9 +330,9 @@ namespace FivePebblesPong
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
         {
-            if (FivePebblesPong.HasEnumExt && testItem.abstractPhysicalObject.type == Enums.GameControllerMoon)
+            if (Plugin.HasEnumExt && testItem.abstractPhysicalObject.type == Enums.GameControllerMoon)
                 return Enums.GameControllerMoonReaction;
-            if (FivePebblesPong.HasEnumExt && (testItem.abstractPhysicalObject.type == Enums.GameControllerPebbles || testItem is GameController))
+            if (Plugin.HasEnumExt && (testItem.abstractPhysicalObject.type == Enums.GameControllerPebbles || testItem is GameController))
                 return Enums.GameControllerPebblesReaction;
             return orig(self, testItem);
         }
@@ -341,14 +341,14 @@ namespace FivePebblesPong
         //moon constructor
         static void SLOracleBehaviorCtorHook(On.SLOracleBehavior.orig_ctor orig, SLOracleBehavior self, Oracle oracle)
         {
-            FivePebblesPong.ME.Logger_p.LogInfo("SLOracleBehaviorCtorHook");
+            Plugin.ME.Logger_p.LogInfo("SLOracleBehaviorCtorHook");
             orig(self, oracle);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             SLGameStarter.moonDelayUpdateGame = SLGameStarter.moonDelayUpdateGameReset;
             SLGameStarter.moonCalibratedProjector = false;
             SLGameStarter.starter = null;
-            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
+            Plugin.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
@@ -356,7 +356,7 @@ namespace FivePebblesPong
         static void SLOracleBehaviorUpdateHook(On.SLOracleBehavior.orig_Update orig, SLOracleBehavior self, bool eu)
         {
             orig(self, eu);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SL_AI") && SLGameStarter.starter == null)
@@ -372,7 +372,7 @@ namespace FivePebblesPong
         static void SLOracleBehaviorHasMarkUpdateHook(On.SLOracleBehaviorHasMark.orig_Update orig, SLOracleBehaviorHasMark self, bool eu)
         {
             orig(self, eu);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
@@ -384,7 +384,7 @@ namespace FivePebblesPong
         static void SLOracleBehaviorNoMarkUpdateHook(On.SLOracleBehaviorNoMark.orig_Update orig, SLOracleBehaviorNoMark self, bool eu)
         {
             orig(self, eu);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             if (SLGameStarter.starter?.game is Dino)
                 (SLGameStarter.starter.game as Dino).MoonBehavior(self);
@@ -399,7 +399,7 @@ namespace FivePebblesPong
         public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
         public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
         {
-            if (FivePebblesPong.HasEnumExt) {
+            if (Plugin.HasEnumExt) {
                 if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
                 if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
                 if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
@@ -408,7 +408,7 @@ namespace FivePebblesPong
         }
         public static Vector2 SLOracleBehaviorNoMark_OracleGetToPos_get(orig_OracleGetToPos_NoMark orig, SLOracleBehaviorNoMark self)
         {
-            if (FivePebblesPong.HasEnumExt) {
+            if (Plugin.HasEnumExt) {
                 if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
                 if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
                 if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
@@ -420,13 +420,13 @@ namespace FivePebblesPong
         //five pebbles (rot) constructor
         static void MoreSlugcatsSSOracleRotBehaviorCtorHook(On.MoreSlugcats.SSOracleRotBehavior.orig_ctor orig, MoreSlugcats.SSOracleRotBehavior self, Oracle oracle)
         {
-            FivePebblesPong.ME.Logger_p.LogInfo("MoreSlugcatsSSOracleRotBehaviorCtorHook");
+            Plugin.ME.Logger_p.LogInfo("MoreSlugcatsSSOracleRotBehaviorCtorHook");
             orig(self, oracle);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             RMGameStarter.starter = null;
             RMGameStarter.startedProjector = false;
-            FivePebblesPong.currentPlayer = null; //fix for bug where game starts without controller
+            Plugin.currentPlayer = null; //fix for bug where game starts without controller
         }
 
 
@@ -435,7 +435,7 @@ namespace FivePebblesPong
         {
             orig(self, eu);
 
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
             //construct/free RMGameStarter object when player enters/leaves room
@@ -452,9 +452,9 @@ namespace FivePebblesPong
         //five pebbles (CL) constructor
         static void MoreSlugcatsCLOracleBehaviorCtorHook(On.MoreSlugcats.CLOracleBehavior.orig_ctor orig, MoreSlugcats.CLOracleBehavior self, Oracle oracle)
         {
-            FivePebblesPong.ME.Logger_p.LogInfo("MoreSlugcatsCLOracleBehaviorCtorHook");
+            Plugin.ME.Logger_p.LogInfo("MoreSlugcatsCLOracleBehaviorCtorHook");
             orig(self, oracle);
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
             CLOracleBehaviorReacted = false;
         }
@@ -466,10 +466,10 @@ namespace FivePebblesPong
         {
             orig(self, eu);
 
-            if (!FivePebblesPong.HasEnumExt) //avoid potential crashes
+            if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
-            var p = FivePebblesPong.GetPlayer(self);
+            var p = Plugin.GetPlayer(self);
             if (p == null || CLOracleBehaviorReacted || self.currentConversation != null || !self.hasNoticedPlayer || self.dialogBox == null || self.dialogBox.ShowingAMessage || self.oracle.health <= 0f)
                 return;
 
