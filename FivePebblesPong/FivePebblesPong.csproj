@@ -93,7 +93,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo
-xcopy /y /d "$(ProjectDir)bin\Debug\FivePebblesPong.dll" "$(ProjectDir)bin\fivepebblespong\plugins\"
-xcopy /u /y "$(ProjectDir)bin\Debug\FivePebblesPong.dll" "C:\Users\Wout Kolkman\Documents\Games\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\fivepebblespong\plugins\" || cd .</PostBuildEvent>
+xcopy /y /d "$(ProjectDir)bin\Release\FivePebblesPong.dll" "$(ProjectDir)bin\fivepebblespong\plugins\"
+xcopy /u /y "$(ProjectDir)bin\Release\FivePebblesPong.dll" "C:\Users\Wout Kolkman\Documents\Games\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\fivepebblespong\plugins\" || cd .</PostBuildEvent>
   </PropertyGroup>
 </Project>

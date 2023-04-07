@@ -123,7 +123,7 @@ namespace FivePebblesPong
                     }
 
                     if (game == null)
-                        game = new Pong(self);
+                        game = Plugin.SLGetNewFPGame(self);
 
                     self.movementBehavior = Enums.SLPlayGame;
 
@@ -193,7 +193,7 @@ namespace FivePebblesPong
             if (playerMayPlayGame) //player plays
             {
                 if (SLGameStarter.moonDelayUpdateGame < 400 && this.game == null)
-                    this.game = new Dino(self);
+                    this.game = Plugin.SLGetNewFPGame(self);
 
                 //calibrate projector animation
                 if (!SLGameStarter.moonCalibratedProjector && game != null)
@@ -224,13 +224,20 @@ namespace FivePebblesPong
                         self.holdingObject = null;
                 }
 
-                if (this.game == null)
-                    this.game = new Dino(self) { imageAlpha = 0f };
-                (this.game as Dino)?.Update(self, (
-                    (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
-                    ? 0 //when moon is speaking, don't control game
-                    : (this.game as Dino).MoonAI()
-                ));
+                if (this.game == null) {
+                    this.game = Plugin.SLGetNewFPGame(self);
+                    if (this.game is Dino)
+                        (this.game as Dino).imageAlpha = 0f;
+                }
+                if (this.game is Dino) {
+                    (this.game as Dino).Update(self, (
+                        (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
+                        ? 0 //when moon is speaking, don't control game
+                        : (this.game as Dino).MoonAI()
+                    ));
+                } else {
+                    this.game?.Update(self);
+                }
                 this.game?.Draw();
             }
             else if (this.game != null) //destroy game

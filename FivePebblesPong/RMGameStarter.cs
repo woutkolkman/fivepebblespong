@@ -118,7 +118,7 @@ namespace FivePebblesPong
                 //======================================================
                 case State.Started:
                     if (game == null)
-                        game = new Pong(self);
+                        game = Plugin.RMGetNewFPGame(self);
 
                     //flash images
                     Vector2 pos = new Vector2(UnityEngine.Random.value < 0.5f ? 1000 : -1000, UnityEngine.Random.value < 0.5f ? 1000 : -1000);

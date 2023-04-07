@@ -172,7 +172,7 @@ namespace FivePebblesPong
 
                     if (menu != null) {
                         menu.Update(self);
-                        game = Plugin.GetNewFPGame(self, menu.pearlGrabbed);
+                        game = Plugin.SSGetNewFPGame(self, menu.pearlGrabbed);
                         if (menu.gameCounter == 2000)
                             self.dialogBox.Interrupt(self.Translate("You may pick one."), 10);
                     }

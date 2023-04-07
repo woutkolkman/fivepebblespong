@@ -49,7 +49,7 @@ namespace FivePebblesPong
 
         //called when game selection is active, add new games here
         public static int amountOfGames = 3; //increase counter when adding more games
-        public static FPGame GetNewFPGame(SSOracleBehavior self, int nr) //-1 if no game was selected yet
+        public static FPGame SSGetNewFPGame(SSOracleBehavior self, int nr) //-1 if no game was selected yet
         {
             if (amountOfGames != 0)
                 nr %= amountOfGames;
@@ -60,6 +60,18 @@ namespace FivePebblesPong
                 case 2: return new GrabDot(self);
                 //add new FPGames here
                 default: return null;
+            }
+        }
+        public static FPGame RMGetNewFPGame(MoreSlugcats.SSOracleRotBehavior self)
+        {
+            return new Pong(self);
+        }
+        public static FPGame SLGetNewFPGame(SLOracleBehavior self)
+        {
+            if (self.oracle.room.game.IsMoonHeartActive()) {
+                return new Pong(self);
+            } else {
+                return new Dino(self);
             }
         }
 
