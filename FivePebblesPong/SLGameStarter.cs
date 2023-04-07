@@ -79,6 +79,8 @@ namespace FivePebblesPong
                     //conversation active
                     if (self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).currentConversation != null)
                         break;
+                    if (self is SLOracleBehaviorHasMark && self.dialogBox != null && self.dialogBox.ShowingAMessage)
+                        break;
 
                     //player is messing with neurons
                     if (instantStop)
