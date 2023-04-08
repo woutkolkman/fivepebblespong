@@ -53,7 +53,8 @@ namespace FivePebblesPong
             if (this.gameCounter < 0)
                 this.gameCounter = 0;
 
-            p = Plugin.GetPlayer(self);
+            if (self != null)
+                p = Plugin.GetPlayer(self);
         }
 
 
