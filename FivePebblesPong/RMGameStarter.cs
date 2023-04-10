@@ -37,7 +37,7 @@ namespace FivePebblesPong
 
             //check if player is in front of projector/in the can
             Vector2 playAreaStart = new Vector2(1220, 800);
-            Vector2 playAreaEnd = new Vector2(1800, 1380);
+            Vector2 playAreaEnd = new Vector2(1850, 1380);
             if (p?.DangerPos != null)
                 playerLeft = p.DangerPos.x < playAreaStart.x || p.DangerPos.x > playAreaEnd.x || p.DangerPos.y < playAreaStart.y || p.DangerPos.y > playAreaEnd.y;
 
