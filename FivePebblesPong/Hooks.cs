@@ -148,6 +148,11 @@ namespace FivePebblesPong
             if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
+            if (self?.playerState == null || self?.room?.physicalObjects == null) {
+                Plugin.ME.Logger_p.LogInfo("PlayerCtorHook: Prevented rare exceptions");
+                return;
+            }
+
             if (self.playerState.playerNumber == 0) { //reset
                 gameControllerPebblesInShelter = false;
                 gameControllerMoonInShelter = false;
