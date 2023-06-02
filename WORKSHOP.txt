@@ -1,0 +1,6 @@
+Adds a game controller to Five Pebbles' room. If slugcat grabs it, Pebbles invites you to play Pong. Controls are the up and down keys. This mod does not alter existing dialogue or behavior.
+
+Added to all campaigns.
+
+Source code is here: https://github.com/woutkolkman/fivepebblespong/
+Originally ratrat44's idea: https://www.youtube.com/watch?v=X-k5ytvMFQ4
