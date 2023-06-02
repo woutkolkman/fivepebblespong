@@ -1,7 +1,7 @@
 {
   "id": "maxi-mol.fivepebblespong",
   "name": "Five Pebbles Pong",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "authors": "Maxi Mol",
   "description": "Adds a game controller to Five Pebbles' room. If slugcat grabs it, Pebbles invites you to play Pong. The controls are the up and down keys. This mod does not alter existing dialogue or behavior.",
   "youtube_trailer_id": "I4w8U9lszao",

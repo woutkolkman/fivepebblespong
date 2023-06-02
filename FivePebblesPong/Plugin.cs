@@ -8,7 +8,7 @@ using System.Security.Permissions;
 namespace FivePebblesPong
 {
     //also edit version in "modinfo.json"
-    [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.3")] //(GUID, mod name, mod version)
+    [BepInPlugin("maxi-mol.fivepebblespong", "Five Pebbles Pong", "1.0.4")] //(GUID, mod name, mod version)
     public class Plugin : BaseUnityPlugin
     {
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
@@ -16,6 +16,11 @@ namespace FivePebblesPong
         public Plugin() { __me = new WeakReference(this); }
         public static Plugin ME => __me?.Target as Plugin;
         public BepInEx.Logging.ManualLogSource Logger_p => Logger;
+
+        //reference metadata
+        public string GUID;
+        public string Name;
+        public string Version;
 
         public static bool HasEnumExt => (int)Enums.GameControllerPebbles > 0; //returns true after EnumExtender initializes
         private static bool IsEnabled = false;
@@ -29,6 +34,10 @@ namespace FivePebblesPong
 
             Enums.RegisterValues();
             Hooks.Apply();
+
+            GUID = Info.Metadata.GUID;
+            Name = Info.Metadata.Name;
+            Version = Info.Metadata.Version.ToString();
 
             Plugin.ME.Logger_p.LogInfo("OnEnable called");
         }

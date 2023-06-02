@@ -13,6 +13,9 @@ namespace FivePebblesPong
 
         public static void Apply()
         {
+            //initialize options
+            On.RainWorld.OnModsInit += RainWorldOnModsInitHook;
+
             //selects room to place GameController type
             On.Room.Loaded += RoomLoadedHook;
 
@@ -82,6 +85,14 @@ namespace FivePebblesPong
         public static void Unapply()
         {
             //TODO
+        }
+
+
+        //initialize options
+        static void RainWorldOnModsInitHook(On.RainWorld.orig_OnModsInit orig, RainWorld self)
+        {
+            orig(self);
+            MachineConnector.SetRegisteredOI(Plugin.ME.GUID, new Options());
         }
 
 
@@ -218,6 +229,20 @@ namespace FivePebblesPong
 
             if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
+
+            if (Options.pacifyPebbles?.Value == true &&
+                self?.action == SSOracleBehavior.Action.ThrowOut_KillOnSight &&
+                self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
+            {
+                self.action = Enums.Gaming_Gaming;
+                self.currSubBehavior = new SSOracleBehavior.SSSleepoverBehavior(self);
+                self.movementBehavior = SSOracleBehavior.MovementBehavior.Idle;
+                self.inActionCounter = 0;
+                self.dialogBox?.Interrupt("Never mind...", 0);
+                SSGameStarter.notFullyStartedCounter = 0;
+                Plugin.ME.Logger_p.LogInfo("SSOracleBehaviorUpdateHook: SlumberParty set");
+                return;
+            }
 
             //wait until slugcat can communicate
             if (self.timeSinceSeenPlayer <= 300 || !self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)

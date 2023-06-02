@@ -65,7 +65,7 @@ namespace FivePebblesPong
             if (state != State.Stop && stateBeforeRun == State.Stop)
             {
                 previousAction = self.action;
-                Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.action) + ": " + self.action.ToString());
+                Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.action) + ": " + self.action?.ToString());
                 previousSubBehavior = self.currSubBehavior;
                 Plugin.ME.Logger_p.LogInfo("Save " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
                 previousMovementBehavior = self.movementBehavior;
@@ -74,7 +74,7 @@ namespace FivePebblesPong
             if (state == State.Stop && state != stateBeforeRun && !preventActionOverride)
             {
                 self.action = previousAction;
-                Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action.ToString());
+                Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.action) + ": " + self.action?.ToString());
                 self.currSubBehavior = previousSubBehavior;
                 Plugin.ME.Logger_p.LogInfo("Restore " + nameof(self.currSubBehavior) + ": " + self.currSubBehavior.ToString());
                 self.movementBehavior = previousMovementBehavior;
@@ -119,7 +119,7 @@ namespace FivePebblesPong
                 case State.Stop: //main game conversation is running
 
                     //first Artificer encounter no games
-                    if (self.action.ToString().Equals("MeetArty_Init") || self.action.ToString().Equals("MeetArty_Talking"))
+                    if (self.action?.ToString().Equals("MeetArty_Init") == true || self.action?.ToString().Equals("MeetArty_Talking") == true)
                         break;
 
                     if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.notFullyStartedCounter < 4)
@@ -130,8 +130,8 @@ namespace FivePebblesPong
                 case State.StartDialog:
                     if (statePreviousRun != state)
                     {
-                        //no Pebbles games during Spearmaster campaign
-                        if (self.player.slugcatStats.name.ToString().Equals("Spear"))
+                        //no Pebbles games during Spearmaster campaign (and pacify is off)
+                        if (self.player.slugcatStats.name.ToString().Equals("Spear") && self.action != Enums.Gaming_Gaming)
                         {
                             self.dialogBox.Interrupt(self.Translate("No games. I am currently very busy."), 10);
                             if (SSGameStarter.notFullyStartedCounter < 4)
@@ -312,7 +312,7 @@ namespace FivePebblesPong
                 //======================================================
                 case State.Stop: //main game conversation is running
                     if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI") &&
-                        self.action.ToString().Equals("Moon_SlumberParty") && self.conversation == null && self.inspectPearl == null)
+                        self.action?.ToString().Equals("Moon_SlumberParty") == true && self.conversation == null && self.inspectPearl == null)
                         state = State.StartDialog;
                     break;
 
