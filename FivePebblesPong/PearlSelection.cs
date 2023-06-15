@@ -96,18 +96,25 @@ namespace FivePebblesPong
                     break;
 
                 case (Type.Binary):
-                    if (pearlsUsed > 16)
-                        pearlsUsed = 16;
+                    void AddPoints(int startX, bool add)
+                    {
+                        for (int i = 0; i < pearlsUsed/2; i++) {
+                            float x = (i * (lenX / (pearlsUsed/2)));
+                            x = add ? startX + x : startX - x;
+                            float y = (base.gameCounter & (1 << 3 + i)) != 0 ? maxY : minY;
+                            positions.Add(new Vector2(x, y));
+                        }
+                    }
+                    if (pearlsUsed > 32)
+                        pearlsUsed = 32;
                     base.minX = 240;
                     base.maxX = 760;
                     base.minY = 100;
                     base.maxY = 120;
-                    for (int i = 0; i < pearlsUsed; i++)
-                    {
-                        float x = minX + (i * (lenX / pearlsUsed));
-                        float y = (base.gameCounter & (1<<3+i)) != 0 ? maxY : minY;
-                        positions.Add(new Vector2(x, y));
-                    }
+                    AddPoints(minX, true);
+                    base.minY = 600;
+                    base.maxY = 580;
+                    AddPoints(maxX - (lenX / (pearlsUsed/2)), false);
                     break;
 
                 default:
