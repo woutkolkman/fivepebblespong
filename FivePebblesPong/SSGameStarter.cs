@@ -197,7 +197,7 @@ namespace FivePebblesPong
                         //finish calibration after X frames
                         bool finish = false;
                         showMediaCounter++;
-                        if (showMediaCounter > 100)
+                        if (showMediaCounter > 150)
                             finish = true;
 
                         //run animation, true ==> target location reached, "projector" is calibrated

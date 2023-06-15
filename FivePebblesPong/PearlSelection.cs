@@ -14,7 +14,8 @@ namespace FivePebblesPong
         public enum Type
         {
             SinusY,
-            SinXCosY
+            SinXCosY,
+            Binary
         }
         public Type type;
 
@@ -37,7 +38,12 @@ namespace FivePebblesPong
                         if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is PebblesPearl)
                             pearls.Add(c.realizedCreature.grasps[i].grabbed);
 
-            type = (UnityEngine.Random.value < 0.5f ? Type.SinusY : Type.SinXCosY);
+            switch (UnityEngine.Random.Range(0, 2))
+            {
+                case 0: type = Type.SinusY; break;
+                case 1: type = Type.Binary; break;
+                //case 99: type = Type.SinXCosY; break;
+            }
 
             //prevent showing pearl dialog
             self.pearlPickupReaction = false;
@@ -55,10 +61,12 @@ namespace FivePebblesPong
         {
             List<Vector2> positions = new List<Vector2>();
 
+            int pearlsUsed = pearls.Count;
             switch (type)
             {
                 case (Type.SinusY):
-                    int pearlsUsed = pearls.Count / 2;
+                    if (pearlsUsed > 19)
+                        pearlsUsed = 19;
                     base.minX = 240;
                     base.maxX = 760;
                     base.minY = 100;
@@ -76,13 +84,28 @@ namespace FivePebblesPong
                     base.maxX = 750;
                     base.minY = 90;
                     base.maxY = 610;
-                    for (int i = 0; i < pearls.Count; i++)
+                    for (int i = 0; i < pearlsUsed; i++)
                     {
-                        float time = ((i * 2 / (float)pearls.Count) + (float) base.gameCounter / 2000);
+                        float time = ((i * 2 / (float) pearlsUsed) + (float) base.gameCounter / 2000);
                         double formX = Math.Sin(4 * Math.PI * time);
                         double formY = Math.Cos(3 * Math.PI * time);
                         float x = midX + ((lenX/2) * (float) formX);
                         float y = midY + ((lenY/2) * (float) formY);
+                        positions.Add(new Vector2(x, y));
+                    }
+                    break;
+
+                case (Type.Binary):
+                    if (pearlsUsed > 16)
+                        pearlsUsed = 16;
+                    base.minX = 240;
+                    base.maxX = 760;
+                    base.minY = 100;
+                    base.maxY = 120;
+                    for (int i = 0; i < pearlsUsed; i++)
+                    {
+                        float x = minX + (i * (lenX / pearlsUsed));
+                        float y = (base.gameCounter & (1<<3+i)) != 0 ? maxY : minY;
                         positions.Add(new Vector2(x, y));
                     }
                     break;
