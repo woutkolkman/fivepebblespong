@@ -100,7 +100,7 @@ namespace FivePebblesPong
 
             //display score in rotating circle of pearls
             for (int i = 0; i < pearlTargets.Count && i < score; i++)
-                pearlTargets[i] = GetPosInCircle(new Vector2(midX, midY), scoreRadius, i, winScore);
+                pearlTargets[i] = PearlSelection.GetPosInCircle(base.gameCounter/20f, new Vector2(midX, midY), scoreRadius, i, winScore);
             if (dot != null && score >= 0 && score < pearlTargets.Count)
                 pearlTargets[score] = dot.pos + Vector2.zero;
             ps.Update(self, pearlTargets);
@@ -121,15 +121,6 @@ namespace FivePebblesPong
         {
             //update image positions
             dot?.DrawImage(offset);
-        }
-
-
-        public Vector2 GetPosInCircle(Vector2 center, int radius, int pearl, int maxPearls)
-        {
-            float offset = (2 * (float)Math.PI / maxPearls) * pearl;
-            float x = center.x + radius * (float)Math.Sin(offset + (float)base.gameCounter / 20);
-            float y = center.y + radius * (float)Math.Cos(offset + (float)base.gameCounter / 20);
-            return new Vector2(x, y);
         }
 
 
@@ -183,7 +174,7 @@ namespace FivePebblesPong
 
                 for (int i = 0; i < pearls.Count; i++) {
                     if (pearls[i].grabbedBy.Count <= 0) {
-                        pearls[i].firstChunk.pos = game.GetPosInCircle(pos, radius, i, pearls.Count);
+                        pearls[i].firstChunk.setPos = PearlSelection.GetPosInCircle(game.gameCounter/20f, pos, radius, i, pearls.Count);
                         pearls[i].firstChunk.vel = new Vector2();
                     }
                 }

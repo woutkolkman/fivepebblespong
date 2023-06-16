@@ -15,7 +15,8 @@ namespace FivePebblesPong
         {
             SinusY,
             SinXCosY,
-            Binary
+            Binary,
+            Circle
         }
         public Type type;
 
@@ -38,10 +39,11 @@ namespace FivePebblesPong
                         if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is PebblesPearl)
                             pearls.Add(c.realizedCreature.grasps[i].grabbed);
 
-            switch (UnityEngine.Random.Range(0, 2))
+            switch (UnityEngine.Random.Range(0, 3))
             {
                 case 0: type = Type.SinusY; break;
                 case 1: type = Type.Binary; break;
+                case 2: type = Type.Circle; break;
                 //case 99: type = Type.SinXCosY; break;
             }
 
@@ -117,6 +119,16 @@ namespace FivePebblesPong
                     AddPoints(maxX - (lenX / (pearlsUsed/2)), false);
                     break;
 
+                case (Type.Circle):
+                    if (pearlsUsed > 12)
+                        pearlsUsed = 12;
+                    int rad = lenX / 2 - 50;
+                    if (gameCounter > 80)
+                        teleport = true;
+                    for (int i = 0; i < pearlsUsed; i++)
+                        positions.Add(GetPosInCircle(gameCounter/40f, new Vector2(midX, midY), rad, -i, pearlsUsed + 2));
+                    break;
+
                 default:
                     break;
             }
@@ -155,7 +167,7 @@ namespace FivePebblesPong
                 float dist = Vector2.Distance(pearls[i].firstChunk.pos, positions[i]);
                 if (dist < 3f || teleport)
                 {
-                    pearls[i].firstChunk.pos = positions[i];
+                    pearls[i].firstChunk.setPos = positions[i];
                     pearls[i].firstChunk.vel = new Vector2();
                     continue;
                 }
@@ -171,6 +183,15 @@ namespace FivePebblesPong
                 pearls[i].firstChunk.vel.y /= (damping);
                 pearls[i].firstChunk.vel += multiplier * Custom.DirVec(pearls[i].firstChunk.pos, positions[i]);
             }
+        }
+
+
+        public static Vector2 GetPosInCircle(float counter, Vector2 center, int radius, int pearl, int maxPearls)
+        {
+            float offset = (2 * (float)Math.PI / maxPearls) * pearl;
+            float x = center.x + radius * (float)Math.Sin(offset + counter);
+            float y = center.y + radius * (float)Math.Cos(offset + counter);
+            return new Vector2(x, y);
         }
     }
 }
