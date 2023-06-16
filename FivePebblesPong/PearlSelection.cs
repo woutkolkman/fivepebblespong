@@ -16,7 +16,8 @@ namespace FivePebblesPong
             SinusY,
             SinXCosY,
             Binary,
-            Circle
+            Circle,
+            SinXCosYTrain
         }
         public Type type;
 
@@ -33,7 +34,8 @@ namespace FivePebblesPong
                 case 0: type = Type.SinusY; break;
                 case 1: type = Type.Binary; break;
                 case 2: type = Type.Circle; break;
-                //case 99: type = Type.SinXCosY; break;
+                case 3: type = Type.SinXCosYTrain; break;
+                //case 3: type = Type.SinXCosY; break;
             }
 
             //prevent showing pearl dialog
@@ -89,14 +91,17 @@ namespace FivePebblesPong
                     }
                     break;
 
+                case (Type.SinXCosYTrain):
                 case (Type.SinXCosY):
+                    if (type == Type.SinXCosYTrain && pearlsUsed > 14)
+                        pearlsUsed = 14;
                     base.minX = 230;
                     base.maxX = 750;
                     base.minY = 90;
                     base.maxY = 610;
                     for (int i = 0; i < pearlsUsed; i++)
                     {
-                        float time = ((i * 2 / (float) pearlsUsed) + (float) base.gameCounter / 2000);
+                        float time = ((-i * 2 / (float) pearls.Count) + (float) base.gameCounter / (type == Type.SinXCosYTrain ? 500 : 2000));
                         double formX = Math.Sin(4 * Math.PI * time);
                         double formY = Math.Cos(3 * Math.PI * time);
                         float x = midX + ((lenX/2) * (float) formX);
