@@ -29,14 +29,14 @@ namespace FivePebblesPong
             //gather pearls from current room
             for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
                 for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
-                    if (self.oracle.room.physicalObjects[i][j] is PebblesPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
+                    if (self.oracle.room.physicalObjects[i][j] is DataPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
                         pearls.Add(self.oracle.room.physicalObjects[i][j]);
 
             //gather pearls from creature grasps
             if (addGrabbedPearls)
                 foreach (AbstractCreature c in self.oracle.room.abstractRoom.creatures)
                     for (int i = 0; i < c.realizedCreature.grasps.Length; i++)
-                        if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is PebblesPearl)
+                        if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is DataPearl)
                             pearls.Add(c.realizedCreature.grasps[i].grabbed);
 
             switch (UnityEngine.Random.Range(0, 3))
@@ -123,7 +123,7 @@ namespace FivePebblesPong
                     if (pearlsUsed > 12)
                         pearlsUsed = 12;
                     int rad = lenX / 2 - 50;
-                    if (gameCounter > 80)
+                    if (gameCounter > 120)
                         teleport = true;
                     for (int i = 0; i < pearlsUsed; i++)
                         positions.Add(GetPosInCircle(gameCounter/40f, new Vector2(midX, midY), rad, -i, pearlsUsed + 2));
@@ -168,7 +168,7 @@ namespace FivePebblesPong
                 if (dist < 3f || teleport)
                 {
                     pearls[i].firstChunk.setPos = positions[i];
-                    pearls[i].firstChunk.vel = new Vector2();
+                    pearls[i].firstChunk.vel = positions[i] - pearls[i].firstChunk.pos;
                     continue;
                 }
 

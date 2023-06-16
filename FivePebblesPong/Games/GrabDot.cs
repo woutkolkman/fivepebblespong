@@ -174,7 +174,7 @@ namespace FivePebblesPong
 
                 for (int i = 0; i < pearls.Count; i++) {
                     if (pearls[i].grabbedBy.Count <= 0) {
-                        pearls[i].firstChunk.setPos = PearlSelection.GetPosInCircle(game.gameCounter/20f, pos, radius, i, pearls.Count);
+                        pearls[i].firstChunk.setPos = PearlSelection.GetPosInCircle(game.gameCounter/10f, pos, radius, i, pearls.Count);
                         pearls[i].firstChunk.vel = new Vector2();
                     }
                 }
