@@ -146,7 +146,8 @@ namespace FivePebblesPong
             //update score
             if (self is SSOracleBehavior)
                 scoreBoard?.Update(self as SSOracleBehavior, scoreCount);
-            if (!grabbedScoreReacted && playerWin <= 0 && scoreBoard != null && scoreBoard.pearlGrabbed != -1)
+            if (!grabbedScoreReacted && scoreBoard != null && scoreBoard.pearlGrabbed >= 0 &&
+                scoreCount.Count > scoreBoard.pearlGrabbed && scoreCount[scoreBoard.pearlGrabbed].x > midX)
             {
                 grabbedScoreReacted = true;
 
