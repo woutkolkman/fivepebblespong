@@ -206,6 +206,18 @@ namespace FivePebblesPong
                         if (this.border.image.alpha <= 0f)
                             this.border.Destroy();
                     }
+
+                    //reaction if all pearls are used
+                    if (state != State.Playing && self is SSOracleBehavior && scoreBoard?.pearls?.Count > 0) {
+                        if (scoreCount.Count + 1 == scoreBoard.pearls.Count)
+                            scoreBoard.RefreshPearlsInRoom(self as SSOracleBehavior);
+                        if (scoreCount.Count + 1 == scoreBoard.pearls.Count) {
+                            if (self.oracle.ID == Oracle.OracleID.SS)
+                                dialogBox.Interrupt(self.Translate("It looks like we used all pearls." + (playerWin == 0 ? " Git gud." : "")), 10);
+                            if (self.oracle.ID.ToString().Equals("DM"))
+                                dialogBox.Interrupt(self.Translate("Now that's a lot of playtime!"), 10);
+                        }
+                    }
                     break;
 
                 //======================================================
@@ -339,12 +351,12 @@ namespace FivePebblesPong
             if (state == State.PlayerWin && moonDifficulty < 1f)
                 moonDifficulty += 0.1f;
             if (state == State.PebblesWin && moonDifficulty > 0.3f)
-                moonDifficulty -= 0.1f;
+                moonDifficulty -= 0.12f;
+            moonDifficulty = Mathf.Clamp(moonDifficulty, 0.3f, 1f);
             if (state == State.PlayerWin || state == State.PebblesWin)
                 Plugin.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
 
-            if (this.gameCounter % 15 == 0)
-            {
+            if (this.gameCounter % 15 == 0) {
                 moonInputDisabled = (UnityEngine.Random.value > moonDifficulty);
                 if (ball.velocityX < 0) //ball moves away from puppet
                     moonDelay = 15 - (int)(15 * moonDifficulty);

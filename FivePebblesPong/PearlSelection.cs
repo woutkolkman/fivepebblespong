@@ -26,18 +26,7 @@ namespace FivePebblesPong
             this.pearlGrabbed = -1;
             this.pearls = new List<PhysicalObject>();
 
-            //gather pearls from current room
-            for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
-                for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
-                    if (self.oracle.room.physicalObjects[i][j] is DataPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
-                        pearls.Add(self.oracle.room.physicalObjects[i][j]);
-
-            //gather pearls from creature grasps
-            if (addGrabbedPearls)
-                foreach (AbstractCreature c in self.oracle.room.abstractRoom.creatures)
-                    for (int i = 0; i < c.realizedCreature.grasps.Length; i++)
-                        if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is DataPearl)
-                            pearls.Add(c.realizedCreature.grasps[i].grabbed);
+            RefreshPearlsInRoom(self, addGrabbedPearls);
 
             switch (UnityEngine.Random.Range(0, 3))
             {
@@ -56,6 +45,25 @@ namespace FivePebblesPong
         {
             pearls.Clear();
             base.Destroy(); //if not done already
+        }
+
+
+        public void RefreshPearlsInRoom(SSOracleBehavior self, bool addGrabbedPearls = false)
+        {
+            pearls.Clear();
+
+            //gather pearls from current room
+            for (int i = 0; i < self.oracle.room.physicalObjects.Length; i++)
+                for (int j = 0; j < self.oracle.room.physicalObjects[i].Count; j++)
+                    if (self.oracle.room.physicalObjects[i][j] is DataPearl && self.oracle.room.physicalObjects[i][j].grabbedBy.Count <= 0)
+                        pearls.Add(self.oracle.room.physicalObjects[i][j]);
+
+            //gather pearls from creature grasps
+            if (addGrabbedPearls)
+                foreach (AbstractCreature c in self.oracle.room.abstractRoom.creatures)
+                    for (int i = 0; i < c.realizedCreature.grasps.Length; i++)
+                        if (c.realizedCreature.grasps[i] != null && c.realizedCreature.grasps[i].grabbed is DataPearl)
+                            pearls.Add(c.realizedCreature.grasps[i].grabbed);
         }
 
 
