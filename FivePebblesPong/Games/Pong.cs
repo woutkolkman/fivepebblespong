@@ -77,12 +77,19 @@ namespace FivePebblesPong
         {
             float playerY = leftPdl != null ? leftPdl.pos.y : midY;
             float pebblesY = rightPdl != null ? rightPdl.pos.y : midY;
-            leftPdl?.Destroy();
-            rightPdl?.Destroy();
             int paddleOffset = 260;
-            this.leftPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? SlugcatStats.Name.White), 10, reloadImg: true);
+
+            leftPdl?.Destroy();
+            Color paddleColor = (hrMode ?
+                new Color(0.44705883f, 0.9019608f, 0.76862746f) : //5P overseer color
+                PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? SlugcatStats.Name.White)
+            );
+            int playerPaddleThickness = hrMode ? 2 : 10;
+            this.leftPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", paddleColor, playerPaddleThickness, reloadImg: true);
             this.leftPdl.pos = new Vector2(midX - paddleOffset, playerY);
-            Color paddleColor = (self.oracle.ID == Oracle.OracleID.SS ?
+
+            rightPdl?.Destroy();
+            paddleColor = (self.oracle.ID == Oracle.OracleID.SS && !hrMode ?
                 new Color(0.44705883f, 0.9019608f, 0.76862746f) : //5P overseer color
                 new Color(1f, 0.8f, 0.3f) //Moon overseer color
             );
