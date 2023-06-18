@@ -115,8 +115,21 @@ namespace FivePebblesPong
         }
 
 
+        private int leftPdlInput = 0;
         public override void Update(OracleBehavior self)
         {
+            //Rubicon, move puppet and look at ball
+            if (hrMode && self.oracle.ID == Oracle.OracleID.SS) {
+                if (!(self is SSOracleBehavior))
+                    return;
+                self.lookPoint = (state == State.Playing || hrMode) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
+                (self as SSOracleBehavior).SetNewDestination(leftPdl.pos); //moves handle closer occasionally
+                (self as SSOracleBehavior).currentGetTo = leftPdl.pos;
+                (self as SSOracleBehavior).currentGetTo.y += leftPdlInput * leftPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                (self as SSOracleBehavior).floatyMovement = false;
+                return;
+            }
+
             base.Update(self);
 
             //increase ball speed gradually
@@ -134,22 +147,23 @@ namespace FivePebblesPong
                     self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
 
             //update paddles
-            int pebblesInput = (self.oracle.ID == Oracle.OracleID.SS) ? PebblesAI() : MoonAI();
-            if (rightPdl.Update(0, pebblesInput, ball)) //if ball is hit
+            int rightPdlInput = (self.oracle.ID == Oracle.OracleID.SS || hrMode) ? PebblesAI() : MoonAI();
+            if (rightPdl.Update(0, rightPdlInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
-            if (leftPdl.Update(0, (p?.input[0].y ?? 0), ball)) //if ball is hit
+            leftPdlInput = doubleAI ? PebblesAI() : (p?.input[0].y ?? 0);
+            if (leftPdl.Update(0, leftPdlInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
-            self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
+            self.lookPoint = (state == State.Playing || hrMode) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
             if (self is SSOracleBehavior) {
                 (self as SSOracleBehavior).SetNewDestination(rightPdl.pos); //moves handle closer occasionally
                 (self as SSOracleBehavior).currentGetTo = rightPdl.pos;
-                (self as SSOracleBehavior).currentGetTo.y += pebblesInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                (self as SSOracleBehavior).currentGetTo.y += rightPdlInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 (self as SSOracleBehavior).floatyMovement = false;
             } else if (self is SLOracleBehavior) {
                 Hooks.SLOracleGetToPosOverride = rightPdl.pos; //updates in functions SLOracleBehaviorHasMark_OracleGetToPos_get and SLOracleBehaviorNoMark_OracleGetToPos_get
-                Hooks.SLOracleGetToPosOverride.y += 16f /*SL specific*/ + pebblesInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                Hooks.SLOracleGetToPosOverride.y += 16f /*SL specific*/ + rightPdlInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 if (Hooks.SLOracleGetToPosOverride.y < 150f) //Moon doesn't like cold water
                     Hooks.SLOracleGetToPosOverride.y = 150f;
                 SLGameStarter.forceFlightMode = true; //updates in function DefaultSLOracleBehavior
