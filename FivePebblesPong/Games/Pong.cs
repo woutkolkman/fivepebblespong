@@ -25,6 +25,8 @@ namespace FivePebblesPong
         public float startSpeed = 6f;
         public int pebblesUpdateRate = 8; //calculate ball trajectory every X frames
         public bool waterMoonReacted = false;
+        private bool hrMode; //pebbles gets moved to left paddle
+        public bool doubleAI = false; //double AI in Rubicon
 
 
         public enum State
@@ -39,6 +41,10 @@ namespace FivePebblesPong
 
         public Pong(OracleBehavior self) : base(self)
         {
+            hrMode = self.oracle?.room?.roomSettings?.name?.Equals("HR_AI") ?? false;
+            if (hrMode)
+                doubleAI = true;
+
             if (self is SSOracleBehavior) { //the only place where border acts as intended (fading)
                 this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
                 this.border.pos = new Vector2(midX, midY);
@@ -55,7 +61,7 @@ namespace FivePebblesPong
             this.line = new PongLine(self, false, lenY, 2, 18, Color.white, "FPP_Line", reloadImg: true);
             this.line.pos = new Vector2(midX, midY);
 
-            if (self is SSOracleBehavior)
+            if (self is SSOracleBehavior && !hrMode)
                 scoreBoard = new PearlSelection(self as SSOracleBehavior);
             scoreCount = new List<Vector2>();
         }
@@ -227,6 +233,8 @@ namespace FivePebblesPong
                     playerLastWin = true;
                     scoreCount.Add(new Vector2(midX - 60 - 15 * (playerWin % 10), SCORE_HEIGHT + 15 * (playerWin / 10)));
                     playerWin++;
+                    if (hrMode)
+                        break;
                     if (compliment) {
                         compliment = false;
                         if (self.oracle.ID == Oracle.OracleID.SS) {
@@ -249,6 +257,8 @@ namespace FivePebblesPong
                     playerLastWin = false;
                     scoreCount.Add(new Vector2(midX + 60 + 15 * (pebblesWin % 10), SCORE_HEIGHT + 15 * (pebblesWin / 10)));
                     pebblesWin++;
+                    if (hrMode)
+                        break;
                     if (self is SSOracleBehavior && //remove this if MoreSlugcats.SSOracleRotBehavior should also have this behavior
                         self.oracle.ID == Oracle.OracleID.SS) {
                         if (pebblesWin == 10) {
