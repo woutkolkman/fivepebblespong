@@ -83,6 +83,10 @@ namespace FivePebblesPong
                 return new Dino(self);
             }
         }
+        public static FPGame HRGetNewFPGame(SSOracleBehavior self)
+        {
+            return new Pong(self);
+        }
 
 
         //get player with controller

@@ -5,12 +5,13 @@ namespace FivePebblesPong
 {
     public class Options : OptionInterface
     {
-        public static Configurable<bool> pacifyPebbles;
+        public static Configurable<bool> pacifyPebbles, hrPong;
 
 
         public Options()
         {
             pacifyPebbles = config.Bind("pacifyPebbles", defaultValue: false, info: new ConfigurableInfo("Change behavior to SlumberParty when kill-on-sight action is reached. Only works with the mark (because of limitations).\nThere may be exceptions if you don't use Downpour, but it shouldn't crash the game.", null, "", "Pacify Five Pebbles"));
+            hrPong = config.Bind("hrPong", defaultValue: true, info: new ConfigurableInfo("Pebbles and Moon play Pong in Rubicon before you enter.", null, "", "HR Pong (SPOILER)"));
         }
 
 
@@ -23,6 +24,7 @@ namespace FivePebblesPong
             };
             AddTitle();
             AddCheckbox(pacifyPebbles, 500f);
+            AddCheckbox(hrPong, 460f);
         }
 
 

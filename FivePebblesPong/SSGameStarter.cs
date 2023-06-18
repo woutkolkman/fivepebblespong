@@ -194,7 +194,9 @@ namespace FivePebblesPong
                 case State.Calibrate: //calibratedProjector should be false if calibration should run
                     if (state != statePreviousRun)
                         game?.Update(self); //update once to optionally spawn game objects
-                    if (!SSGameStarter.calibratedProjector && game != null)
+                    if (game == null)
+                        SSGameStarter.calibratedProjector = true;
+                    if (!SSGameStarter.calibratedProjector)
                     {
                         //finish calibration after X frames
                         bool finish = false;

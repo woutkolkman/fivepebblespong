@@ -216,6 +216,7 @@ namespace FivePebblesPong
             SSGameStarter.controllerInStomachReacted = false;
             SSGameStarter.controllerThrownReacted = false;
             SSGameStarter.starter = null;
+            HRGameStarter.starter = null;
             Plugin.currentPlayer = null; //fix for bug where game starts without controller
         }
 
@@ -228,6 +229,16 @@ namespace FivePebblesPong
             if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
+            //rubicon custom behavior
+            if (self.action == MoreSlugcats.MoreSlugcatsEnums.SSOracleBehaviorAction.Rubicon &&
+                self.currSubBehavior is SSOracleBehavior.SSOracleRubicon)
+            {
+                if (Options.hrPong?.Value != false)
+                    SSOracleRubiconUpdate(self);
+                return;
+            }
+
+            //pacify pebbles option
             if (Options.pacifyPebbles?.Value == true &&
                 self?.action == SSOracleBehavior.Action.ThrowOut_KillOnSight &&
                 self.oracle.room.game.GetStorySession.saveState.deathPersistentSaveData.theMark)
@@ -267,6 +278,24 @@ namespace FivePebblesPong
 
             //run state machine for starting/running/stopping games
             SSGameStarter.starter?.StateMachine(self);
+        }
+
+
+        public static void SSOracleRubiconUpdate(SSOracleBehavior self)
+        {
+            if (self.oracle?.room?.game?.IsStorySession != true)
+                return;
+            DeathPersistentSaveData saveData = (self.oracle.room.game.session as StoryGameSession)?.saveState?.deathPersistentSaveData;
+            if (saveData == null || !saveData.ripMoon || !saveData.ripPebbles)
+                return;
+
+            if ((self.currSubBehavior as SSOracleBehavior.SSOracleRubicon).noticedPlayer) {
+                if (HRGameStarter.starter?.state == HRGameStarter.State.Stop && HRGameStarter.starter?.game == null)
+                    HRGameStarter.starter = null;
+            } else if (HRGameStarter.starter == null){
+                HRGameStarter.starter = new HRGameStarter();
+            }
+            HRGameStarter.starter?.StateMachine(self);
         }
 
         

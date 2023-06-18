@@ -36,6 +36,13 @@ namespace FivePebblesPong
                     minY = 40;
                     maxY = 620;
                 }
+                if (self.oracle.room.roomSettings.name.Equals("HR_AI"))
+                {
+                    minX = 200;
+                    maxX = 780;
+                    minY = 140;
+                    maxY = 720;
+                }
             }
 
             if (self != null)

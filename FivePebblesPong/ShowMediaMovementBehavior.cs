@@ -6,9 +6,16 @@ namespace FivePebblesPong
 {
     public class ShowMediaMovementBehavior
     {
-        public Vector2 showMediaPos = new Vector2();
-        private Vector2 idealShowMediaPos = new Vector2();
+        public Vector2 showMediaPos;
+        private Vector2 idealShowMediaPos;
         private int consistentShowMediaPosCounter = 0;
+
+
+        public ShowMediaMovementBehavior(Vector2 startPos = new Vector2())
+        {
+            showMediaPos = startPos;
+            idealShowMediaPos = startPos;
+        }
 
 
         //returns true if done

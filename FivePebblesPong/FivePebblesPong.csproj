@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="HRGameStarter.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="GameController.cs" />
