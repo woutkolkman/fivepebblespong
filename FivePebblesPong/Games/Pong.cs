@@ -6,8 +6,7 @@ namespace FivePebblesPong
 {
     public class Pong : FPGame
     {
-        public PongPaddle leftPdl;
-        public PongPaddle rightPdl;
+        public PongPaddle leftPdl, rightPdl;
         public PongBall ball;
         public PongLine line;
         public SquareBorderMark border;
@@ -23,10 +22,11 @@ namespace FivePebblesPong
         public static bool grabbedScoreReacted = false;
         public float ballAccel = 0.003f;
         public float startSpeed = 6f;
-        public int pebblesUpdateRate = 8; //calculate ball trajectory every X frames
+        public int pebblesUpdateRate = 6; //calculate ball trajectory every X ticks
         public bool waterMoonReacted = false;
         private bool hrMode; //pebbles gets moved to left paddle
         public bool doubleAI = false; //double AI in Rubicon
+        private PongAI rightPdlAI, leftPdlAI;
 
 
         public enum State
@@ -44,6 +44,8 @@ namespace FivePebblesPong
             hrMode = self.oracle?.room?.roomSettings?.name?.Equals("HR_AI") ?? false;
             if (hrMode)
                 doubleAI = true;
+            rightPdlAI = new PongAI(this, false);
+            leftPdlAI = new PongAI(this, true);
 
             if (self is SSOracleBehavior) { //the only place where border acts as intended (fading)
                 this.border = new SquareBorderMark(self, base.maxX - base.minX, base.maxY - base.minY, "FPP_Border", reloadImg: true);
@@ -98,7 +100,10 @@ namespace FivePebblesPong
             this.rightPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
 
             //reset random offset, else next ball could be missed
-            this.randomOffsY = 0f;
+            if (rightPdlAI != null)
+                rightPdlAI.randomOffsY = 0f;
+            if (leftPdlAI != null)
+                leftPdlAI.randomOffsY = 0f;
         }
 
 
@@ -118,7 +123,7 @@ namespace FivePebblesPong
         private int leftPdlInput = 0;
         public override void Update(OracleBehavior self)
         {
-            //Rubicon, move puppet and look at ball
+            //Rubicon, move puppet and look at player/ball
             if (hrMode && self.oracle.ID == Oracle.OracleID.SS) {
                 if (!(self is SSOracleBehavior))
                     return;
@@ -127,7 +132,7 @@ namespace FivePebblesPong
                 (self as SSOracleBehavior).currentGetTo = leftPdl.pos;
                 (self as SSOracleBehavior).currentGetTo.y += leftPdlInput * leftPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 (self as SSOracleBehavior).floatyMovement = false;
-                return;
+                return; //Pong.Update is now called twice a tick, so return to prevent speeding up the game
             }
 
             base.Update(self);
@@ -147,10 +152,10 @@ namespace FivePebblesPong
                     self.oracle.room.PlaySound(SoundID.MENY_Already_Selected_MultipleChoice_Clicked, self.oracle.firstChunk);
 
             //update paddles
-            int rightPdlInput = (self.oracle.ID == Oracle.OracleID.SS || hrMode) ? PebblesAI() : MoonAI();
+            int rightPdlInput = (self.oracle.ID == Oracle.OracleID.SS || hrMode) ? rightPdlAI.PebblesAI() : rightPdlAI.MoonAI();
             if (rightPdl.Update(0, rightPdlInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
-            leftPdlInput = doubleAI ? PebblesAI() : (p?.input[0].y ?? 0);
+            leftPdlInput = doubleAI ? leftPdlAI.PebblesAI() : (p?.input[0].y ?? 0);
             if (leftPdl.Update(0, leftPdlInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
@@ -310,96 +315,113 @@ namespace FivePebblesPong
         }
 
 
-        private float predY;
-        private float randomOffsY;
-        private bool newRandomOffsY;
-        public int PebblesAI()
+        private class PongAI
         {
-            //if (false) //player controlled
-            //    return self.player.input[0].y;
+            public Pong game;
+            private bool invert; //if true, paddle is on left side of screen
 
-            const int deadband = 5; //avoids paddle oscillation
-            bool once = false;
 
-            //https://stackoverflow.com/questions/61139016/how-to-predict-trajectory-of-ball-in-a-ping-pong-game-for-ai-paddle-prediction
-            if (base.gameCounter % pebblesUpdateRate == 0) //only execute every <pebblesUpdateRate> frames
+            public PongAI(Pong game, bool leftSide)
             {
-                if (ball.velocityX > 0) //if ball moves towards Pebbles
+                this.game = game;
+                this.invert = leftSide;
+            }
+
+
+            private float predY;
+            public float randomOffsY;
+            private bool newRandomOffsY;
+            public int PebblesAI()
+            {
+                //if (false) //player controlled
+                //    return self.player.input[0].y;
+
+                PongPaddle paddle = invert ? game.leftPdl : game.rightPdl;
+                const int deadband = 5; //avoids paddle oscillation
+                bool once = false;
+
+                //https://stackoverflow.com/questions/61139016/how-to-predict-trajectory-of-ball-in-a-ping-pong-game-for-ai-paddle-prediction
+                if (game.gameCounter % game.pebblesUpdateRate == 0) //only execute every <pebblesUpdateRate> frames
                 {
-                    //height ball position area
-                    float mHeight = base.lenY - (2 * ball.radius);
+                    if (invert ^ game.ball.velocityX > 0) //if ball moves towards paddle
+                    {
+                        //height ball position area
+                        float mHeight = game.lenY - (2 * game.ball.radius);
 
-                    //deltaY per X
-                    float slope = ball.velocityY / ball.velocityX;
-                    if (float.IsInfinity(slope) || float.IsNegativeInfinity(slope))
-                        slope = 0; //should never run with ballBounceAngle applied
+                        //deltaY per X
+                        float slope = game.ball.velocityY / game.ball.velocityX;
+                        if (float.IsInfinity(slope) || float.IsNegativeInfinity(slope))
+                            slope = 0; //should never run with ballBounceAngle applied
 
-                    //distance towards paddle
-                    float deltaX = rightPdl.pos.x - rightPdl.width / 2 - ball.radius - ball.pos.x;
+                        //distance towards paddle
+                        float deltaX = paddle.pos.x - game.ball.pos.x;
+                        float objRadius = paddle.width / 2 + game.ball.radius;
+                        deltaX = invert ? deltaX + objRadius : deltaX - objRadius;
 
-                    //predict intercept point without walls
-                    float intercept = Math.Abs((ball.pos.y - ball.minY - ball.radius) + (deltaX * slope));
-                    predY = (intercept % (2 * mHeight));
+                        //predict intercept point without walls
+                        float intercept = Math.Abs((game.ball.pos.y - game.ball.minY - game.ball.radius) + (deltaX * slope));
+                        predY = (intercept % (2 * mHeight));
 
-                    //remove walls and ballradius
-                    if (predY > (mHeight))
-                        predY = (2 * mHeight) - predY;
-                    predY += ball.minY + ball.radius;
+                        //remove walls and ballradius
+                        if (predY > (mHeight))
+                            predY = (2 * mHeight) - predY;
+                        predY += game.ball.minY + game.ball.radius;
 
-                    newRandomOffsY = true;
+                        newRandomOffsY = true;
+                    }
+                    else
+                    { //ball moves away from paddle
+                        predY = game.midY;
+                        if (newRandomOffsY && UnityEngine.Random.value < 0.7f)
+                            once = true;
+                        newRandomOffsY = false;
+                    }
                 }
-                else
-                { //ball moves away from Pebbles
-                    predY = base.midY;
-                    if (newRandomOffsY && UnityEngine.Random.value < 0.7f)
-                        once = true;
-                    newRandomOffsY = false;
+
+                //at random interval a random offset from predicted ball intercept
+                if (once || UnityEngine.Random.value < 0.002f)
+                {
+                    once = false;
+                    float allowed = (paddle.height / 2) - deadband;
+                    randomOffsY = allowed * UnityEngine.Random.Range(-1f, 1f);
                 }
+
+                if (predY + randomOffsY > paddle.pos.y + deadband)
+                    return 1;
+                if (predY + randomOffsY < paddle.pos.y - deadband)
+                    return -1;
+                return 0;
             }
 
-            //at random interval a random offset from predicted ball intercept
-            if (once || UnityEngine.Random.value < 0.002f)
+
+            public float moonDifficulty = 0.7f;
+            private bool moonInputDisabled;
+            private int moonDelay;
+            public int MoonAI()
             {
-                once = false;
-                float allowed = (rightPdl.height / 2) - deadband;
-                randomOffsY = allowed * UnityEngine.Random.Range(-1f, 1f);
+                int input = PebblesAI();
+
+                if (game.state == State.PlayerWin && moonDifficulty < 1f)
+                    moonDifficulty += 0.1f;
+                if (game.state == State.PebblesWin && moonDifficulty > 0.3f)
+                    moonDifficulty -= 0.12f;
+                moonDifficulty = Mathf.Clamp(moonDifficulty, 0.3f, 1f);
+                if (game.state == State.PlayerWin || game.state == State.PebblesWin)
+                    Plugin.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
+
+                if (game.gameCounter % 15 == 0) {
+                    moonInputDisabled = (UnityEngine.Random.value > moonDifficulty);
+                    if (game.ball.velocityX < 0) //ball moves away from puppet
+                        moonDelay = 15 - (int)(15 * moonDifficulty);
+                }
+
+                if (game.ball.velocityX > 0 && moonDelay > 0) //ball moves towards puppet
+                    moonDelay--;
+                if ((game.ball.velocityX > 0 && moonDelay > 0) || moonInputDisabled)
+                    input = 0;
+
+                return input;
             }
-
-            if (predY + randomOffsY > rightPdl.pos.y + deadband)
-                return 1;
-            if (predY + randomOffsY < rightPdl.pos.y - deadband)
-                return -1;
-            return 0;
-        }
-
-
-        public float moonDifficulty = 0.7f;
-        private bool moonInputDisabled;
-        private int moonDelay;
-        public int MoonAI()
-        {
-            int input = PebblesAI();
-
-            if (state == State.PlayerWin && moonDifficulty < 1f)
-                moonDifficulty += 0.1f;
-            if (state == State.PebblesWin && moonDifficulty > 0.3f)
-                moonDifficulty -= 0.12f;
-            moonDifficulty = Mathf.Clamp(moonDifficulty, 0.3f, 1f);
-            if (state == State.PlayerWin || state == State.PebblesWin)
-                Plugin.ME.Logger_p.LogInfo("New moonDifficulty: " + moonDifficulty);
-
-            if (this.gameCounter % 15 == 0) {
-                moonInputDisabled = (UnityEngine.Random.value > moonDifficulty);
-                if (ball.velocityX < 0) //ball moves away from puppet
-                    moonDelay = 15 - (int)(15 * moonDifficulty);
-            }
-
-            if (ball.velocityX > 0 && moonDelay > 0) //ball moves towards puppet
-                moonDelay--;
-            if ((ball.velocityX > 0 && moonDelay > 0) || moonInputDisabled)
-                input = 0;
-
-            return input;
         }
     }
 }
