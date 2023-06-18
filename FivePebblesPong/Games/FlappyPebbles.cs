@@ -45,7 +45,10 @@ namespace FivePebblesPong
         public override void Update(SSOracleBehavior self)
         {
             base.Update(self);
+
+            //room and puppet
             palette = started ? 25 : 26;
+            self.lookPoint = started ? new Vector2(maxX, midY) : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
 
             //read player input
             int pY = p?.input[0].y ?? 0;
@@ -56,16 +59,13 @@ namespace FivePebblesPong
             //start/stop game and check input
             if (!prevInput && input) {
                 jump = true;
+                if (!started)
+                    Reset();
                 started = true;
             }
             prevInput = input;
-
-            //reset position
-            if (!started) {
-                pos.y = midY;
-                dot.pos = pos;
+            if (!started)
                 return;
-            }
 
             //positioning and hitboxes
             if (jump) {
@@ -89,6 +89,17 @@ namespace FivePebblesPong
 
             for (int i = 0; i < pipes.Count; i++)
                 pipes[i]?.DrawImage(offset);
+        }
+
+
+        public void Reset()
+        {
+            for (int i = 0; i < pipes.Count; i++)
+                pipes[i]?.Destroy();
+            pipes?.Clear();
+            pos.y = midY;
+            dot.pos = pos;
+            base.gameCounter = 0;
         }
     }
 }
