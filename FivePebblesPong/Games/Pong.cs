@@ -6,8 +6,8 @@ namespace FivePebblesPong
 {
     public class Pong : FPGame
     {
-        public PongPaddle playerPdl;
-        public PongPaddle pebblesPdl;
+        public PongPaddle leftPdl;
+        public PongPaddle rightPdl;
         public PongBall ball;
         public PongLine line;
         public SquareBorderMark border;
@@ -75,20 +75,20 @@ namespace FivePebblesPong
 
         public void CreatePaddles(OracleBehavior self, int playerPdlHeight, int pebblesPdlHeight, int pdlWidth)
         {
-            float playerY = playerPdl != null ? playerPdl.pos.y : midY;
-            float pebblesY = pebblesPdl != null ? pebblesPdl.pos.y : midY;
-            playerPdl?.Destroy();
-            pebblesPdl?.Destroy();
+            float playerY = leftPdl != null ? leftPdl.pos.y : midY;
+            float pebblesY = rightPdl != null ? rightPdl.pos.y : midY;
+            leftPdl?.Destroy();
+            rightPdl?.Destroy();
             int paddleOffset = 260;
-            this.playerPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? SlugcatStats.Name.White), 10, reloadImg: true);
-            this.playerPdl.pos = new Vector2(midX - paddleOffset, playerY);
+            this.leftPdl = new PongPaddle(self, this, pdlWidth, playerPdlHeight, "FPP_Player", PlayerGraphics.SlugcatColor(p?.playerState?.slugcatCharacter ?? SlugcatStats.Name.White), 10, reloadImg: true);
+            this.leftPdl.pos = new Vector2(midX - paddleOffset, playerY);
             Color paddleColor = (self.oracle.ID == Oracle.OracleID.SS ?
                 new Color(0.44705883f, 0.9019608f, 0.76862746f) : //5P overseer color
                 new Color(1f, 0.8f, 0.3f) //Moon overseer color
             );
             int pebblesPaddleThickness = (self is MoreSlugcats.SSOracleRotBehavior ? 10 : 2);
-            this.pebblesPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", paddleColor, pebblesPaddleThickness, reloadImg: true);
-            this.pebblesPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
+            this.rightPdl = new PongPaddle(self, this, pdlWidth, pebblesPdlHeight, "FPP_Pebbles", paddleColor, pebblesPaddleThickness, reloadImg: true);
+            this.rightPdl.pos = new Vector2(midX + paddleOffset, pebblesY);
 
             //reset random offset, else next ball could be missed
             this.randomOffsY = 0f;
@@ -98,8 +98,8 @@ namespace FivePebblesPong
         public override void Destroy()
         {
             base.Destroy(); //empty
-            this.playerPdl?.Destroy();
-            this.pebblesPdl?.Destroy();
+            this.leftPdl?.Destroy();
+            this.rightPdl?.Destroy();
             this.ball?.Destroy();
             this.line?.Destroy();
             this.border?.Destroy();
@@ -128,21 +128,21 @@ namespace FivePebblesPong
 
             //update paddles
             int pebblesInput = (self.oracle.ID == Oracle.OracleID.SS) ? PebblesAI() : MoonAI();
-            if (pebblesPdl.Update(0, pebblesInput, ball)) //if ball is hit
+            if (rightPdl.Update(0, pebblesInput, ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
-            if (playerPdl.Update(0, (p?.input[0].y ?? 0), ball)) //if ball is hit
+            if (leftPdl.Update(0, (p?.input[0].y ?? 0), ball)) //if ball is hit
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
 
             //move puppet and look at player/ball
             self.lookPoint = (state == State.Playing) ? ball.pos : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
             if (self is SSOracleBehavior) {
-                (self as SSOracleBehavior).SetNewDestination(pebblesPdl.pos); //moves handle closer occasionally
-                (self as SSOracleBehavior).currentGetTo = pebblesPdl.pos;
-                (self as SSOracleBehavior).currentGetTo.y += pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                (self as SSOracleBehavior).SetNewDestination(rightPdl.pos); //moves handle closer occasionally
+                (self as SSOracleBehavior).currentGetTo = rightPdl.pos;
+                (self as SSOracleBehavior).currentGetTo.y += pebblesInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 (self as SSOracleBehavior).floatyMovement = false;
             } else if (self is SLOracleBehavior) {
-                Hooks.SLOracleGetToPosOverride = pebblesPdl.pos; //updates in functions SLOracleBehaviorHasMark_OracleGetToPos_get and SLOracleBehaviorNoMark_OracleGetToPos_get
-                Hooks.SLOracleGetToPosOverride.y += 16f /*SL specific*/ + pebblesInput * pebblesPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
+                Hooks.SLOracleGetToPosOverride = rightPdl.pos; //updates in functions SLOracleBehaviorHasMark_OracleGetToPos_get and SLOracleBehaviorNoMark_OracleGetToPos_get
+                Hooks.SLOracleGetToPosOverride.y += 16f /*SL specific*/ + pebblesInput * rightPdl.movementSpeed * POS_OFFSET_SPEED; //keep up with fast paddle
                 if (Hooks.SLOracleGetToPosOverride.y < 150f) //Moon doesn't like cold water
                     Hooks.SLOracleGetToPosOverride.y = 150f;
                 SLGameStarter.forceFlightMode = true; //updates in function DefaultSLOracleBehavior
@@ -173,8 +173,8 @@ namespace FivePebblesPong
         public override void Draw(Vector2 offset)
         {
             //update image positions
-            playerPdl.DrawImage(offset);
-            pebblesPdl.DrawImage(offset);
+            leftPdl.DrawImage(offset);
+            rightPdl.DrawImage(offset);
             ball.DrawImage(offset);
             line.DrawImage(offset);
             border?.DrawImage(offset);
@@ -268,7 +268,7 @@ namespace FivePebblesPong
                         if (pebblesWin == 15) {
                             dialogBox.Interrupt(self.Translate("Try again."), 10);
                             this.CreatePaddles(self, 200, 30, 20);
-                            playerPdl.movementSpeed += 1f;
+                            leftPdl.movementSpeed += 1f;
                         }
                     }
                     if (self.oracle.ID == Oracle.OracleID.SL && !waterMoonReacted && ball.pos.y < minY + 80) {
@@ -314,7 +314,7 @@ namespace FivePebblesPong
                         slope = 0; //should never run with ballBounceAngle applied
 
                     //distance towards paddle
-                    float deltaX = pebblesPdl.pos.x - pebblesPdl.width / 2 - ball.radius - ball.pos.x;
+                    float deltaX = rightPdl.pos.x - rightPdl.width / 2 - ball.radius - ball.pos.x;
 
                     //predict intercept point without walls
                     float intercept = Math.Abs((ball.pos.y - ball.minY - ball.radius) + (deltaX * slope));
@@ -340,13 +340,13 @@ namespace FivePebblesPong
             if (once || UnityEngine.Random.value < 0.002f)
             {
                 once = false;
-                float allowed = (pebblesPdl.height / 2) - deadband;
+                float allowed = (rightPdl.height / 2) - deadband;
                 randomOffsY = allowed * UnityEngine.Random.Range(-1f, 1f);
             }
 
-            if (predY + randomOffsY > pebblesPdl.pos.y + deadband)
+            if (predY + randomOffsY > rightPdl.pos.y + deadband)
                 return 1;
-            if (predY + randomOffsY < pebblesPdl.pos.y - deadband)
+            if (predY + randomOffsY < rightPdl.pos.y - deadband)
                 return -1;
             return 0;
         }
