@@ -38,7 +38,8 @@
   <ItemGroup>
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="HRGameStarter.cs" />
+    <Compile Include="Games\FlappyPebbles.cs" />
+    <Compile Include="GameStarters\HRGameStarter.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="GameController.cs" />
@@ -56,10 +57,10 @@
     <Compile Include="Games\GrabDot.cs" />
     <Compile Include="Games\Pong.cs" />
     <Compile Include="Hooks.cs" />
-    <Compile Include="RMGameStarter.cs" />
-    <Compile Include="SLGameStarter.cs" />
+    <Compile Include="GameStarters\RMGameStarter.cs" />
+    <Compile Include="GameStarters\SLGameStarter.cs" />
     <Compile Include="PearlSelection.cs" />
-    <Compile Include="SSGameStarter.cs" />
+    <Compile Include="GameStarters\SSGameStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShowMediaMovementBehavior.cs" />
   </ItemGroup>
