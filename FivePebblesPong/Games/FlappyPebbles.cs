@@ -6,23 +6,32 @@ namespace FivePebblesPong
 {
     public class FlappyPebbles : FPGame
     {
-        const float POS_OFFSET_SPEED = 13; //keep up with fast paddle by altering getTo position
-        public List<PongPaddle> pipes;
+        const float POS_OFFSET_SPEED = 16; //keep up with fast bird by altering getTo position
+        public List<Pipe> pipes;
         public bool started = false;
         private bool prevInput = false;
-        public float velocity, jumpStartV, gravityV;
-        public Vector2 pos;
-        public Dot dot;
+        public float velocity, jumpStartV = 12f, gravityV = 1.5f;
+        public int pipeInterval = 80, startInterval = 160;
+        public Dot bird;
+
+        //dimensions
+        private Texture2D rect, line;
+        private Vector2 rectSize = new Vector2(100, 30);
+        public int pipeHeight = 110;
 
 
         public FlappyPebbles(SSOracleBehavior self) : base(self)
         {
+            //prevent using a lot of memory by drawing a rect & line once
+            rect = CreateGamePNGs.DrawRectangle((int) rectSize.x, (int) rectSize.y, 2, Color.green);
+            line = CreateGamePNGs.DrawPerpendicularLine(false, lenY, 2, Color.green);
+
             base.maxY += 15;
-            this.pipes = new List<PongPaddle>();
-            this.jumpStartV = 16f;
-            this.gravityV = 2.2f;
-            this.pos = new Vector2(minX + lenX / 3, midY);
-            dot = new Dot(self, this, 4, "FPP_Bird");
+            base.maxX += 200;
+            base.minX -= 200;
+            this.pipes = new List<Pipe>();
+            bird = new Dot(self, this, 4, "FPP_Bird");
+            Reset();
         }
 
 
@@ -35,7 +44,7 @@ namespace FivePebblesPong
         public override void Destroy()
         {
             base.Destroy(); //empty
-            dot?.Destroy();
+            bird?.Destroy();
             for (int i = 0; i < pipes.Count; i++)
                 pipes[i]?.Destroy();
             pipes?.Clear();
@@ -46,9 +55,9 @@ namespace FivePebblesPong
         {
             base.Update(self);
 
-            //room and puppet
+            //room and behavior
             palette = started ? 25 : 26;
-            self.lookPoint = started ? new Vector2(maxX, midY) : (p?.DangerPos ?? self.player?.DangerPos ?? new Vector2());
+            self.movementBehavior = started ? Enums.SSPlayGame : SSOracleBehavior.MovementBehavior.Talk;
 
             //read player input
             int pY = p?.input[0].y ?? 0;
@@ -59,9 +68,10 @@ namespace FivePebblesPong
             //start/stop game and check input
             if (!prevInput && input) {
                 jump = true;
-                if (!started)
+                if (!started && base.gameCounter > 40) {
                     Reset();
-                started = true;
+                    started = true;
+                }
             }
             prevInput = input;
             if (!started)
@@ -72,20 +82,43 @@ namespace FivePebblesPong
                 velocity = jumpStartV;
                 self.oracle.room.PlaySound(SoundID.MENU_Checkbox_Check, self.oracle.firstChunk);
             }
-            pos.y += velocity;
+            bird.pos.y += velocity;
             velocity -= gravityV;
-            if (pos.y > maxY || pos.y < minY) {
+
+            //death
+            bool dead = bird.pos.y > maxY || bird.pos.y < minY;
+            for (int i = 0; i < pipes.Count; i++) {
+                dead |= pipes[i]?.Update(self, bird.pos) ?? false;
+
+                //delete pipe if it left the screen
+                if (pipes[i]?.pos.x < minX) {
+                    pipes[i]?.Destroy();
+                    pipes.RemoveAt(i);
+                }
+            }
+            if (dead) {
                 started = false;
                 self.oracle.room.PlaySound(SoundID.HUD_Game_Over_Prompt, self.oracle.firstChunk);
+                base.gameCounter = 0;
             }
-            dot.pos = pos;
+
+            //pebbles puppet
+            self.lookPoint = new Vector2(maxX, midY);
+            self.SetNewDestination(bird.pos); //moves handle closer occasionally
+            self.currentGetTo = bird.pos;
+            self.currentGetTo.y += velocity * POS_OFFSET_SPEED; //keep up with fast bird
+            self.floatyMovement = false;
+
+            //placing pipes
+            if (gameCounter >= startInterval && gameCounter % pipeInterval == 0)
+                pipes.Add(new Pipe(self, this, rect, line, rectSize, height: pipeHeight));
         }
 
 
         public override void Draw(Vector2 offset)
         {
             //update image positions
-            dot.DrawImage(offset);
+            bird.DrawImage(offset);
 
             for (int i = 0; i < pipes.Count; i++)
                 pipes[i]?.DrawImage(offset);
@@ -97,8 +130,7 @@ namespace FivePebblesPong
             for (int i = 0; i < pipes.Count; i++)
                 pipes[i]?.Destroy();
             pipes?.Clear();
-            pos.y = midY;
-            dot.pos = pos;
+            bird.pos = new Vector2(minX + lenX / 3, midY);
             base.gameCounter = 0;
         }
     }

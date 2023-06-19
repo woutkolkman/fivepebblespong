@@ -115,8 +115,7 @@ namespace FivePebblesPong
 
         public virtual void Destroy()
         {
-            if (image != null)
-                image.Destroy();
+            image?.Destroy();
             image = null;
         }
     }
