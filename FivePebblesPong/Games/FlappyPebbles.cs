@@ -58,6 +58,8 @@ namespace FivePebblesPong
             //room and behavior
             palette = started ? 25 : 26;
             self.movementBehavior = started ? Enums.SSPlayGame : SSOracleBehavior.MovementBehavior.Talk;
+            if (bird.image != null)
+                bird.image.alpha = started ? 0f : 1f;
 
             //read player input
             int pY = p?.input[0].y ?? 0;
@@ -111,6 +113,8 @@ namespace FivePebblesPong
             self.lookPoint = new Vector2(maxX, midY);
             self.SetNewDestination(bird.pos); //moves handle closer occasionally
             self.currentGetTo = bird.pos;
+            if (base.gameCounter > 40) //after pebbles reached the position
+                self.oracle.firstChunk.pos = bird.pos;
             self.currentGetTo.y += velocity * POS_OFFSET_SPEED; //keep up with fast bird
             self.floatyMovement = false;
         }
