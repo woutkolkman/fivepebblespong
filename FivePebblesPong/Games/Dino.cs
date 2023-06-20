@@ -81,19 +81,18 @@ namespace FivePebblesPong
             this.dino.Update(input);
 
             for (int i = 0; i < obstacles.Count; i++) {
-                if (obstacles[i] != null) {
-                    if (obstacles[i].Update(this.dino)) {
-                        gameStarted = false; //obstacle was hit, stop game
-                        lastCounter = gameCounter;
-                        dino.SetAnimation(DinoPlayer.Animation.Dead);
-                    }
+                if (obstacles[i]?.Update(this.dino) ?? false) {
+                    gameStarted = false; //obstacle was hit, stop game
+                    lastCounter = gameCounter;
+                    dino.SetAnimation(DinoPlayer.Animation.Dead);
+                }
+            }
 
-                    //obstacle left the screen
-                    if (obstacles[i].pos.x < midX - gameWidth / 2)
-                    {
-                        obstacles[i].Destroy();
-                        obstacles.RemoveAt(i);
-                    }
+            //obstacle left the screen
+            for (int i = 0; i < obstacles.Count; i++) {
+                if (obstacles[i]?.pos.x < midX - gameWidth / 2) {
+                    obstacles[i].Destroy();
+                    obstacles.RemoveAt(i);
                 }
             }
 

@@ -30,7 +30,7 @@ namespace FivePebblesPong
             base.maxX += 200;
             base.minX -= 200;
             this.pipes = new List<Pipe>();
-            bird = new Dot(self, this, 4, "FPP_Bird");
+            bird = new Dot(self, this, 4, "FPP_PebblesPoint");
             Reset();
         }
 
@@ -87,20 +87,25 @@ namespace FivePebblesPong
 
             //death
             bool dead = bird.pos.y > maxY || bird.pos.y < minY;
-            for (int i = 0; i < pipes.Count; i++) {
+            for (int i = 0; i < pipes.Count; i++)
                 dead |= pipes[i]?.Update(self, bird.pos) ?? false;
-
-                //delete pipe if it left the screen
-                if (pipes[i]?.pos.x < minX) {
-                    pipes[i]?.Destroy();
-                    pipes.RemoveAt(i);
-                }
-            }
             if (dead) {
                 started = false;
                 self.oracle.room.PlaySound(SoundID.HUD_Game_Over_Prompt, self.oracle.firstChunk);
                 base.gameCounter = 0;
             }
+
+            //delete pipe if it left the screen
+            for (int i = 0; i < pipes.Count; i++) {
+                if (pipes[i]?.pos.x < minX) {
+                    pipes[i]?.Destroy();
+                    pipes.RemoveAt(i);
+                }
+            }
+
+            //placing pipes
+            if (gameCounter >= startInterval && gameCounter % pipeInterval == 0)
+                pipes.Add(new Pipe(self, this, rect, line, rectSize, height: pipeHeight));
 
             //pebbles puppet
             self.lookPoint = new Vector2(maxX, midY);
@@ -108,10 +113,6 @@ namespace FivePebblesPong
             self.currentGetTo = bird.pos;
             self.currentGetTo.y += velocity * POS_OFFSET_SPEED; //keep up with fast bird
             self.floatyMovement = false;
-
-            //placing pipes
-            if (gameCounter >= startInterval && gameCounter % pipeInterval == 0)
-                pipes.Add(new Pipe(self, this, rect, line, rectSize, height: pipeHeight));
         }
 
 
