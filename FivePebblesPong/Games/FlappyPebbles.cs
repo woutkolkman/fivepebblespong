@@ -19,6 +19,11 @@ namespace FivePebblesPong
         private Vector2 rectSize = new Vector2(100, 30);
         public int pipeHeight = 110;
 
+        //scoreboard
+        public PearlSelection scoreBoard;
+        public List<Vector2> scoreCount;
+        public const float SCORE_HEIGHT = 135;
+
 
         public FlappyPebbles(SSOracleBehavior self) : base(self)
         {
@@ -31,6 +36,9 @@ namespace FivePebblesPong
             base.minX -= 200;
             this.pipes = new List<Pipe>();
             bird = new Dot(self, this, 4, "FPP_PebblesPoint");
+
+            scoreBoard = new PearlSelection(self as SSOracleBehavior);
+            scoreCount = new List<Vector2>();
             Reset();
         }
 
@@ -48,6 +56,8 @@ namespace FivePebblesPong
             for (int i = 0; i < pipes.Count; i++)
                 pipes[i]?.Destroy();
             pipes?.Clear();
+            this.scoreCount.Clear();
+            this.scoreBoard?.Destroy();
         }
 
 
@@ -60,6 +70,9 @@ namespace FivePebblesPong
             self.movementBehavior = started ? Enums.SSPlayGame : SSOracleBehavior.MovementBehavior.Talk;
             if (bird.image != null)
                 bird.image.alpha = started ? 0f : 1f;
+
+            //update score
+            scoreBoard?.Update(self, scoreCount);
 
             //read player input
             int pY = p?.input[0].y ?? 0;
@@ -87,10 +100,21 @@ namespace FivePebblesPong
             bird.pos.y += velocity;
             velocity -= gravityV;
 
-            //death
+            //death & points
             bool dead = bird.pos.y > maxY || bird.pos.y < minY;
-            for (int i = 0; i < pipes.Count; i++)
-                dead |= pipes[i]?.Update(self, bird.pos) ?? false;
+            for (int i = 0; i < pipes.Count; i++) {
+                if (pipes[i] == null)
+                    continue;
+                dead |= pipes[i].Update(self, bird.pos);
+
+                //pipe passed
+                if (!pipes[i].passed && pipes[i].pos.x < bird.pos.x) {
+                    pipes[i].passed = true;
+                    scoreCount.Add(new Vector2(midX + 50 + 15 * (scoreCount.Count % 10), SCORE_HEIGHT + 15 * (scoreCount.Count / 10)));
+                    self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
+                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
+                }
+            }
             if (dead) {
                 started = false;
                 self.oracle.room.PlaySound(SoundID.HUD_Game_Over_Prompt, self.oracle.firstChunk);
@@ -113,7 +137,7 @@ namespace FivePebblesPong
             self.lookPoint = new Vector2(maxX, midY);
             self.SetNewDestination(bird.pos); //moves handle closer occasionally
             self.currentGetTo = bird.pos;
-            if (base.gameCounter > 40) //after pebbles reached the position
+            if (base.gameCounter > 60) //after pebbles reached the position
                 self.oracle.firstChunk.pos = bird.pos;
             self.currentGetTo.y += velocity * POS_OFFSET_SPEED; //keep up with fast bird
             self.floatyMovement = false;
@@ -137,6 +161,7 @@ namespace FivePebblesPong
             pipes?.Clear();
             bird.pos = new Vector2(minX + lenX / 3, midY);
             base.gameCounter = 0;
+            this.scoreCount.Clear();
         }
     }
 }

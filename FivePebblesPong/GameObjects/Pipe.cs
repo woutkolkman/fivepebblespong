@@ -13,6 +13,7 @@ namespace FivePebblesPong
         public float halfX => flyRect.x / 2;
         public float halfY => flyRect.y / 2;
         public int gameLenY;
+        public bool passed = false;
 
 
         public Pipe(OracleBehavior self, FPGame game, Texture2D rect, Texture2D line, Vector2 rectSize, int height = 100, bool reloadImg = false) : base("")
