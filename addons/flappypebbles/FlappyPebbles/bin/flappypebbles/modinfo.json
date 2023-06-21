@@ -1,0 +1,11 @@
+{
+  "id": "maxi-mol.flappypebbles",
+  "name": "Flappy Pebbles",
+  "version": "0.1.0",
+  "authors": "Maxi Mol",
+  "description": "Torture Five Pebbles with your favorite 2013 mobile game! Add-on for Five Pebbles Pong.",
+  "requirements": ["maxi-mol.fivepebblespong"],
+  "requirements_names": ["Five Pebbles Pong"],
+  "tags": ["Game Mechanics"],
+  "checksum_override_version": false
+}
