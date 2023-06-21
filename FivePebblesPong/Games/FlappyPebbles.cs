@@ -107,12 +107,20 @@ namespace FivePebblesPong
                     continue;
                 dead |= pipes[i].Update(self, bird.pos);
 
-                //pipe passed
-                if (!pipes[i].passed && pipes[i].pos.x < bird.pos.x) {
-                    pipes[i].passed = true;
-                    scoreCount.Add(new Vector2(midX + 50 + 15 * (scoreCount.Count % 10), SCORE_HEIGHT + 15 * (scoreCount.Count / 10)));
-                    self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
-                    self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
+                //pipe passed?
+                if (pipes[i].passed || pipes[i].pos.x > bird.pos.x)
+                    continue;
+                pipes[i].passed = true;
+                scoreCount.Add(new Vector2(midX + 50 + 15 * (scoreCount.Count % 10), SCORE_HEIGHT + 15 * (scoreCount.Count / 10)));
+                self.oracle.room.PlaySound(SoundID.HUD_Food_Meter_Fill_Plop_A, self.oracle.firstChunk);
+                self.oracle.room.PlaySound(SoundID.Mouse_Light_Flicker, self.oracle.firstChunk);
+
+                if (scoreCount.Count >= scoreBoard?.pearls?.Count)
+                    scoreBoard.RefreshPearlsInRoom(self);
+                if (scoreCount.Count >= scoreBoard?.pearls?.Count) {
+                    if (base.gameCounter < startInterval)
+                        scoreCount.Clear();
+                    base.gameCounter = 0; //short period of no pipes
                 }
             }
             if (dead) {
@@ -137,7 +145,7 @@ namespace FivePebblesPong
             self.lookPoint = new Vector2(maxX, midY);
             self.SetNewDestination(bird.pos); //moves handle closer occasionally
             self.currentGetTo = bird.pos;
-            if (base.gameCounter > 60) //after pebbles reached the position
+            if (base.gameCounter > 60 || pipes.Count > 0) //after pebbles reached the position
                 self.oracle.firstChunk.pos = bird.pos;
             self.currentGetTo.y += velocity * POS_OFFSET_SPEED; //keep up with fast bird
             self.floatyMovement = false;
