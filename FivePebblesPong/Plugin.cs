@@ -57,7 +57,7 @@ namespace FivePebblesPong
 
 
         //called when game selection is active, add new games here
-        public static int amountOfGames = 4; //increase counter when adding more games
+        public static int amountOfGames = 3; //increase counter when adding more games
         public static FPGame SSGetNewFPGame(SSOracleBehavior self, int nr) //-1 if no game was selected yet
         {
             if (amountOfGames != 0)
@@ -67,7 +67,6 @@ namespace FivePebblesPong
                 case 0: return new Pong(self);
                 case 1: return new Breakout(self);
                 case 2: return new GrabDot(self);
-                case 3: return new FlappyPebbles(self);
                 //add new FPGames here
                 default: return null;
             }

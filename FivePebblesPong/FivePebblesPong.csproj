@@ -38,8 +38,6 @@
   <ItemGroup>
     <Compile Include="CreateGamePNGs.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="GameObjects\Pipe.cs" />
-    <Compile Include="Games\FlappyPebbles.cs" />
     <Compile Include="GameStarters\HRGameStarter.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Plugin.cs" />
