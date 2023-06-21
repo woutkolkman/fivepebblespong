@@ -20,3 +20,4 @@ You should see a ball projection bouncing, and you can change the palette by pre
 5. The YourGame.cs file contains some examples. More examples are available in the Five Pebbles Pong code.
 6. You can upload your plugin in the Remix menu within Rain World, or by using an uploader tool.
 7. Every time you update your mod. You should change the version in Plugin.cs and modinfo.json. Updating is done with the same Remix menu button.
+8. You can print to logs using "Plugin.Logger.LogInfo("");". Check BepInEx logs located in "Rain World\BepInEx\LogOutput.log", or enable a console window in "Rain World\BepInEx\config\BepInEx.cfg".
