@@ -1,0 +1,11 @@
+{
+  "id": "yourname.yourgame",
+  "name": "Your Game",
+  "version": "0.1.0",
+  "authors": "yourname",
+  "description": "Very nice.",
+  "requirements": ["maxi-mol.fivepebblespong"],
+  "requirements_names": ["Five Pebbles Pong"],
+  "tags": ["Game Mechanics"],
+  "checksum_override_version": false
+}

@@ -1,0 +1,5 @@
+Torture Five Pebbles with your favorite 2013 mobile game! Add-on for Five Pebbles Pong.
+If this is the only addon, you can grab the 4th pearl from the left to start this game.
+
+You can program and upload your own games! This is an example.
+Source code is here: https://github.com/woutkolkman/fivepebblespong/tree/master/addons

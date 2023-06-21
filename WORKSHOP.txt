@@ -4,3 +4,6 @@ Added to all campaigns.
 
 Source code is here: https://github.com/woutkolkman/fivepebblespong/
 Originally ratrat44's idea: https://www.youtube.com/watch?v=X-k5ytvMFQ4
+
+You can program and upload your own games! Flappy Pebbles is an example.
+Source code is here: https://github.com/woutkolkman/fivepebblespong/tree/master/addons

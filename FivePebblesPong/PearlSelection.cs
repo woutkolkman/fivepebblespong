@@ -29,7 +29,7 @@ namespace FivePebblesPong
 
             RefreshPearlsInRoom(self, addGrabbedPearls);
 
-            switch (UnityEngine.Random.Range(0, 3))
+            switch (UnityEngine.Random.Range(0, 4))
             {
                 case 0: type = Type.SinusY; break;
                 case 1: type = Type.Binary; break;

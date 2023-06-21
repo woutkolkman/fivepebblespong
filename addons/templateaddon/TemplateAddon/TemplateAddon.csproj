@@ -7,8 +7,8 @@
     <ProjectGuid>{C0093BC7-1934-4C50-9C34-16B6DA636F83}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlappyPebbles</RootNamespace>
-    <AssemblyName>FlappyPebbles</AssemblyName>
+    <RootNamespace>TemplateAddon</RootNamespace>
+    <AssemblyName>TemplateAddon</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -36,8 +36,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FlappyPebbles.cs" />
-    <Compile Include="Pipe.cs" />
+    <Compile Include="YourGame.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,7 +78,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo
-xcopy /y /d "$(ProjectDir)bin\Release\FlappyPebbles.dll" "$(ProjectDir)bin\flappypebbles\plugins\"
-xcopy /u /y "$(ProjectDir)bin\Release\FlappyPebbles.dll" "C:\Users\Wout Kolkman\Documents\Games\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\flappypebbles\plugins\" || cd .</PostBuildEvent>
+xcopy /y /d "$(ProjectDir)bin\Release\TemplateAddon.dll" "$(ProjectDir)bin\templateaddon\plugins\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
