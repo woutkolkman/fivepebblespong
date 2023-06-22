@@ -13,6 +13,8 @@ Thanks to the [Rain World Modding Wiki](https://rainworldmodding.miraheze.org/),
 ### Description
 A Rain World mod that adds a game controller to Five Pebbles' room. If slugcat grabs it, Pebbles invites you to play Pong. Controls are the up and down keys. This mod does not alter existing dialogue or behavior.
 
+You can program and upload your own games! Go to the "addons" folder for more info.
+
 <img src="https://github.com/woutkolkman/fivepebblespong/blob/master/gifs/fivepebblespong.gif" height="400">
 More games:  
 <img src="https://github.com/woutkolkman/fivepebblespong/blob/master/gifs/fivepebblesbreakout.gif" height="400">
