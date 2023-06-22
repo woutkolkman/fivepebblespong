@@ -59,7 +59,7 @@ namespace TemplateAddon
             if (!(self is SSOracleBehavior))
                 return;
 
-            //nothing actually happens, you can program his movement here
+            //no movement behavior is programmed for "SSPlayGame", so you can program it here
             (self as SSOracleBehavior).movementBehavior = FivePebblesPong.Enums.SSPlayGame;
 
             //go to middle of room

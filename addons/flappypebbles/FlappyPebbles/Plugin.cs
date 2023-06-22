@@ -8,7 +8,7 @@ using System.Security.Permissions;
 namespace FlappyPebbles
 {
     //also edit version in "modinfo.json"
-    [BepInPlugin("maxi-mol.flappypebbles", "FlappyPebbles", "0.1.0")] //(GUID, mod name, mod version)
+    [BepInPlugin("maxi-mol.flappypebbles", "Flappy Pebbles", "0.1.0")] //(GUID, mod name, mod version)
     public class Plugin : BaseUnityPlugin
     {
         public static new ManualLogSource Logger { get; private set; } = null;

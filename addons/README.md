@@ -10,7 +10,7 @@ Check the contents of the BUILD.md file for instructions on how to setup your ID
 
 
 ### Steps to create your game
-1. Download the templateaddon folder, and try to build the code as described in BUILD.md.
+1. Download the templateaddon folder, and try to build the code as described in BUILD.md. You can select target "Release" instead of "Debug" in the toolbar menu.
 2. Copy the "templateaddon\TemplateAddon\bin\templateaddon\" folder to your Rain World mods folder at "Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\". The "plugins" folder should contain a .dll file if building was successful.
 3. Load the plugin and try to start the mod by selecting your games' pearl. You can use Warp Menu to quickly go to room SS_AI, and with Dev Tools you can teleport around by pressing 'O' and 'V'.
 
