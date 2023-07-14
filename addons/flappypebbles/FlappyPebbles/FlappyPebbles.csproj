@@ -80,6 +80,6 @@
   <PropertyGroup>
     <PostBuildEvent>echo
 xcopy /y /d "$(ProjectDir)bin\Release\FlappyPebbles.dll" "$(ProjectDir)bin\flappypebbles\plugins\"
-xcopy /u /y "$(ProjectDir)bin\Release\FlappyPebbles.dll" "C:\Users\Wout Kolkman\Documents\Games\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\flappypebbles\plugins\" || cd .</PostBuildEvent>
+xcopy /u /y "$(ProjectDir)bin\Release\FlappyPebbles.dll" "C:\Program Files (x86)\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\flappypebbles\plugins\" || cd .</PostBuildEvent>
   </PropertyGroup>
 </Project>

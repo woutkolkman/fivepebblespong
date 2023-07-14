@@ -78,6 +78,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo
-xcopy /y /d "$(ProjectDir)bin\Release\TemplateAddon.dll" "$(ProjectDir)bin\templateaddon\plugins\"</PostBuildEvent>
+xcopy /y /d "$(ProjectDir)bin\Release\TemplateAddon.dll" "$(ProjectDir)bin\templateaddon\plugins\"
+xcopy /u /y "$(ProjectDir)bin\Release\TemplateAddon.dll" "C:\Program Files (x86)\Steam\SteamApps\common\Rain World\RainWorld_Data\StreamingAssets\mods\templateaddon\plugins\" || cd .</PostBuildEvent>
   </PropertyGroup>
 </Project>
