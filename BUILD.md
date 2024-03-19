@@ -16,6 +16,7 @@ Add references to files as described in the guide above:
 - UnityEngine.CoreModule.dll
 - MonoMod.RuntimeDetour.dll
 - MonoMod.Utils.dll
+- Unity.Mathematics.dll
 
 The files can be found in the Rain World folder. You can copy and store these, for example, in a folder "references" next to the folder containing this source code.
 

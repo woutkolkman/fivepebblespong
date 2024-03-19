@@ -67,7 +67,7 @@ namespace FivePebblesPong
                 if (self.oracle.room.GetTile(tryPos).Solid)
                     return float.MaxValue;
                 float num = Mathf.Abs(Vector2.Distance(tryPos, self.player.DangerPos) - 250f); //NOTE checks only singleplayer: "self.player"
-                num -= Math.Min((float)self.oracle.room.aimap.getAItile(tryPos).terrainProximity, 9f) * 30f;
+                num -= Math.Min((float)self.oracle.room.aimap.getTerrainProximity(tryPos), 9f) * 30f;
                 if (self is SSOracleBehavior)
                     num -= Vector2.Distance(tryPos, (self as SSOracleBehavior).nextPos) * 0.5f;
                 for (int i = 0; i < self.oracle.arm.joints.Length; i++)
