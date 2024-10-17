@@ -7,5 +7,6 @@
   "requirements": ["maxi-mol.fivepebblespong"],
   "requirements_names": ["Five Pebbles Pong"],
   "tags": ["Game Mechanics"],
+  "update_url": "https://github.com/woutkolkman/fivepebblespong/releases/latest",
   "checksum_override_version": false
 }
