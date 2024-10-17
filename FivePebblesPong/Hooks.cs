@@ -198,7 +198,7 @@ namespace FivePebblesPong
                 self.imageNames = imageNames;
                 self.cycleTime = cycleTime;
                 self.setAlpha = new float?(1f);
-                return;
+                return; //don't call orig(), because that will also call LoadFile()
             }
             orig(self, imageNames, cycleTime);
         }
@@ -304,12 +304,13 @@ namespace FivePebblesPong
         public delegate bool orig_Gravity(SSOracleBehavior.SubBehavior self);
         public static bool SSOracleBehavior_SubBehavior_Gravity_get(orig_Gravity orig, SSOracleBehavior.SubBehavior self)
         {
+            bool origVal = orig(self);
             if (Plugin.HasEnumExt && SSGameStarter.starter != null) { //avoid potential crashes
-                if (previous_SSOracleBehavior_SubBehavior_Gravity ^ SSGameStarter.starter.gravity)
+                if (previous_SSOracleBehavior_SubBehavior_Gravity ^ SSGameStarter.starter.gravity) //gravity changed, play sound
                     self.oracle.room.PlaySound(SSGameStarter.starter.gravity ? SoundID.SS_AI_Exit_Work_Mode : SoundID.Broken_Anti_Gravity_Switch_On, 0f, 1f, 1f);
                 previous_SSOracleBehavior_SubBehavior_Gravity = SSGameStarter.starter.gravity;
             } else {
-                previous_SSOracleBehavior_SubBehavior_Gravity = orig(self); //always true
+                previous_SSOracleBehavior_SubBehavior_Gravity = origVal; //always true
             }
             return previous_SSOracleBehavior_SubBehavior_Gravity;
         }
@@ -387,11 +388,12 @@ namespace FivePebblesPong
         }
         static SLOracleBehaviorHasMark.MiscItemType SLOracleBehaviorHasMarkTypeOfMiscItemHook(On.SLOracleBehaviorHasMark.orig_TypeOfMiscItem orig, SLOracleBehaviorHasMark self, PhysicalObject testItem)
         {
+            var origVal = orig(self, testItem);
             if (Plugin.HasEnumExt && testItem.abstractPhysicalObject.type == Enums.GameControllerMoon)
                 return Enums.GameControllerMoonReaction;
             if (Plugin.HasEnumExt && (testItem.abstractPhysicalObject.type == Enums.GameControllerPebbles || testItem is GameController))
                 return Enums.GameControllerPebblesReaction;
-            return orig(self, testItem);
+            return origVal;
         }
 
 
@@ -456,21 +458,23 @@ namespace FivePebblesPong
         public delegate Vector2 orig_OracleGetToPos_NoMark(SLOracleBehaviorNoMark self);
         public static Vector2 SLOracleBehaviorHasMark_OracleGetToPos_get(orig_OracleGetToPos_HasMark orig, SLOracleBehaviorHasMark self)
         {
+            Vector2 origVal = orig(self);
             if (Plugin.HasEnumExt) {
                 if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
                 if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
                 if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
             }
-            return orig(self);
+            return origVal;
         }
         public static Vector2 SLOracleBehaviorNoMark_OracleGetToPos_get(orig_OracleGetToPos_NoMark orig, SLOracleBehaviorNoMark self)
         {
+            Vector2 origVal = orig(self);
             if (Plugin.HasEnumExt) {
                 if (SLGameStarter.grabItem != null) return SLGameStarter.grabItem.firstChunk.pos;
                 if (SLGameStarter.starter?.game == null) SLOracleGetToPosOverride = new Vector2();
                 if (SLOracleGetToPosOverride != new Vector2()) return SLOracleGetToPosOverride;
             }
-            return orig(self);
+            return origVal;
         }
 
 
