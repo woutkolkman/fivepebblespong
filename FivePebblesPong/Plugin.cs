@@ -35,9 +35,9 @@ namespace FivePebblesPong
             Enums.RegisterValues();
             Hooks.Apply();
 
-            GUID = Info.Metadata.GUID;
-            Name = Info.Metadata.Name;
-            Version = Info.Metadata.Version.ToString();
+            GUID = Info?.Metadata?.GUID;
+            Name = Info?.Metadata?.Name;
+            Version = Info?.Metadata?.Version?.ToString();
 
             Plugin.ME.Logger_p.LogInfo("OnEnable called");
         }

@@ -9,6 +9,7 @@ namespace FivePebblesPong
     {
         static BindingFlags propFlags = BindingFlags.Instance | BindingFlags.Public;
         static BindingFlags myMethodFlags = BindingFlags.Static | BindingFlags.Public;
+        static Hook SSOracleBehaviorSubBehaviorGravityHook, SLOracleBehaviorHasMarkOracleGetToPosHook, SLOracleBehaviorNoMarkOracleGetToPosHook;
 
 
         public static void Apply()
@@ -35,7 +36,7 @@ namespace FivePebblesPong
             On.SSOracleBehavior.Update += SSOracleBehaviorUpdateHook;
 
             //five pebbles gravity RuntimeDetour
-            Hook SSOracleBehaviorSubBehaviorGravityHook = new Hook(
+            SSOracleBehaviorSubBehaviorGravityHook = new Hook(
                 typeof(SSOracleBehavior.SubBehavior).GetProperty("Gravity", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SSOracleBehavior_SubBehavior_Gravity_get", myMethodFlags)
             );
@@ -59,11 +60,11 @@ namespace FivePebblesPong
             On.SLOracleBehaviorNoMark.Update += SLOracleBehaviorNoMarkUpdateHook;
 
             //Moon OracleGetToPos RuntimeDetour
-            Hook SLOracleBehaviorHasMarkOracleGetToPosHook = new Hook(
+            SLOracleBehaviorHasMarkOracleGetToPosHook = new Hook(
                 typeof(SLOracleBehaviorHasMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SLOracleBehaviorHasMark_OracleGetToPos_get", myMethodFlags)
             );
-            Hook SLOracleBehaviorNoMarkOracleGetToPosHook = new Hook(
+            SLOracleBehaviorNoMarkOracleGetToPosHook = new Hook(
                 typeof(SLOracleBehaviorNoMark).GetProperty("OracleGetToPos", propFlags).GetGetMethod(),
                 typeof(Hooks).GetMethod("SLOracleBehaviorNoMark_OracleGetToPos_get", myMethodFlags)
             );
@@ -84,7 +85,31 @@ namespace FivePebblesPong
 
         public static void Unapply()
         {
-            //TODO
+            On.RainWorld.OnModsInit -= RainWorldOnModsInitHook;
+            On.Room.Loaded -= RoomLoadedHook;
+            On.AbstractPhysicalObject.Realize -= AbstractPhysicalObjectRealizeHook;
+            On.Player.ctor -= PlayerCtorHook;
+            On.ProjectedImage.ctor -= ProjectedImageCtorHook;
+            On.SSOracleBehavior.ctor -= SSOracleBehaviorCtorHook;
+            On.SSOracleBehavior.Update -= SSOracleBehaviorUpdateHook;
+            if (SSOracleBehaviorSubBehaviorGravityHook.IsValid)
+                SSOracleBehaviorSubBehaviorGravityHook.Dispose();
+            On.Creature.Violence -= CreatureViolenceHook;
+            On.LizardGraphics.AddToContainer -= LizardGraphicsAddToContainerHook;
+            On.SLOracleBehaviorHasMark.MoonConversation.AddEvents -= SLOracleBehaviorHasMarkMoonConversationAddEventsHook;
+            On.SLOracleBehaviorHasMark.TypeOfMiscItem -= SLOracleBehaviorHasMarkTypeOfMiscItemHook;
+            On.SLOracleBehavior.ctor -= SLOracleBehaviorCtorHook;
+            On.SLOracleBehavior.Update -= SLOracleBehaviorUpdateHook;
+            On.SLOracleBehaviorHasMark.Update -= SLOracleBehaviorHasMarkUpdateHook;
+            On.SLOracleBehaviorNoMark.Update -= SLOracleBehaviorNoMarkUpdateHook;
+            if (SLOracleBehaviorHasMarkOracleGetToPosHook.IsValid)
+                SLOracleBehaviorHasMarkOracleGetToPosHook.Dispose();
+            if (SLOracleBehaviorNoMarkOracleGetToPosHook.IsValid)
+                SLOracleBehaviorNoMarkOracleGetToPosHook.Dispose();
+            On.MoreSlugcats.SSOracleRotBehavior.ctor -= MoreSlugcatsSSOracleRotBehaviorCtorHook;
+            On.MoreSlugcats.SSOracleRotBehavior.Update -= MoreSlugcatsSSOracleRotBehaviorUpdateHook;
+            On.MoreSlugcats.CLOracleBehavior.ctor -= MoreSlugcatsCLOracleBehaviorCtorHook;
+            On.MoreSlugcats.CLOracleBehavior.Update -= MoreSlugcatsCLOracleBehaviorUpdateHook;
         }
 
 
@@ -93,6 +118,7 @@ namespace FivePebblesPong
         {
             orig(self);
             MachineConnector.SetRegisteredOI(Plugin.ME.GUID, new Options());
+            //TODO, if using Rain Reloader, this hook will never trigger, and the remix options won't be initialized
         }
 
 
