@@ -117,8 +117,10 @@ namespace FivePebblesPong
         static void RainWorldOnModsInitHook(On.RainWorld.orig_OnModsInit orig, RainWorld self)
         {
             orig(self);
-            MachineConnector.SetRegisteredOI(Plugin.ME.GUID, new Options());
-            //TODO, if using Rain Reloader, this hook will never trigger, and the remix options won't be initialized
+
+            //hook gets called (for this mod) only when not using Rain Reloader
+            Plugin.ME.Logger_p.LogDebug("RainWorldOnModsInitHook, first time initializing options interface");
+            MachineConnector.SetRegisteredOI(Plugin.GUID, new Options());
         }
 
 
@@ -210,7 +212,7 @@ namespace FivePebblesPong
             }
 
             if (gameControllerPebblesInShelter || gameControllerMoonInShelter)
-                Plugin.ME.Logger_p.LogInfo("PlayerCtorHook: Prevent controller duplicate");
+                Plugin.ME.Logger_p.LogInfo("PlayerCtorHook, prevent controller duplicate");
             //TODO, when a GameController is stored in another shelter, it's not detected and duplication is allowed
         }
 
@@ -275,7 +277,7 @@ namespace FivePebblesPong
                 self.inActionCounter = 0;
                 self.dialogBox?.Interrupt("Never mind...", 0);
                 SSGameStarter.notFullyStartedCounter = 0;
-                Plugin.ME.Logger_p.LogInfo("SSOracleBehaviorUpdateHook: SlumberParty set");
+                Plugin.ME.Logger_p.LogInfo("SSOracleBehaviorUpdateHook, SlumberParty set");
                 return;
             }
 
@@ -349,7 +351,7 @@ namespace FivePebblesPong
                 foreach (AbstractCreature ac in (SSGameStarter.starter.game as GrabDot).creatures) {
                     if (ac?.realizedCreature?.mainBodyChunk == source) {
                         damage = 0f;
-                        Plugin.ME.Logger_p.LogInfo("CreatureViolenceHook: Prevent damage");
+                        Plugin.ME.Logger_p.LogInfo("CreatureViolenceHook, prevent damage");
                     }
                 }
             }
@@ -373,7 +375,7 @@ namespace FivePebblesPong
                 if (sLeaser != null && sLeaser.sprites != null)
                     for (int i = 0; i < sLeaser.sprites.Length; i++)
                         sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["Hologram"]; //default is "Basic"
-                Plugin.ME.Logger_p.LogInfo("LizardGraphicsAddToContainerHook: Hologram lizard");
+                Plugin.ME.Logger_p.LogInfo("LizardGraphicsAddToContainerHook, hologram lizard");
             }
             orig(self, sLeaser, rCam, newContainer);
         }
