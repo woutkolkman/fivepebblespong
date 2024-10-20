@@ -7,14 +7,13 @@ using System.Security.Permissions;
 
 namespace FivePebblesPong
 {
-    //also edit version in "modinfo.json"
     [BepInPlugin(GUID, Name, Version)]
     public class Plugin : BaseUnityPlugin
     {
         //metadata
         public const string GUID = "maxi-mol.fivepebblespong";
         public const string Name = "Five Pebbles Pong";
-        public const string Version = "1.1.1";
+        public const string Version = "1.1.1"; //also edit version in "modinfo.json"
 
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
         private static WeakReference __me; //WeakReference still allows garbage collection
