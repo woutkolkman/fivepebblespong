@@ -38,6 +38,7 @@ namespace FivePebblesPong
             if (MachineConnector.IsThisModActive(GUID)) {
                 Plugin.ME.Logger_p.LogDebug("OnEnable, re-initializing options interface");
                 MachineConnector.SetRegisteredOI(GUID, new Options());
+                MachineConnector.ReloadConfig(MachineConnector.GetRegisteredOI(GUID));
             }
 
             Plugin.ME.Logger_p.LogInfo("OnEnable called");
