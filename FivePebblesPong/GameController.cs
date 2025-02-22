@@ -5,6 +5,9 @@ namespace FivePebblesPong
 {
     public class GameController : Rock
     {
+        //TODO, add GameController icon for map and in BeastMaster etc.
+
+
         public GameController(AbstractPhysicalObject abstractPhysicalObject, Color? c = null) : base(abstractPhysicalObject, abstractPhysicalObject.world)
         {
             this.color = Color.white;
