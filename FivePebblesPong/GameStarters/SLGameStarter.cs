@@ -369,6 +369,8 @@ namespace FivePebblesPong
         public static bool forceFlightMode;
         public static void DefaultSLOracleBehavior(SLOracleBehavior self)
         {
+            //TODO also make players look?
+
             //overwrite moon look position
             if (moonLookPoint != new Vector2())
                 self.lookPoint = moonLookPoint;
