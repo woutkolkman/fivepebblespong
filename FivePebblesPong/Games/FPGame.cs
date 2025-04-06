@@ -24,19 +24,19 @@ namespace FivePebblesPong
 
             if (self?.oracle?.room?.game != null && self.oracle.room.roomSettings != null)
             {
-                if (self.oracle.room.roomSettings.name.StartsWith("RM_AI")) {
+                if (self.oracle.room.roomSettings.name.ToUpper().StartsWith("RM_AI")) {
                     minX = 1220;
                     maxX = 1800;
                     minY = 800;
                     maxY = 1380;
                 }
-                if (self.oracle.room.roomSettings.name.Equals("SL_AI")) {
+                if (self.oracle.room.roomSettings.name.ToUpper().Equals("SL_AI")) {
                     minX = 1240;
                     maxX = 1820;
                     minY = 40;
                     maxY = 620;
                 }
-                if (self.oracle.room.roomSettings.name.Equals("HR_AI"))
+                if (self.oracle.room.roomSettings.name.ToUpper().Equals("HR_AI"))
                 {
                     minX = 200;
                     maxX = 780;

@@ -136,21 +136,21 @@ namespace FivePebblesPong
 
             if (self.game != null && self.roomSettings != null && firsttime)
             {
-                if (self.roomSettings.name.Equals("SS_AI") && !gameControllerPebblesInShelter)
+                if (self.roomSettings.name.ToUpper().Equals("SS_AI") && !gameControllerPebblesInShelter)
                     //copy existing coordinate from a random object
                     PlaceObject(Enums.GameControllerPebbles, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count)].pos);
 
-                if (self.roomSettings.name.Equals("DM_AI") && !gameControllerMoonInShelter)
+                if (self.roomSettings.name.ToUpper().Equals("DM_AI") && !gameControllerMoonInShelter)
                     //copy existing coordinate from a random object
                     PlaceObject(Enums.GameControllerMoon, self.roomSettings.placedObjects[UnityEngine.Random.Range(0, self.roomSettings.placedObjects.Count)].pos);
 
-                if (self.roomSettings.name.StartsWith("RM_AI") && !gameControllerPebblesInShelter)
+                if (self.roomSettings.name.ToUpper().StartsWith("RM_AI") && !gameControllerPebblesInShelter)
                     PlaceObject(Enums.GameControllerPebbles, new Vector2(2740, 1280));
 
-                if (self.roomSettings.name.Equals("SL_MOONTOP") && !gameControllerMoonInShelter)
+                if (self.roomSettings.name.ToUpper().Equals("SL_MOONTOP") && !gameControllerMoonInShelter)
                     PlaceObject(Enums.GameControllerMoon, new Vector2(1000, 650));
 
-                if (self.roomSettings.name.Equals("CL_AI") && !gameControllerPebblesInShelter)
+                if (self.roomSettings.name.ToUpper().Equals("CL_AI") && !gameControllerPebblesInShelter)
                     PlaceObject(Enums.GameControllerPebbles, new Vector2(2310, 730));
             }
 
@@ -298,9 +298,9 @@ namespace FivePebblesPong
             }
 
             //construct/free SSGameStarter object when player enters/leaves room
-            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.EndsWith("_AI") && SSGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.ToUpper().EndsWith("_AI") && SSGameStarter.starter == null)
                 SSGameStarter.starter = new SSGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.EndsWith("_AI")) && SSGameStarter.starter != null && SSGameStarter.starter.state == SSGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.ToUpper().EndsWith("_AI")) && SSGameStarter.starter != null && SSGameStarter.starter.state == SSGameStarter.State.Stop)
                 SSGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 
@@ -446,9 +446,9 @@ namespace FivePebblesPong
             if (!Plugin.HasEnumExt) //avoid potential crashes
                 return;
 
-            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.Equals("SL_AI") && SLGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.ToUpper().Equals("SL_AI") && SLGameStarter.starter == null)
                 SLGameStarter.starter = new SLGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.Equals("SL_AI")) && SLGameStarter.starter != null && SLGameStarter.starter.game == null)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.ToUpper().Equals("SL_AI")) && SLGameStarter.starter != null && SLGameStarter.starter.game == null)
                 SLGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 
@@ -528,9 +528,9 @@ namespace FivePebblesPong
                 return;
 
             //construct/free RMGameStarter object when player enters/leaves room
-            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.StartsWith("RM_AI") && RMGameStarter.starter == null)
+            if (self.player?.room?.roomSettings != null && self.player.room.roomSettings.name.ToUpper().StartsWith("RM_AI") && RMGameStarter.starter == null)
                 RMGameStarter.starter = new RMGameStarter();
-            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.StartsWith("RM_AI")) && RMGameStarter.starter != null && RMGameStarter.starter.state == RMGameStarter.State.Stop)
+            if ((self.player?.room?.roomSettings == null || !self.player.room.roomSettings.name.ToUpper().StartsWith("RM_AI")) && RMGameStarter.starter != null && RMGameStarter.starter.state == RMGameStarter.State.Stop)
                 RMGameStarter.starter = null;
             //NOTE checks only singleplayer: "self.player"
 

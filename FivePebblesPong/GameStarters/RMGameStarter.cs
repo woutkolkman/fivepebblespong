@@ -56,7 +56,7 @@ namespace FivePebblesPong
                 //======================================================
                 case State.Stop:
                     //player not in room, or no controller
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.StartsWith("RM_AI") || playerLeft)
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().StartsWith("RM_AI") || playerLeft)
                         break;
 
                     //conversation active
@@ -126,7 +126,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw(UnityEngine.Random.value < 0.1f ? pos : new Vector2());
 
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.StartsWith("RM_AI") || playerLeft)
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().StartsWith("RM_AI") || playerLeft)
                         state = State.StopDialog;
                     break;
 

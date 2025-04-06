@@ -63,7 +63,7 @@ namespace FivePebblesPong
             instantStop |= self is SLOracleBehaviorHasMark && (self as SLOracleBehaviorHasMark).State.hasToldPlayerNotToEatNeurons;
 
             //is player leaving? or no player carries controller
-            bool playerLeaves = p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI") || p.DangerPos.x < minXPosPlayer;
+            bool playerLeaves = p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().Equals("SL_AI") || p.DangerPos.x < minXPosPlayer;
 
             //TODO test without deathPersistentSaveData.theMark (doesn't normally take place in campaigns)
 
@@ -132,7 +132,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.Equals("SL_AI") || instantStop || playerLeaves)
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().Equals("SL_AI") || instantStop || playerLeaves)
                         state = State.StopDialog;
                     break;
 
@@ -180,13 +180,13 @@ namespace FivePebblesPong
             bool playerMayPlayGame = (
                 self.hasNoticedPlayer &&
                 p?.room?.roomSettings != null && //player carries controller
-                p.room.roomSettings.name.Equals("SL_AI") &&
+                p.room.roomSettings.name.ToUpper().Equals("SL_AI") &&
                 p.DangerPos.x >= minXPosPlayer //stop game when leaving
             );
             bool moonMayPlayGame = (
                 self.holdingObject is GameController &&
                 self.player?.room?.roomSettings != null &&
-                self.player.room.roomSettings.name.Equals("SL_AI") && //memory gets freed if player leaves
+                self.player.room.roomSettings.name.ToUpper().Equals("SL_AI") && //memory gets freed if player leaves
                 SLGameStarter.moonDelayUpdateGame <= 0 //so game doesn't start until player has played it at least once
             );
             //NOTE checks only singleplayer: "self.player"

@@ -122,7 +122,7 @@ namespace FivePebblesPong
                     if (self.action?.ToString().Equals("MeetArty_Init") == true || self.action?.ToString().Equals("MeetArty_Talking") == true)
                         break;
 
-                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("SS_AI") && SSGameStarter.notFullyStartedCounter < 4)
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.ToUpper().Equals("SS_AI") && SSGameStarter.notFullyStartedCounter < 4)
                         state = State.StartDialog;
                     break;
 
@@ -181,7 +181,7 @@ namespace FivePebblesPong
 
                     if (game != null)
                         state = State.Calibrate;
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.EndsWith("_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().EndsWith("_AI"))
                         state = State.StopDialog;
                     if (state != State.SelectGame)
                     {
@@ -226,7 +226,7 @@ namespace FivePebblesPong
                     game?.Update(self);
                     game?.Draw();
 
-                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.EndsWith("_AI"))
+                    if (p?.room?.roomSettings == null || !p.room.roomSettings.name.ToUpper().EndsWith("_AI"))
                         state = State.StopDialog;
                     break;
 
@@ -315,7 +315,7 @@ namespace FivePebblesPong
             {
                 //======================================================
                 case State.Stop: //main game conversation is running
-                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.Equals("DM_AI") &&
+                    if (p?.room?.roomSettings != null /*player carries controller*/ && p.room.roomSettings.name.ToUpper().Equals("DM_AI") &&
                         self.action?.ToString().Equals("Moon_SlumberParty") == true && self.conversation == null && self.inspectPearl == null)
                         state = State.StartDialog;
                     break;

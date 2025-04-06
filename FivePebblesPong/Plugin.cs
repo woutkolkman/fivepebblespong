@@ -13,7 +13,7 @@ namespace FivePebblesPong
         //metadata
         public const string GUID = "maxi-mol.fivepebblespong";
         public const string Name = "Five Pebbles Pong";
-        public const string Version = "1.1.1"; //also edit version in "modinfo.json"
+        public const string Version = "1.2.0"; //also edit version in "modinfo.json"
 
         //for accessing logger https://rainworldmodding.miraheze.org/wiki/Code_Environments
         private static WeakReference __me; //WeakReference still allows garbage collection

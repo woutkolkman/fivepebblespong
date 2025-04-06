@@ -41,7 +41,7 @@ namespace FivePebblesPong
 
         public Pong(OracleBehavior self) : base(self)
         {
-            hrMode = self.oracle?.room?.roomSettings?.name?.Equals("HR_AI") ?? false;
+            hrMode = self.oracle?.room?.roomSettings?.name?.ToUpper().Equals("HR_AI") ?? false;
             if (hrMode)
                 doubleAI = true;
             rightPdlAI = new PongAI(this, false);
