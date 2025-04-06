@@ -8,6 +8,9 @@ namespace FivePebblesPong
 {
     public static class CreateGamePNGs
     {
+        //TODO every time a Texture2D is created without destroying it, it takes up memory
+
+
         //25 pixels transparent from each edge (for projection shader to work properly)
         public const int EDGE_DIST = 25;
 
