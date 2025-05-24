@@ -22,6 +22,7 @@ namespace FivePebblesPong
         public static bool grabbedScoreReacted = false;
         public float ballAccel = 0.003f;
         public float startSpeed = 6f;
+        public float extraStartSpeed = 0f; //quicker up to speed when a round ends
         public int pebblesUpdateRate = 6; //calculate ball trajectory every X ticks
         public bool waterMoonReacted = false;
         private bool hrMode; //pebbles gets moved to left paddle
@@ -138,11 +139,10 @@ namespace FivePebblesPong
             base.Update(self);
 
             //increase ball speed gradually
-            ball.movementSpeed = startSpeed + (ballAccel * base.gameCounter);
+            ball.movementSpeed = startSpeed + extraStartSpeed + (ballAccel * base.gameCounter);
 
             this.StateMachine(self);
-            if (state == State.GetReady)
-            { //reset ball position and angle
+            if (state == State.GetReady) { //reset ball position and angle
                 ball.pos = new Vector2(midX, midY);
                 ball.angle = (playerLastWin ? Math.PI : 0); //pass ball to last winner
                 ball.lastWallHit = new Vector2(); //reset wall hit
@@ -234,6 +234,14 @@ namespace FivePebblesPong
                         state = State.PebblesWin;
                     if (ball.lastWallHit.x == maxX)
                         state = State.PlayerWin;
+
+                    if (state != State.Playing) { //adjust ball starting speed
+                        float pct = 0.50f;
+                        if (self.oracle.ID == Oracle.OracleID.SL || self.oracle.ID.ToString().Equals("DM"))
+                            pct = 0.25f;
+                        extraStartSpeed = (ball.movementSpeed - startSpeed) * pct;
+                    }
+
                     if (this.border != null && this.border.image != null) { //slowly remove border
                         this.border.image.alpha -= 0.01f;
                         if (this.border.image.alpha <= 0f)
@@ -379,8 +387,7 @@ namespace FivePebblesPong
                 }
 
                 //at random interval a random offset from predicted ball intercept
-                if (once || UnityEngine.Random.value < 0.002f)
-                {
+                if (once || UnityEngine.Random.value < 0.002f) {
                     once = false;
                     float allowed = (paddle.height / 2) - deadband;
                     randomOffsY = allowed * UnityEngine.Random.Range(-1f, 1f);
